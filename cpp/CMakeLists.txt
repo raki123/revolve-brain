@@ -20,8 +20,8 @@ endif()
 find_package(PythonLibs REQUIRED)
 
 # boost libraries
+find_package(Boost REQUIRED COMPONENTS system)
 if (${APPLE})
-    find_package(Boost REQUIRED COMPONENTS system)
     find_package(Boost COMPONENTS system python3)
 
     if (NOT ${Boost_python3_FOUND})
@@ -32,7 +32,13 @@ if (${APPLE})
     set(PYTHON_INCLUDE_DIRS ${PYTHON_INCLUDE_DIRS} "/usr/include/python3.5m")
     set(Python_LIBRARIES ${Python_LIBRARIES} "/Library/Frameworks/Python.framework/Versions/3.5/lib/python3.5/config-3.5m/libpython3.5m.a")
 else()
-    find_package(Boost REQUIRED COMPONENTS system python3)
+    find_package(Boost COMPONENTS system python3)
+
+    # try python-py34 for raspberry
+    if (NOT ${Boost_python3_FOUND})
+        message(STATUS "boost python3 not found, searching for python-py34")
+        find_package(Boost REQUIRED COMPONENTS system python-py34)
+    endif()
 endif()
 
 set(Boost_USE_STATIC_LIBS OFF)
