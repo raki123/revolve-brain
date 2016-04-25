@@ -20,37 +20,41 @@ endif()
 find_package(PythonLibs REQUIRED)
 
 # boost libraries
-find_package(Boost REQUIRED COMPONENTS system)
-if (${APPLE})
-    find_package(Boost COMPONENTS system python3)
+set(Boost_USE_STATIC_LIBS OFF)
+set(Boost_USE_MULTITHREADED ON)
+set(Boost_USE_STATIC_RUNTIME OFF)
+find_package(Boost COMPONENTS system python3)
+message(STATUS "boost: ${Boost_FOUND} - system: ${Boost_SYSTEM_FOUND} - python3: ${Boost_PYTHON3_FOUND}")
 
-    if (NOT ${Boost_python3_FOUND})
+if (${Boost_SYSTEM_FOUND})
+else()
+    message(FATAL_ERROR "boost system required and not found")
+endif()
+
+if (${Boost_PYTHON3_FOUND})
+else()
+    if (${APPLE})
         message(FATAL_ERROR "boost python3 not found, try to run command\n"
                 "$ brew install boost-python --without-python --with-python3")
     endif()
 
-    set(PYTHON_INCLUDE_DIRS ${PYTHON_INCLUDE_DIRS} "/usr/include/python3.5m")
-    set(Python_LIBRARIES ${Python_LIBRARIES} "/Library/Frameworks/Python.framework/Versions/3.5/lib/python3.5/config-3.5m/libpython3.5m.a")
-else()
-    find_package(Boost COMPONENTS system python3)
-
     # try python-py34 for raspberry
-    if (NOT ${Boost_python3_FOUND})
-        message(STATUS "boost python3 not found, searching for python-py34")
-        find_package(Boost REQUIRED COMPONENTS system python-py34)
-    endif()
+    message(STATUS "boost python3 not found, searching for python-py34")
+    find_package(Boost REQUIRED COMPONENTS system python-py34)
 endif()
 
-set(Boost_USE_STATIC_LIBS OFF)
-set(Boost_USE_MULTITHREADED ON)
-set(Boost_USE_STATIC_RUNTIME OFF)
+if (${APPLE})
+    set(PYTHON_INCLUDE_DIRS ${PYTHON_INCLUDE_DIRS} "/usr/include/python3.5m")
+    set(Python_LIBRARIES ${Python_LIBRARIES} "/Library/Frameworks/Python.framework/Versions/3.5/lib/python3.5/config-3.5m/libpython3.5m.a")
+endif()
+
 
 # end Libraries stuff
 include_directories(${Boost_INCLUDE_DIRS} ${PYTHON_INCLUDE_DIRS} ${PROJECT_SOURCE_DIR})
 
 
 # Compiling ####################################################################
-add_library(revolve-brain SHARED brain/neuralnetwork.cpp brain/actuator.cpp brain/sensor.cpp)
+add_library(revolve-brain SHARED brain/neural_network.cpp brain/actuator.cpp brain/sensor.cpp)
 python_add_module(revolve_brain_python brain/python/brain.cpp)
 
 
