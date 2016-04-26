@@ -18,7 +18,7 @@ RLPower::RLPower(std::string modelName, std::vector< ActuatorPtr >& actuators, s
         nActuators_(actuators.size()),
         nSensors_(sensors.size()),
         init_(true),
-        source_y_size(5),
+        source_y_size(3),
         start_eval_time_(0),
         generation_counter_(0),
         noise_sigma_(0.008),
@@ -26,11 +26,11 @@ RLPower::RLPower(std::string modelName, std::vector< ActuatorPtr >& actuators, s
 
     step_rate_ = RLPower::MAX_SPLINE_SAMPLES / source_y_size;
 
-    //currentPosition_.Reset();
-    //previousPosition_.Reset();
     std::random_device rd;
     std::mt19937 mt(rd());
     std::normal_distribution<double> dist(-1, 1);
+
+    // Init first random controller
     for (unsigned int i = 0; i < nActuators_; i++) {
         Spline *spline = new Spline(source_y_size);
         for (int j = 0; j < source_y_size; j++) {
@@ -38,13 +38,40 @@ RLPower::RLPower(std::string modelName, std::vector< ActuatorPtr >& actuators, s
         }
         current_policy_[i] = spline;
     }
+
+    // Init of empty cache
+    for (unsigned int i = 0; i < nActuators_; i++) {
+        interpolation_cache_[i] = new Spline(INTERPOLATION_CACHE_SIZE);
+    }
 }
 
-RLPower::~RLPower() { }
+RLPower::~RLPower() {
+    // Delete ranking policy
+    for (auto it = ranked_policies_.begin(); it != ranked_policies_.end(); it++) {
+        // first → fitness
+        // second → policy
+        for (int i=0; i<it->second.size(); i++) {
+            delete it->second[i];
+            it->second[i] = nullptr;
+        }
+    }
+
+    // Current policy
+    for (unsigned int i = 0; i < nActuators_; i++) {
+        delete current_policy_[i];
+        current_policy_[i] = nullptr;
+    }
+
+    // Cache
+    for (unsigned int i = 0; i < nActuators_; i++) {
+        delete interpolation_cache_[i];
+        interpolation_cache_[i] = nullptr;
+    }
+}
 
 double RLPower::getFitness()
 {
-        // Calculate fitness for current policy
+        //TODO Calculate fitness for current policy
         /*double dS = sqrt(
                 pow(previousPosition_.Pos().X() - currentPosition_.Pos().X(), 2) +
                 pow(previousPosition_.Pos().Y() - currentPosition_.Pos().Y(), 2));
@@ -136,6 +163,39 @@ void RLPower::generatePolicy()
         }
         current_policy_[i] = spline;
     }
+
+    // cache update
+    this->generateCache();
+}
+
+void RLPower::generateCache()
+{
+    this->interpolateCubic(current_policy_, interpolation_cache_);
+}
+
+void RLPower::generateOutput(const double time, double* output_vector)
+{
+    // get correct X value (between 0 and CICLE_LENGTH)
+    double x = time - start_time_;
+    while (x >= RLPower::CICLE_LENGTH) {
+        start_time_ += RLPower::CICLE_LENGTH;
+        x = time - start_time_;
+    }
+
+    // adjust X on the cache coordinate space
+    x = (x/CICLE_LENGTH) * INTERPOLATION_CACHE_SIZE;
+    // generate previous and next values
+    int x_a = ((int)x) % INTERPOLATION_CACHE_SIZE;
+    int x_b = (x_a+1) % INTERPOLATION_CACHE_SIZE;
+
+    // linear interpolation for every actuator
+    for (int i=0; i<nActuators_; i++) {
+        double y_a = interpolation_cache_[i]->at(x_a);
+        double y_b = interpolation_cache_[i]->at(x_b);
+
+        output_vector[i] = y_a +
+            ((y_b - y_a) * (x - x_a) / (x_b - x_a));
+    }
 }
 
 
@@ -149,25 +209,15 @@ void RLPower::update(const std::vector< ActuatorPtr >& actuators, const std::vec
         start_eval_time_ = t;
     }
 
-    // Initialise new policy
-    if (init_) {
-        //this->initPolicy(step_rate_);
-        init_ = false;
-    }
-
-    this->step(t);
     double output_vector[nActuators_];
+    this->generateOutput(t, output_vector);
 
     // Send new signals to the actuators
     unsigned int p = 0;
     for (auto actuator: actuators) {
         actuator->update(&output_vector[p], step);
-        //actuator->update(&currentPolicy_[p][stepIndex_], step);
         p += actuator->outputs();
     }
-}
-
-void RLPower::step(double time) {
 }
 
 void RLPower::initPolicy(const int steps) {

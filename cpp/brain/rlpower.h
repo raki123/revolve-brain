@@ -29,10 +29,6 @@ public:
                         double t, double step);
 
 protected:
-    /**
-     * Steps the neural network
-     */
-    void step(double time);
 
     double getFitness();
     void generatePolicy();
@@ -79,6 +75,7 @@ private:
 
     void interpolate(const int steps);
     void interpolateCubic(Policy& source_y, Policy& destination_y);
+    void generateCache();
 
     /**
      * Writes all current splines to file
@@ -95,13 +92,25 @@ private:
      */
     void writeLast();
 
+    /**
+     * Extracts the value of the current_policy in x=time using linear
+     * interpolation
+     *
+     * Writes the output in output_vector
+     */
+    void generateOutput(const double time, double *output_vector);
+
+    Policy interpolation_cache_;
+
     const int MAX_EVALUATIONS = 2500; // max number of evaluations
     const int MAX_RANKED_POLICIES = 10; // max length of policies vector
     const int MAX_SPLINE_SAMPLES = 100; // interpolation cache size
     const int UPDATE_STEP = 100; // after # generations, it increases the number of spline points
     const int FREQUENCY_RATE = 30; // seconds
-    const unsigned int CICLE_LENGTH = 5; // seconds
+    const double CICLE_LENGTH = 5; // seconds
     const double SIGMA_DECAY_SQUARED =  0.98; // sigma decay
+    const int INTERPOLATION_CACHE_SIZE = 100; // number of data points for the interpolation cache
+    double start_time_;
 };
 
 #endif //REVOLVE_GAZEBO_BRAIN_REINFORCEDLEARNING_H
