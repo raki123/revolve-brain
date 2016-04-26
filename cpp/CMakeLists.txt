@@ -54,7 +54,7 @@ include_directories(${Boost_INCLUDE_DIRS} ${PYTHON_INCLUDE_DIRS} ${PROJECT_SOURC
 
 
 # Compiling ####################################################################
-add_library(revolve-brain SHARED brain/neural_network.cpp brain/actuator.cpp brain/sensor.cpp)
+add_library(revolve-brain SHARED brain/rlpower.cpp brain/neural_network.cpp brain/actuator.cpp brain/sensor.cpp)
 python_add_module(revolve_brain_python brain/python/brain.cpp)
 
 

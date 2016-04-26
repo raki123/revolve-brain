@@ -9,7 +9,7 @@ public:
     Sensor();
 
     virtual void read(double *input_vector) = 0;
-    virtual unsigned int inputs() = 0;
+    virtual unsigned int inputs() const = 0;
 };
 
 typedef boost::shared_ptr< Sensor > SensorPtr;
