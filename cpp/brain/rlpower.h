@@ -51,9 +51,6 @@ protected:
 
     double start_eval_time_;
 
-    bool init_;
-
-    double curr_fitness_;
     unsigned int generation_counter_;
     //ignition::math::Pose3d currentPosition_;
     //xignition::math::Pose3d previousPosition_;
@@ -71,9 +68,6 @@ protected:
     double noise_sigma_;
 
 private:
-    void initPolicy(const int steps);
-
-    void interpolate(const int steps);
     void interpolateCubic(Policy& source_y, Policy& destination_y);
     void generateCache();
 
@@ -85,7 +79,7 @@ private:
     /**
      * Writes current spline to file
      */
-    void writeCurrent();
+    void writeCurrent(double current_fitness);
 
     /**
      * Writes best 10 splines to file
@@ -110,7 +104,7 @@ private:
     const double CICLE_LENGTH = 5; // seconds
     const double SIGMA_DECAY_SQUARED =  0.98; // sigma decay
     const int INTERPOLATION_CACHE_SIZE = 100; // number of data points for the interpolation cache
-    double start_time_;
+    double cycle_start_time_;
 };
 
 #endif //REVOLVE_GAZEBO_BRAIN_REINFORCEDLEARNING_H

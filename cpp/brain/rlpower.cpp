@@ -17,11 +17,11 @@
 RLPower::RLPower(std::string modelName, std::vector< ActuatorPtr >& actuators, std::vector< SensorPtr >& sensors) :
         nActuators_(actuators.size()),
         nSensors_(sensors.size()),
-        init_(true),
         source_y_size(3),
         start_eval_time_(0),
         generation_counter_(0),
         noise_sigma_(0.008),
+        cycle_start_time_(-1),
         current_policy_(nActuators_, 0) {
 
     step_rate_ = RLPower::MAX_SPLINE_SAMPLES / source_y_size;
@@ -84,12 +84,12 @@ double RLPower::getFitness()
 void RLPower::generatePolicy()
 {
     // Calculate fitness for current policy
-    curr_fitness_ = this->getFitness();
+    double curr_fitness = this->getFitness();
 
     // Insert ranked policy in list
-    std::cout << "Generation " << generation_counter_ << " fitness " << curr_fitness_ << std::endl;
-    this->writeCurrent();
-    ranked_policies_.insert({curr_fitness_, current_policy_});
+    std::cout << "Generation " << generation_counter_ << " fitness " << curr_fitness << std::endl;
+    this->writeCurrent(curr_fitness);
+    ranked_policies_.insert({curr_fitness, current_policy_});
 
     // Remove worst policies
     while (ranked_policies_.size() > RLPower::MAX_RANKED_POLICIES) {
@@ -104,23 +104,38 @@ void RLPower::generatePolicy()
         this->writeLast();
 
     // Set variables for new policy
-    init_ = true;
     generation_counter_++;
 
 
-    // Update steps if it is time
+    // increase spline points if it is time
     if (generation_counter_ % RLPower::UPDATE_STEP == 0) {
-        Policy tmp(current_policy_.size());
+        source_y_size++;
+
+        // current policy
+        Policy policy_copy(current_policy_.size());
         for (int i=0; i<source_y_size; i++) {
-            tmp[i] = new Spline(current_policy_[i]->begin(), current_policy_[i]->end());
+            policy_copy[i] = new Spline(current_policy_[i]->begin(), current_policy_[i]->end());
         }
 
-        source_y_size++;
         current_policy_.resize(source_y_size);
-        interpolateCubic(tmp, current_policy_);
+        interpolateCubic(policy_copy, current_policy_);
 
-        for (int i=0; i<source_y_size; i++) {
-            delete tmp[i];
+
+        //for every ranked policy
+        for(int i=0; i < ranked_policies_.size(); i++) {
+
+            for (int j=0; j<source_y_size; j++) {
+                policy_copy[j] = new Spline(ranked_policies_[i][j]->begin(), ranked_policies_[i][j]->end());
+            }
+
+            ranked_policies_[i].resize(source_y_size);
+            interpolateCubic(policy_copy, ranked_policies_[i]);
+
+
+            for (int j=0; j<source_y_size; j++) {
+                delete policy_copy[j];
+            }
+
         }
 
         // LOG code
@@ -128,6 +143,7 @@ void RLPower::generatePolicy()
         std::cout << "New samplingSize_=" << source_y_size << ", and stepRate_=" << step_rate_ << std::endl;
         if (generation_counter_ == RLPower::MAX_EVALUATIONS - 1)
             std::cout << "Finish!!!" << std::endl;
+
     }
 
 
@@ -137,10 +153,10 @@ void RLPower::generatePolicy()
     std::normal_distribution<double> dist(0, noise_sigma_);
     noise_sigma_ *= SIGMA_DECAY_SQUARED;
 
-    double total = 0;
+    double total_fitness = 0;
     for (auto it = ranked_policies_.begin(); it != ranked_policies_.end(); it++) {
         // first is fitness
-        total += it->first;
+        total_fitness += it->first;
     }
 
     // for actuator
@@ -150,16 +166,18 @@ void RLPower::generatePolicy()
         for (unsigned int j = 0; j < source_y_size; j++) {
 
             // modifier ...
+            double spline_point = 0;
             for (auto it = ranked_policies_.begin(); it != ranked_policies_.end(); it++) {
                 // first → fitness
                 // second → policy
-                auto tmp = ((it->second[i]->at(j) - current_policy_[i]->at(j)) * it->first);
-                spline->at(j) = tmp;
+                spline_point += ((it->second[i]->at(j) - current_policy_[i]->at(j)) * it->first);
             }
-            spline->at(j) /= total;
+            spline_point /= total_fitness;
 
             // ... + noise + current
-            spline->at(j) += dist(mt) + current_policy_[i]->at(j);
+            spline_point += dist(mt) + current_policy_[i]->at(j);
+
+            spline->at(j) = spline_point;
         }
         current_policy_[i] = spline;
     }
@@ -175,11 +193,15 @@ void RLPower::generateCache()
 
 void RLPower::generateOutput(const double time, double* output_vector)
 {
+    if (cycle_start_time_ < 0) {
+        cycle_start_time_ = time;
+    }
+
     // get correct X value (between 0 and CICLE_LENGTH)
-    double x = time - start_time_;
+    double x = time - cycle_start_time_;
     while (x >= RLPower::CICLE_LENGTH) {
-        start_time_ += RLPower::CICLE_LENGTH;
-        x = time - start_time_;
+        cycle_start_time_ += RLPower::CICLE_LENGTH;
+        x = time - cycle_start_time_;
     }
 
     // adjust X on the cache coordinate space
@@ -202,13 +224,13 @@ void RLPower::generateOutput(const double time, double* output_vector)
 void RLPower::update(const std::vector< ActuatorPtr >& actuators, const std::vector< SensorPtr >& sensors, double t, double step) {
     boost::mutex::scoped_lock lock(networkMutex_);
 
-
     // Evaluate policy on certain time limit
     if ((t-start_eval_time_) > RLPower::FREQUENCY_RATE && generation_counter_ < RLPower::MAX_EVALUATIONS) {
         this->generatePolicy();
         start_eval_time_ = t;
     }
 
+    // generate outputs
     double output_vector[nActuators_];
     this->generateOutput(t, output_vector);
 
@@ -217,85 +239,6 @@ void RLPower::update(const std::vector< ActuatorPtr >& actuators, const std::vec
     for (auto actuator: actuators) {
         actuator->update(&output_vector[p], step);
         p += actuator->outputs();
-    }
-}
-
-void RLPower::initPolicy(const int steps) {
-    // Generate new array of random splines
-    std::random_device rd;
-    std::mt19937 mt(rd());
-
-    if (step_rate_ <= 0) step_rate_ = 1;
-
-
-    if (ranked_policies_.size() == 0) {
-        std::uniform_real_distribution<double> dist(-1, 1);
-        for (unsigned int i = 0; i < nActuators_; i++) {
-            Spline *spline = new Spline(RLPower::MAX_SPLINE_SAMPLES, 0);
-            for (unsigned int j = 0; j < RLPower::MAX_SPLINE_SAMPLES; j = j + steps) {
-                spline->at(j) = dist(mt);
-            }
-            current_policy_[i] = spline;
-        }
-    } else {
-        double total = 0;
-        for (auto it = ranked_policies_.begin(); it != ranked_policies_.end(); it++) {
-            total += it->first;
-        }
-        std::uniform_real_distribution<double> dist(-0.1, 0.1);
-        for (unsigned int i = 0; i < nActuators_; i++) {
-            Spline *spline = new Spline(RLPower::MAX_SPLINE_SAMPLES, 0);
-            for (unsigned int j = 0; j < RLPower::MAX_SPLINE_SAMPLES; j = j + steps) {
-                spline->at(j) = dist(mt) + current_policy_.at(i)->at(j);
-                for (auto it = ranked_policies_.begin(); it != ranked_policies_.end(); it++) {
-                    spline->at(j) += ((it->second.at(i)->at(j) - current_policy_.at(i)->at(j)) * it->first) / total;
-                }
-            }
-            current_policy_[i] = spline;
-        }
-    }
-
-    this->interpolate(steps);
-}
-
-void RLPower::interpolate(const int steps) {
-    for (unsigned int i = 0; i < nActuators_; i++) {
-        unsigned int startingIndex, beginIndex, endIndex;
-        double startingValue, beginValue = 0, endValue = 0, stepRate;
-        for (unsigned int j = 0; j < RLPower::MAX_SPLINE_SAMPLES; j++) {
-            if (current_policy_[i]->at(j) != 0 && beginValue == 0) {
-                beginValue = current_policy_[i]->at(j);
-                beginIndex = j;
-                startingValue = beginValue;
-                startingIndex = beginIndex;
-            }
-            if (current_policy_[i]->at(j) != 0 && beginValue != 0) {
-                endValue = current_policy_[i]->at(j);
-                endIndex = j;
-            }
-
-            if (beginValue != 0 && endValue != 0) {
-                // Interpolate
-                stepRate = (endValue - beginValue) / steps;
-
-                for (unsigned int k = beginIndex + 1; k < endIndex; k++) {
-                    current_policy_[i]->at(k) = current_policy_[i]->at(k - 1) + stepRate;
-                }
-
-                // Reset check for next value
-                beginValue = endValue;
-                beginIndex = endIndex;
-                endValue = 0;
-            }
-        }
-
-        // Interpolate end and start of spline
-        stepRate = (startingValue - beginValue) / steps;
-        for (unsigned int k = beginIndex + 1;
-                k < (RLPower::MAX_SPLINE_SAMPLES * (i + 1)) + (startingIndex - (RLPower::MAX_SPLINE_SAMPLES * i)); k++) {
-            current_policy_[i]->at(k % (RLPower::MAX_SPLINE_SAMPLES * (i + 1))) =
-                    current_policy_[i]->at((k - 1) % (RLPower::MAX_SPLINE_SAMPLES * (i + 1))) + stepRate;
-        }
     }
 }
 
@@ -368,13 +311,13 @@ void RLPower::printCurrent() {
     }
 }
 
-void RLPower::writeCurrent() {
+void RLPower::writeCurrent(double current_fitness) {
     std::ofstream outputFile;
     std::string uri = "~/output/spider_";
     outputFile.open(uri + ".csv", std::ios::app | std::ios::out | std::ios::ate);
     // std::to_string(currEval_) -------^
     // outputFile << "id,fitness,steps,policy" << std::endl;
-    outputFile << generation_counter_ << "," << curr_fitness_ << "," << step_rate_ << ",";
+    outputFile << generation_counter_ << "," << current_fitness << "," << step_rate_ << ",";
     for (unsigned int i = 0; i < RLPower::MAX_SPLINE_SAMPLES; i++) {
         for (unsigned int j = 0; j < nActuators_; j = j + step_rate_) {
             outputFile << current_policy_[j]->at(i) << ":";
