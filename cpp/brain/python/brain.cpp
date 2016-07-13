@@ -2,6 +2,8 @@
 #include "brain/brain.h"
 #include "brain/neural_network.h"
 
+using namespace revolve::brain;
+
 BOOST_PYTHON_MODULE(revolve_brain_python)
 {
     // abstract Brain class

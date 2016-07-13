@@ -4,12 +4,15 @@
  * ignoring the default brain behavior in the `RobotController`.
  */
 
-#ifndef REVOLVE_GAZEBO_BRAIN_BRAIN_H_
-#define REVOLVE_GAZEBO_BRAIN_BRAIN_H_
+#ifndef REVOLVE_BRAIN_BRAIN_H_
+#define REVOLVE_BRAIN_BRAIN_H_
 
 #include <vector>
 #include "sensor.h"
 #include "actuator.h"
+
+namespace revolve {
+namespace brain {
 
 class Brain {
 public:
@@ -49,4 +52,7 @@ protected:
     bool offline;
 };
 
-#endif /* REVOLVE_GAZEBO_BRAIN_BRAIN_H_ */
+}
+}
+
+#endif /* REVOLVE_BRAIN_BRAIN_H_ */

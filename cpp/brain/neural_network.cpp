@@ -15,6 +15,8 @@
 #include <cmath>
 #include <cstring>
 
+using namespace revolve::brain;
+
 NeuralNetwork::NeuralNetwork():
     flipState_(false),
     nInputs_(0),
