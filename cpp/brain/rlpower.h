@@ -25,9 +25,9 @@ public:
     typedef std::vector <Spline> Policy;
     typedef std::shared_ptr <Policy> PolicyPtr;
 
-    typedef std::shared_ptr <revolve::brain::Evaluator> EvaluatorPtr;
+    typedef boost::shared_ptr <revolve::brain::Evaluator> EvaluatorPtr;
 
-    RLPower(std::string modelName, RLPower::EvaluatorPtr evaluator,
+    RLPower(RLPower::EvaluatorPtr evaluator,
                     unsigned int n_actuators, unsigned int n_sensors);
 
     virtual ~RLPower();

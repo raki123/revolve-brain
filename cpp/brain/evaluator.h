@@ -7,6 +7,8 @@ namespace brain {
 class Evaluator
 {
 public:
+    virtual ~Evaluator() {};
+
     virtual void start() = 0;
     virtual double fitness() = 0;
 };

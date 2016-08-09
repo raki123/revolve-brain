@@ -23,20 +23,19 @@
 
 using namespace revolve::brain;
 
-RLPower::RLPower(std::string modelName, EvaluatorPtr evaluator,
+RLPower::RLPower(EvaluatorPtr evaluator,
                     unsigned int n_actuators, unsigned int n_sensors) :
         nActuators_(n_actuators),
         nSensors_(n_sensors),
         start_eval_time_(0),
         generation_counter_(0),
         evaluator_(evaluator),
-        cycle_start_time_(-1),
-        robot_name_(modelName) {
+        cycle_start_time_(-1) {
 
     source_y_size = RLPower::INITIAL_SPLINE_SIZE;
     noise_sigma_ = RLPower::SIGMA_START_VALUE;
 
-    std::cout << "RLPower::RLPower()" << std::endl;
+//     std::cout << "RLPower::RLPower()" << std::endl;
     // Create transport node
 //     node_.reset(new ::gazebo::transport::Node());
 //     node_->Init();

@@ -26,6 +26,12 @@ set(Boost_USE_STATIC_RUNTIME OFF)
 find_package(Boost COMPONENTS system python3)
 message(STATUS "boost: ${Boost_FOUND} - system: ${Boost_SYSTEM_FOUND} - python3: ${Boost_PYTHON3_FOUND}")
 
+### RLPOWER DEPENDENCIES ###
+# GSL
+# Gnu mathematical library
+find_package(GSL REQUIRED)
+
+
 if (${Boost_SYSTEM_FOUND})
 else()
     message(FATAL_ERROR "boost system required and not found")
@@ -50,7 +56,7 @@ endif()
 
 
 # end Libraries stuff
-include_directories(${Boost_INCLUDE_DIRS} ${PYTHON_INCLUDE_DIRS} ${PROJECT_SOURCE_DIR})
+include_directories(${Boost_INCLUDE_DIRS} ${PYTHON_INCLUDE_DIRS} ${PROJECT_SOURCE_DIR} ${GSL_INCLUDE_DIRS})
 
 
 # Compiling ####################################################################
@@ -60,7 +66,7 @@ python_add_module(revolve_brain_python brain/python/brain.cpp)
 
 
 # Linking ######################################################################
-target_link_libraries(revolve-brain ${Boost_LIBRARIES} ${PYTHON_LIBRARIES})
+target_link_libraries(revolve-brain ${Boost_LIBRARIES} ${PYTHON_LIBRARIES} ${GSL_LIBRARIES})
 target_link_libraries(revolve_brain_python revolve-brain)
 
 
@@ -74,5 +80,11 @@ install(TARGETS revolve-brain DESTINATION lib)
 enable_testing()
 file(COPY brain/python/import_test.py DESTINATION .)
 file(COPY brain/python/neuralnetwork_test.py DESTINATION .)
+file(COPY brain/python/sensor_test.py DESTINATION .)
+file(COPY brain/python/actuator_test.py DESTINATION .)
+file(COPY brain/python/rlpower_test.py DESTINATION .)
 add_test(00-Import python3 -m unittest import_test.py)
-add_test(02-NeuralNetwork python3 -m unittest neuralnetwork_test.py)
+add_test(01-Sensor python3 -m unittest sensor_test.py)
+add_test(01-Actuator python3 -m unittest actuator_test.py)
+add_test(03-NeuralNetwork python3 -m unittest neuralnetwork_test.py)
+add_test(04-RLPower python3 -m unittest rlpower_test.py)
