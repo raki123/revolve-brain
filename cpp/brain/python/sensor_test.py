@@ -32,13 +32,14 @@ class SensorTest(unittest.TestCase):
 
     def test_methods(self):
         self.sensor = Sensor()
-        self.assertEqual(self.sensor.inputs(), 1)
-        self.assertEqual(self.sensor.inputs(), 1)
+        self.assertEqual(self.sensor.inputs(), Sensor.SIZE)
+        self.assertEqual(self.sensor.inputs(), Sensor.SIZE)
 
-        results = [-100]
+        results = [-100 for i in range(0, Sensor.SIZE)]
         for i in range(0,100):
             self.sensor.read(results)
-            self.assertEqual(results[0], i)
+            for j in range(0, Sensor.SIZE):
+                self.assertEqual(results[j], i*Sensor.SIZE+j)
 
     def tearDown(self):
         # Called after the last testfunction was executed
