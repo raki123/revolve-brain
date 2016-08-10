@@ -10,6 +10,9 @@
 namespace revolve {
 namespace brain {
 
+/**
+ * Class needed to enable calling virtual methods implemented child python classes
+ */
 class EvaluatorWrap : public Evaluator, public boost::python::wrapper<Evaluator>
 {
 public:

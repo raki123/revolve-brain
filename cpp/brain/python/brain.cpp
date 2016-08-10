@@ -5,12 +5,20 @@
 #include "brain/python/actuator_wrap.h"
 #include "brain/python/evaluator_wrap.h"
 #include "brain/python/sensor_wrap.h"
+#include "brain/python/rlpower_python.h"
+#include "brain/python/python_array.h"
 
 
 using namespace revolve::brain;
 
 BOOST_PYTHON_MODULE(revolve_brain_python)
 {
+    // class to access arrays from python
+    boost::python::class_< python_array<double> >("Array", boost::python::no_init)
+        .def("__setitem__", &python_array<double>::setitem )
+        .def("__getitem__", &python_array<double>::getitem )
+    ;
+
     // evaluator abstract class
     boost::python::class_< EvaluatorWrap, boost::noncopyable >("Evaluator")
         .def("start", boost::python::pure_virtual(&Evaluator::start))
@@ -34,13 +42,22 @@ BOOST_PYTHON_MODULE(revolve_brain_python)
     boost::python::class_< Brain, boost::noncopyable>("Brain", boost::python::no_init);
 
     // neural network class
-    boost::python::class_< NeuralNetwork, boost::python::bases<Brain> ,boost::noncopyable >("NeuralNetwork")
+    boost::python::class_< NeuralNetwork,
+        boost::python::bases<Brain>,
+        boost::noncopyable >
+        ("NeuralNetwork")
         .def("update", &NeuralNetwork::update)
     ;
 
     // rlpower controller class
-    boost::python::class_< RLPower, boost::python::bases<Brain>, boost::noncopyable >("RLPower", boost::python::init< boost::shared_ptr<Evaluator>, unsigned int, unsigned int >() )
-        .def("update", &RLPower::update)
+    boost::python::class_< RLPower_python,
+        boost::python::bases<Brain>,
+        boost::noncopyable >
+        (
+            "RLPower",
+            boost::python::init< boost::shared_ptr<Evaluator>, unsigned int, unsigned int >()
+        )
+        .def("update", &RLPower_python::update)
     ;
     //boost::python::implicitly_convertible<RLPower*, Brain*>();
 };

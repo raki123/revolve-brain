@@ -4,18 +4,20 @@ import unittest
 import revolve_brain_python
 
 class Sensor(revolve_brain_python.Sensor):
+    SIZE = 4
     def __init__(self):
         super().__init__()
         self.i = 0
 
     #void read(double * input_vector)
     def read(self, input_vector):
-        input_vector[0] = self.i
-        self.i += 1
+        for i in range(0, self.SIZE):
+            input_vector[i] = self.i
+            self.i += 1
 
     #virtual unsigned int inputs() const
     def inputs(self):
-        return 1
+        return self.SIZE
 
 
 class SensorTest(unittest.TestCase):

@@ -79,18 +79,46 @@ protected:
     EvaluatorPtr evaluator_;
 
     /**
-        * Rank and matrix of currently used splines.
-        * Same as @currentSpline_
-        */
+     * Rank and matrix of currently used splines.
+     * Same as @currentSpline_
+     */
     unsigned int source_y_size;
     unsigned int step_rate_;
 
     /**
-        * Noise in the generatePolicy function
-        */
+     * Noise in the generatePolicy function
+     */
     double noise_sigma_;
 
-private:
+protected:
+
+    template < typename ActuatorContainer, typename SensorContainer >
+    void update(const ActuatorContainer &actuators, const SensorContainer &sensors,
+                        double t, double step)
+    {
+        //boost::mutex::scoped_lock lock(networkMutex_);
+
+        // Evaluate policy on certain time limit
+        if ((t - start_eval_time_) > RLPower::FREQUENCY_RATE && generation_counter_ < RLPower::MAX_EVALUATIONS) {
+            this->generatePolicy();
+            start_eval_time_ = t;
+            evaluator_->start();
+        }
+
+        // generate outputs
+        double *output_vector = new double[nActuators_];
+        this->generateOutput(t, output_vector);
+
+        // Send new signals to the actuators
+        unsigned int p = 0;
+        for (auto actuator: actuators) {
+            actuator->update(output_vector+p, step);
+            p += actuator->outputs();
+        }
+
+        delete[] output_vector;
+    }
+
     void interpolateCubic(Policy *const source_y, Policy *destination_y);
 
     void generateCache();

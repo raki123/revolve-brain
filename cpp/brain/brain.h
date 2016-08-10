@@ -35,7 +35,7 @@ public:
      * a supervisor.
      * @return true if the brain is offline
      */
-    bool isOffline() {
+    bool isOffline() const {
         return this->offline;
     }
 

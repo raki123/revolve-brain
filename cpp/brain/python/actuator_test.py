@@ -12,9 +12,11 @@ class Actuator(revolve_brain_python.Actuator):
 
     #virtual void update(double *output_vector, double step)
     def update(self, output_vector, step):
-        print("Advancing of step: {}".format(step))
+        #print("Advancing of step: {}".format(step))
+        variable = None
         for i in range(0, self.SIZE):
-            print("Motor {} value: {}".format(i, output_vector[i]))
+            #print("Motor {} value: {}".format(i, output_vector[i]))
+            variable = output_vector[i]
 
     #virtual unsigned int outputs() const
     def outputs(self):

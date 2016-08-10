@@ -75,28 +75,10 @@ RLPower::~RLPower() {
 }
 
 void RLPower::update(const std::vector < ActuatorPtr > &actuators,
-                        const std::vector < SensorPtr > &sensors, double t, double step) {
-//     boost::mutex::scoped_lock lock(networkMutex_);
-
-    // Evaluate policy on certain time limit
-    if ((t - start_eval_time_) > RLPower::FREQUENCY_RATE && generation_counter_ < RLPower::MAX_EVALUATIONS) {
-        this->generatePolicy();
-        start_eval_time_ = t;
-        evaluator_->start();
-    }
-
-    // generate outputs
-    double *output_vector = new double[nActuators_];
-    this->generateOutput(t, output_vector);
-
-    // Send new signals to the actuators
-    unsigned int p = 0;
-    for (auto actuator: actuators) {
-        actuator->update(&output_vector[p], step);
-        p += actuator->outputs();
-    }
-
-    delete[] output_vector;
+                     const std::vector < SensorPtr > &sensors,
+                     double t, double step)
+{
+    this->update<std::vector<ActuatorPtr>, std::vector<SensorPtr>>(actuators, sensors, t, step);
 }
 
 void RLPower::generatePolicy() {
