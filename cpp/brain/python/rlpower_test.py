@@ -5,6 +5,7 @@ from sensor_test import Sensor
 from actuator_test import Actuator
 
 import unittest
+import random
 
 class Evaluator(revolve_brain_python.Evaluator):
     def __init__(self):
@@ -16,7 +17,7 @@ class Evaluator(revolve_brain_python.Evaluator):
 
     def fitness(self):
         self.i += 1
-        return self.i
+        return random.random()
 
 class RLPowerTestInstance(unittest.TestCase):
     def setUp(self):

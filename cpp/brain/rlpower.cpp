@@ -86,7 +86,15 @@ void RLPower::generatePolicy() {
     double curr_fitness = this->getFitness();
 
     // Insert ranked policy in list
-    ranked_policies_.insert({curr_fitness, current_policy_});
+    PolicyPtr policy_copy = std::make_shared<Policy>(nActuators_);
+    for (unsigned int i = 0; i < nActuators_; i++) {
+        Spline &spline = current_policy_->at(i);
+        policy_copy->at(i) = Spline(spline.begin(), spline.end());
+
+        spline.resize(source_y_size);
+    }
+
+    ranked_policies_.insert({curr_fitness, policy_copy});
 
     // Remove worst policies
     while (ranked_policies_.size() > RLPower::MAX_RANKED_POLICIES) {
