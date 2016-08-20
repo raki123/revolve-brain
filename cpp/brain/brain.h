@@ -27,8 +27,10 @@ public:
      * @param t Current simulation time
      * @param step Actuation step size in seconds
      */
-    virtual void update(const std::vector< ActuatorPtr > & actuators, const std::vector< SensorPtr > & sensors,
-                double t, double step) = 0;
+    virtual void update(const std::vector< ActuatorPtr > & actuators,
+                        const std::vector< SensorPtr > & sensors,
+                        double t,
+                        double step) = 0;
 
     /**
      * If offline, the robot won't update his controller. This is delegated to

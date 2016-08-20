@@ -10,11 +10,11 @@ requires = [
 # http://robotics.usc.edu/~ampereir/wordpress/?p=202
 
 setup(
-    name='revolve-mating-server',
+    name='revolve-brain',
     version='1.0',
-    description='revolve-mating-server',
-    author='Panagiotis Eustratiadis',
-    author_email='peustratiadis@gmail.com',
+    description='revolve-brain',
+    author='Matteo De Carlo',
+    author_email='matteo.dek@gmail.com',
     packages=find_packages(),
     install_requires=requires,
     entry_points={

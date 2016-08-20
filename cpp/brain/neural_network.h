@@ -36,7 +36,7 @@
 namespace revolve {
 namespace brain {
 
-/*
+/**
  * Copied from NeuronRepresentation.h
  */
 enum neuronType{
@@ -51,6 +51,7 @@ enum neuronType{
 class NeuralNetwork: public Brain {
 public:
     NeuralNetwork();
+
 	/**
 	 * @param Name of the robot
 	 * @param The brain node
@@ -58,15 +59,19 @@ public:
 	 * @param Reference to the sensor list, which might be reordered
 	 */
 	NeuralNetwork(std::string modelName,
-				  std::vector< ActuatorPtr > & actuators, std::vector< SensorPtr > & sensors);
+				  std::vector< ActuatorPtr > & actuators,
+                  std::vector< SensorPtr > & sensors);
+
 	virtual ~NeuralNetwork();
 
-   /**
+    /**
 	* @param Motor list
 	* @param Sensor list
 	*/
-	virtual void update(const std::vector< ActuatorPtr > & actuators, const std::vector< SensorPtr > & sensors,
-			double t, double step);
+	virtual void update(const std::vector< ActuatorPtr > & actuators,
+						const std::vector< SensorPtr > & sensors,
+						double t,
+						double step);
 
 protected:
 	/**
@@ -77,7 +82,7 @@ protected:
 	// Mutex for stepping / updating the network
 	boost::mutex networkMutex_;
 
-	/*
+	/**
 	 * Connection weights, separated into three arrays for convenience. Note
 	 * that only output and hidden neurons are weight targets.
 	 *
@@ -98,13 +103,13 @@ protected:
 	 */
 	unsigned int types_[(MAX_OUTPUT_NEURONS + MAX_HIDDEN_NEURONS)];
 
-	/*
+	/**
 	 * Params for hidden and output neurons, quantity depends on the type of
 	 * neuron
 	 */
 	double params_[MAX_NEURON_PARAMS * (MAX_OUTPUT_NEURONS + MAX_HIDDEN_NEURONS)];
 
-	/*
+	/**
 	 * Output states arrays for the current state and the next state.
 	 */
 	double state1_[MAX_OUTPUT_NEURONS + MAX_HIDDEN_NEURONS];

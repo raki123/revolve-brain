@@ -24,7 +24,8 @@
 using namespace revolve::brain;
 
 RLPower::RLPower(EvaluatorPtr evaluator,
-                    unsigned int n_actuators, unsigned int n_sensors) :
+                 unsigned int n_actuators,
+                 unsigned int n_sensors) :
         nActuators_(n_actuators),
         nSensors_(n_sensors),
         start_eval_time_(0),
@@ -74,10 +75,10 @@ RLPower::~RLPower() {
     // `boost::shared_ptr< Policy >` should take care of memory management for us
 }
 
-void RLPower::update(const std::vector < ActuatorPtr > &actuators,
-                     const std::vector < SensorPtr > &sensors,
-                     double t, double step)
-{
+void RLPower::update(const std::vector<ActuatorPtr> &actuators,
+                     const std::vector<SensorPtr> &sensors,
+                     double t,
+                     double step) {
     this->update<std::vector<ActuatorPtr>, std::vector<SensorPtr>>(actuators, sensors, t, step);
 }
 
@@ -230,7 +231,8 @@ void RLPower::generateCache() {
     this->interpolateCubic(current_policy_.get(), interpolation_cache_.get());
 }
 
-void RLPower::generateOutput(const double time, double *output_vector) {
+void RLPower::generateOutput(const double time,
+                             double *output_vector) {
     if (cycle_start_time_ < 0) {
         cycle_start_time_ = time;
     }
@@ -254,11 +256,12 @@ void RLPower::generateOutput(const double time, double *output_vector) {
         double y_b = interpolation_cache_->at(i)[x_b];
 
         output_vector[i] = y_a +
-                            ((y_b - y_a) * (x - x_a) / (x_b - x_a));
+                           ((y_b - y_a) * (x - x_a) / (x_b - x_a));
     }
 }
 
-void RLPower::interpolateCubic(Policy *const source_y, Policy *destination_y) {
+void RLPower::interpolateCubic(Policy *const source_y,
+                               Policy *destination_y) {
     const unsigned int source_y_size = (*source_y)[0].size();
     const unsigned int destination_y_size = (*destination_y)[0].size();
 

@@ -10,8 +10,14 @@ namespace brain {
 class RLPower_python : public revolve::brain::RLPower
 {
 public:
-RLPower_python(revolve::brain::RLPower::EvaluatorPtr evaluator, unsigned int n_actuators, unsigned int n_sensors);
-void update(boost::python::list& actuators, const boost::python::list& sensors, double t, double step);
+RLPower_python(revolve::brain::RLPower::EvaluatorPtr evaluator,
+               unsigned int n_actuators,
+               unsigned int n_sensors);
+
+void update(boost::python::list& actuators,
+            const boost::python::list& sensors,
+            double t,
+            double step);
 };
 
 }}

@@ -33,9 +33,9 @@ public:
     virtual ~RLPower();
 
     /**
-        * @param Motor list
-        * @param Sensor list
-        */
+     * @param Motor list
+     * @param Sensor list
+     */
     virtual void update(const std::vector < ActuatorPtr > &actuators,
                         const std::vector < SensorPtr > &sensors,
                         double t, double step);
@@ -124,26 +124,26 @@ protected:
     void generateCache();
 
     /**
-        * Writes all current splines to file
-        */
+     * Writes all current splines to file
+     */
     void printCurrent();
 
     /**
-        * Writes current spline to file
-        */
+     * Writes current spline to file
+     */
     void writeCurrent(double current_fitness);
 
     /**
-        * Writes best 10 splines to file
-        */
+     * Writes best 10 splines to file
+     */
     void writeLast(double fitness);
 
     /**
-        * Extracts the value of the current_policy in x=time using linear
-        * interpolation
-        *
-        * Writes the output in output_vector
-        */
+     * Extracts the value of the current_policy in x=time using linear
+     * interpolation
+     *
+     * Writes the output in output_vector
+     */
     void generateOutput(const double time, double *output_vector);
 
     PolicyPtr interpolation_cache_;
@@ -163,13 +163,13 @@ protected:
     std::string robot_name_;
 
     /**
-        * Transport node
-        */
+     * Transport node
+     */
 //     ::gazebo::transport::NodePtr node_;
 
     /**
-        * Network modification subscriber
-        */
+     * Network modification subscriber
+     */
 //     ::gazebo::transport::SubscriberPtr alterSub_;
 };
 

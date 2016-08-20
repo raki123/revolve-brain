@@ -11,7 +11,8 @@ class Actuator
 public:
     virtual ~Actuator() {}
 
-    virtual void update(double *output_vector, double step) = 0;
+    virtual void update(double *output_vector,
+                        double step) = 0;
     virtual unsigned int outputs() const = 0;
 };
 

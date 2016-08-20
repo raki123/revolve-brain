@@ -142,7 +142,8 @@ void NeuralNetwork::step(double time) {
 
 void NeuralNetwork::update(const std::vector< ActuatorPtr >& actuators,
                            const std::vector< SensorPtr >& sensors,
-                           double t, double step)
+                           double t,
+                           double step)
 {
     boost::mutex::scoped_lock lock(networkMutex_);
 
