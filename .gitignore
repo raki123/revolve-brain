@@ -1,10 +1,43 @@
-.AppleDouble
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
 
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# Python-related files
+*.pyc
+
+# Platform-specific files
+.AppleDouble
 .DS_Store
 ._.DS_Store
+
+# IDE-specific files
 .idea
 
+# Miscelaneous
 build
 dist
-
-*.pyc
