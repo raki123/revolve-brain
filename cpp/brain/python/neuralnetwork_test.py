@@ -11,7 +11,7 @@ class NeuralNetworkTest(unittest.TestCase):
     def test_isInstantiated(self):
         self.nn = revolve_brain_python.NeuralNetwork()
         self.assertIsInstance(self.nn,revolve_brain_python.NeuralNetwork)
-        #self.assertIsInstance(self.nn,revolve_brain_python.Brain)
+        self.assertIsInstance(self.nn,revolve_brain_python.Brain)
 
     def tearDown(self):
         # Called after the last testfunction was executed

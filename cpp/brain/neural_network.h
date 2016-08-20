@@ -8,8 +8,8 @@
  * @author Elte Hupkes
  */
 
-#ifndef REVOLVE_GAZEBO_BRAIN_NEURALNETWORK_H_
-#define REVOLVE_GAZEBO_BRAIN_NEURALNETWORK_H_
+#ifndef REVOLVE_BRAIN_NEURALNETWORK_H_
+#define REVOLVE_BRAIN_NEURALNETWORK_H_
 
 
 #include "brain.h"
@@ -32,6 +32,9 @@
 
 // (bias, tau, gain) or (phase offset, period, gain)
 #define MAX_NEURON_PARAMS 3
+
+namespace revolve {
+namespace brain {
 
 /*
  * Copied from NeuronRepresentation.h
@@ -149,5 +152,8 @@ protected:
 	unsigned int nNonInputs_;
 };
 
+}
+}
 
-#endif /* REVOLVE_GAZEBO_BRAIN_NEURALNETWORK_H_ */
+
+#endif /* REVOLVE_BRAIN_NEURALNETWORK_H_ */

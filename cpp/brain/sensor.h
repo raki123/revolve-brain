@@ -1,17 +1,24 @@
-#ifndef SENSOR_H
-#define SENSOR_H
+#ifndef REVOLVE_BRAIN_SENSOR_H
+#define REVOLVE_BRAIN_SENSOR_H
 
 #include <boost/shared_ptr.hpp>
+
+namespace revolve {
+namespace brain {
 
 class Sensor
 {
 public:
-    Sensor();
+    virtual ~Sensor() {}
 
     virtual void read(double *input_vector) = 0;
-    virtual unsigned int inputs() = 0;
+    virtual unsigned int inputs() const = 0;
 };
 
 typedef boost::shared_ptr< Sensor > SensorPtr;
 
-#endif // SENSOR_H
+}
+}
+
+
+#endif // REVOLVE_BRAIN_SENSOR_H

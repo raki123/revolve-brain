@@ -5,6 +5,10 @@ requires = [
     'revolve-hal'
 ]
 
+# check links for native code bits of the library
+# https://docs.python.org/3.5/extending/building.html#distributing-your-extension-modules
+# http://robotics.usc.edu/~ampereir/wordpress/?p=202
+
 setup(
     name='revolve-mating-server',
     version='1.0',
