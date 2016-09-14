@@ -46,7 +46,12 @@ else()
 
     # try python-py34 for raspberry
     message(STATUS "boost python3 not found, searching for python-py34")
-    find_package(Boost REQUIRED COMPONENTS system python-py34)
+    find_package(Boost COMPONENTS system python-py34)
+    if ($Boost_PYTHON3_FOUND)
+    else()
+        message(STATUS "boost python-py34 not found, searching for python-py35")
+        find_package(Boost REQUIRED COMPONENTS system python-py35)
+    endif()
 endif()
 
 if (${APPLE})
