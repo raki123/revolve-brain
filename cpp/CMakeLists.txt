@@ -32,13 +32,11 @@ message(STATUS "boost: ${Boost_FOUND} - system: ${Boost_SYSTEM_FOUND} - python3:
 find_package(GSL REQUIRED)
 
 
-if (${Boost_SYSTEM_FOUND})
-else()
+if (NOT ${Boost_SYSTEM_FOUND})
     message(FATAL_ERROR "boost system required and not found")
 endif()
 
-if (${Boost_PYTHON3_FOUND})
-else()
+if (NOT ${Boost_PYTHON3_FOUND})
     if (${APPLE})
         message(FATAL_ERROR "boost python3 not found, try to run command\n"
                 "$ brew install boost-python --without-python --with-python3")
@@ -46,7 +44,11 @@ else()
 
     # try python-py34 for raspberry
     message(STATUS "boost python3 not found, searching for python-py34")
-    find_package(Boost REQUIRED COMPONENTS system python-py34)
+    find_package(Boost COMPONENTS system python-py34)
+    if (NOT $Boost_PYTHON3_FOUND)
+        message(STATUS "boost python-py34 not found, searching for python-py35")
+        find_package(Boost REQUIRED COMPONENTS system python-py35)
+    endif()
 endif()
 
 if (${APPLE})
