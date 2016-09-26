@@ -21,7 +21,8 @@ class Evaluator(revolve_brain_python.Evaluator):
 
 class RLPowerTestInstance(unittest.TestCase):
     def setUp(self):
-        # Called before the first testfunction is executed
+        # Called before the first testfunction is executedù
+        revolve_brain_python.AsyncNeat.Init()
         pass
 
     def test_evaluator(self):
@@ -41,22 +42,28 @@ class RLPowerTestInstance(unittest.TestCase):
 
     def tearDown(self):
         # Called after the last testfunction was executed
+        revolve_brain_python.AsyncNeat.CleanUp()
         pass
 
 
 class RLPowerTestRun(unittest.TestCase):
     def setUp(self):
+        revolve_brain_python.AsyncNeat.Init()
         # Called before the first testfunction is executed
         self.evaluator = Evaluator()
         self.assertIsInstance(self.evaluator, Evaluator)
 
         self.actuators = [Actuator() for i in range(0,2)]
-        self.sensors = [Sensor() for i in range(0,2)]
+        self.sensors = [Sensor(i) for i in range(0,2)]
 
-        self.controller = revolve_brain_python.RLPower(
+        self.controller = revolve_brain_python.SUPGBrain(
             self.evaluator,
-            len(self.actuators) * Actuator.SIZE,
-            len(self.sensors) * Sensor.SIZE
+            [
+              [-1, 1, 1],
+              [-.5, .5, 1],
+            ],
+            self.actuators,
+            self.sensors,
         )
         self.assertIsInstance(self.controller, revolve_brain_python.Brain)
 
@@ -79,6 +86,7 @@ class RLPowerTestRun(unittest.TestCase):
 
     def tearDown(self):
         # Called after the last testfunction was executed
+        revolve_brain_python.AsyncNeat.CleanUp()
         pass
 
 if __name__ == "__main__":

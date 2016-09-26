@@ -5,9 +5,10 @@ import revolve_brain_python
 
 class Sensor(revolve_brain_python.Sensor):
     SIZE = 4
-    def __init__(self):
+    def __init__(self, id):
         super().__init__()
         self.i = 0
+        self.id = id
 
     #void read(double * input_vector)
     def read(self, input_vector):
@@ -19,6 +20,9 @@ class Sensor(revolve_brain_python.Sensor):
     def inputs(self):
         return self.SIZE
 
+    def sensorId(self):
+        return "sensor[{}]".format(self.id)
+
 
 class SensorTest(unittest.TestCase):
     def setUp(self):
@@ -26,12 +30,12 @@ class SensorTest(unittest.TestCase):
         pass
 
     def test_isInstantiated(self):
-        self.sensor = Sensor()
+        self.sensor = Sensor(4)
         self.assertIsInstance(self.sensor, Sensor)
         self.assertIsInstance(self.sensor, revolve_brain_python.Sensor)
 
     def test_methods(self):
-        self.sensor = Sensor()
+        self.sensor = Sensor(5)
         self.assertEqual(self.sensor.inputs(), Sensor.SIZE)
         self.assertEqual(self.sensor.inputs(), Sensor.SIZE)
 

@@ -31,9 +31,9 @@ class SUPGBrain_python : public revolve::brain::SUPGBrain
 {
 public:
     SUPGBrain_python(revolve::brain::EvaluatorPtr evaluator,
-                     std::vector< std::vector< float > > neuron_coordinates,
-                     std::vector< ActuatorPtr> &motors,
-                     const std::vector< SensorPtr> &sensors);
+                     const boost::python::list /*< boost::python::list< float > >*/ &neuron_coordinates,
+                     const boost::python::list /*< ActuatorPtr> */ &motors,
+                     const boost::python::list /*< SensorPtr> */ &sensors);
 
 
     void update(boost::python::list& actuators,

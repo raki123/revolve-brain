@@ -54,6 +54,17 @@ double SUPGBrain::GetCYCLE_LENGTHenv()
     return 5;
 }
 
+revolve::brain::SUPGBrain::SUPGBrain(EvaluatorPtr evaluator)
+  : evaluator(evaluator)
+  , start_eval_time(std::numeric_limits< double >::lowest())
+  , generation_counter(0)
+  , MAX_EVALUATIONS(GetMAX_EVALUATIONSenv())
+  , FREQUENCY_RATE(GetFREQUENCY_RATEenv())
+  , CYCLE_LENGTH(GetCYCLE_LENGTHenv())
+  , neuron_coordinates(0)
+{
+}
+
 
 SUPGBrain::SUPGBrain(EvaluatorPtr evaluator,
                      const std::vector< std::vector< float > > &neuron_coordinates,
@@ -88,17 +99,16 @@ SUPGBrain::SUPGBrain(EvaluatorPtr evaluator,
     }
     n_outputs = p;
 
+    this->init_async_neat();
+}
+
+void SUPGBrain::init_async_neat() {
     std::unique_ptr< AsyncNeat > neat(new AsyncNeat(
         SUPGNeuron::GetDimensionInput(n_inputs, neuron_coordinates[0].size()),
         SUPGNeuron::GetDimensionOutput(n_outputs),
         std::time(0)
     ));
     this->neat = std::move(neat);
-}
-
-SUPGBrain::~SUPGBrain()
-{
-
 }
 
 
@@ -120,7 +130,7 @@ double SUPGBrain::getFitness()
 void SUPGBrain::nextBrain()
 {
     bool init_supgs;
-    int how_many_neurons;
+    unsigned int how_many_neurons;
     if (!current_evalaution) {
         // first evaluation
         init_supgs = true;
