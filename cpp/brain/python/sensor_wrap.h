@@ -6,7 +6,7 @@
 #include "brain/sensor.h"
 #include "brain/python/python_array.h"
 
-#include <iostream>
+#include <string>
 
 namespace revolve {
 namespace brain {
@@ -23,6 +23,10 @@ public:
 
     virtual unsigned int inputs() const {
         return this->get_override("inputs")();
+    };
+
+    virtual std::string sensorId() const {
+        return this->get_override("sensorId")();
     };
 
 };

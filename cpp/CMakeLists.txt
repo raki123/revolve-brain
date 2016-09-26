@@ -16,6 +16,9 @@ endif()
 
 
 # Libraries ####################################################################
+# build static libraries with position indipendent code, so they can be used in dynamic libraries
+set (CMAKE_POSITION_INDEPENDENT_CODE TRUE)
+
 # python3 libraries
 find_package(PythonLibs REQUIRED)
 
@@ -56,20 +59,39 @@ if (${APPLE})
     set(Python_LIBRARIES ${Python_LIBRARIES} "/Library/Frameworks/Python.framework/Versions/3.5/lib/python3.5/config-3.5m/libpython3.5m.a")
 endif()
 
+# add accneat
+add_subdirectory("neat/accneat")
+#TODO make include path for accneat nicer
+include_directories("neat/accneat/src")
 
 # end Libraries stuff
 include_directories(${Boost_INCLUDE_DIRS} ${PYTHON_INCLUDE_DIRS} ${PROJECT_SOURCE_DIR} ${GSL_INCLUDE_DIRS})
 
 
+file(GLOB_RECURSE BRAIN_SRCS
+        brain/rlpower.cpp
+        brain/neural_network.cpp
+        brain/supgbrain.cpp
+        brain/supg/supgneuron.cpp
+        brain/supg/supggenomemanager.cpp
+        neat/asyncneat.cpp
+        neat/neatevaluation.cpp )
+
 # Compiling ####################################################################
-add_library(revolve-brain SHARED brain/rlpower.cpp brain/neural_network.cpp)
-add_library(revolve-brain-static STATIC brain/rlpower.cpp brain/neural_network.cpp)
-python_add_module(revolve_brain_python brain/python/brain.cpp brain/python/rlpower_python.cpp)
+add_library(revolve-brain-static STATIC ${BRAIN_SRCS})
+add_library(revolve-brain SHARED)
+
+python_add_module(revolve_brain_python
+    brain/python/brain.cpp
+    brain/python/rlpower_python.cpp
+    brain/python/supgbrain_python.cpp
+)
 
 
 # Linking ######################################################################
-target_link_libraries(revolve-brain ${Boost_LIBRARIES} ${PYTHON_LIBRARIES} ${GSL_LIBRARIES})
-target_link_libraries(revolve_brain_python revolve-brain)
+target_link_libraries(revolve-brain-static accneat ${Boost_LIBRARIES} ${PYTHON_LIBRARIES} ${GSL_LIBRARIES})
+target_link_libraries(revolve-brain revolve-brain-static)
+target_link_libraries(revolve_brain_python revolve-brain-static)
 
 
 # Install ######################################################################
@@ -90,3 +112,16 @@ add_test(01-Sensor python3 -m unittest sensor_test.py)
 add_test(01-Actuator python3 -m unittest actuator_test.py)
 add_test(03-NeuralNetwork python3 -m unittest neuralnetwork_test.py)
 add_test(04-RLPower python3 -m unittest rlpower_test.py)
+
+add_executable(testAsyncNeat neat/test/testasyncneat.cpp)
+add_executable(testCustomGenomeManager neat/test/testcustomgenomemanager.cpp)
+add_executable(testMultiNNSpecies neat/test/testmultinnspeciesneat.cpp)
+add_executable(testSUPGBrain test/testsupgbrain.cpp)
+target_link_libraries(testAsyncNeat revolve-brain)
+target_link_libraries(testCustomGenomeManager revolve-brain)
+target_link_libraries(testMultiNNSpecies revolve-brain)
+target_link_libraries(testSUPGBrain revolve-brain)
+add_test(testAsyncNeat testAsyncNeat)
+add_test(testCustomGenomeManager testCustomGenomeManager)
+add_test(testMultiNNSpecies testMultiNNSpecies)
+add_test(testSUPGBrain testSUPGBrain)

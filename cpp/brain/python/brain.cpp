@@ -36,6 +36,7 @@ BOOST_PYTHON_MODULE(revolve_brain_python)
     boost::python::class_< SensorWrap, boost::noncopyable >("Sensor")
         .def("read", boost::python::pure_virtual(&Sensor::read))
         .def("inputs", boost::python::pure_virtual(&Sensor::inputs))
+        .def("sensorId", boost::python::pure_virtual(&Sensor::sensorId))
     ;
 
     // abstract Brain class

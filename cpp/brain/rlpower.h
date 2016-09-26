@@ -25,8 +25,6 @@ namespace brain {
         typedef std::vector<Spline> Policy;
         typedef std::shared_ptr<Policy> PolicyPtr;
 
-        typedef boost::shared_ptr<revolve::brain::Evaluator> EvaluatorPtr;
-
         /**
          * The RLPower constructor reads out configuration file, deretmines which algorithm type to apply and
          * initialises new policy.
@@ -35,7 +33,7 @@ namespace brain {
          * @param n_sensors: number of sensors
          * @return pointer to the RLPower class object
          */
-        RLPower(RLPower::EvaluatorPtr evaluator,
+        RLPower(EvaluatorPtr evaluator,
                 unsigned int n_actuators,
                 unsigned int n_sensors);
 
@@ -89,6 +87,37 @@ namespace brain {
         const unsigned int FREQUENCY_RATE = 30; // seconds
         const double CYCLE_LENGTH = 5; // seconds
         const double SIGMA_DECAY_SQUARED = 0.98; // sigma decay
+
+
+    protected:
+        template<typename ActuatorContainer, typename SensorContainer>
+        void update(const ActuatorContainer &actuators,
+                    const SensorContainer &sensors,
+                    double t,
+                    double step) {
+            //boost::mutex::scoped_lock lock(networkMutex_);
+
+            // Evaluate policy on certain time limit
+            if ((t - start_eval_time_) > RLPower::FREQUENCY_RATE &&
+                generation_counter_ < RLPower::MAX_EVALUATIONS) {
+                this->generatePolicy();
+                start_eval_time_ = t;
+                evaluator_->start();
+            }
+
+            // generate outputs
+            double *output_vector = new double[nActuators_];
+            this->generateOutput(t, output_vector);
+
+            // Send new signals to the actuators
+            unsigned int p = 0;
+            for (auto actuator: actuators) {
+                actuator->update(output_vector + p, step);
+                p += actuator->outputs();
+            }
+
+            delete[] output_vector;
+        }
 
     private:
 //        /**
@@ -148,35 +177,6 @@ namespace brain {
          * Writes best 10 splines to file
          */
         void writeLast(double fitness);
-
-        template<typename ActuatorContainer, typename SensorContainer>
-        void update(const ActuatorContainer &actuators,
-                    const SensorContainer &sensors,
-                    double t,
-                    double step) {
-            //boost::mutex::scoped_lock lock(networkMutex_);
-
-            // Evaluate policy on certain time limit
-            if ((t - start_eval_time_) > RLPower::FREQUENCY_RATE &&
-                generation_counter_ < RLPower::MAX_EVALUATIONS) {
-                this->generatePolicy();
-                start_eval_time_ = t;
-                evaluator_->start();
-            }
-
-            // generate outputs
-            double *output_vector = new double[nActuators_];
-            this->generateOutput(t, output_vector);
-
-            // Send new signals to the actuators
-            unsigned int p = 0;
-            for (auto actuator: actuators) {
-                actuator->update(output_vector + p, step);
-                p += actuator->outputs();
-            }
-
-            delete[] output_vector;
-        }
 
 
         PolicyPtr current_policy_; // Pointer to the current policy
