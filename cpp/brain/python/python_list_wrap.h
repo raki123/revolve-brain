@@ -64,6 +64,10 @@ public:
     iterator end() const {
         return iterator(wrapped_list, list_length);
     }
+
+    size_t size() const {
+        return boost::python::len(*wrapped_list);
+    }
 };
 
 #endif // REVOLVE_BRAIN_PYTHON_LIST_WRAP_H

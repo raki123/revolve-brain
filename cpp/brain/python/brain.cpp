@@ -6,7 +6,9 @@
 #include "brain/python/evaluator_wrap.h"
 #include "brain/python/sensor_wrap.h"
 #include "brain/python/rlpower_python.h"
+#include "brain/python/supgbrain_python.h"
 #include "brain/python/python_array.h"
+#include "neat/asyncneat.h"
 
 
 using namespace revolve::brain;
@@ -36,6 +38,7 @@ BOOST_PYTHON_MODULE(revolve_brain_python)
     boost::python::class_< SensorWrap, boost::noncopyable >("Sensor")
         .def("read", boost::python::pure_virtual(&Sensor::read))
         .def("inputs", boost::python::pure_virtual(&Sensor::inputs))
+        .def("sensorId", boost::python::pure_virtual(&Sensor::sensorId))
     ;
 
     // abstract Brain class
@@ -60,4 +63,31 @@ BOOST_PYTHON_MODULE(revolve_brain_python)
         .def("update", &RLPower_python::update)
     ;
     //boost::python::implicitly_convertible<RLPower*, Brain*>();
-};
+
+    // supg controller class
+    boost::python::class_< SUPGBrain_python,
+        boost::python::bases<Brain>,
+        boost::noncopyable >
+        (
+            "SUPGBrain",
+            boost::python::init<
+                boost::shared_ptr<Evaluator>,
+                boost::python::list&,
+                boost::python::list&,
+                boost::python::list&>()
+        )
+        .def("update", &SUPGBrain_python::update)
+    ;
+
+    boost::python::class_< AsyncNeat,
+        boost::noncopyable >
+        (
+            "AsyncNeat",
+            boost::python::no_init
+        )
+        .def("Init", static_cast<void(*)()>(&AsyncNeat::Init))
+        .staticmethod("Init")
+        .def("CleanUp", &AsyncNeat::CleanUp)
+        .staticmethod("CleanUp")
+    ;
+}

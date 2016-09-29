@@ -4,7 +4,7 @@
 
 using namespace revolve::brain;
 
-RLPower_python::RLPower_python(revolve::brain::RLPower::EvaluatorPtr evaluator,
+RLPower_python::RLPower_python(revolve::brain::EvaluatorPtr evaluator,
                                unsigned int n_actuators,
                                unsigned int n_sensors)
     : RLPower::RLPower(evaluator,
@@ -20,5 +20,7 @@ void RLPower_python::update(boost::python::list & actuators,
     python_list_wrap<ActuatorPtr> actuator_wrap(&actuators);
     python_list_wrap<SensorPtr>   sensor_wrap(&sensors);
 
-    RLPower::update<python_list_wrap<ActuatorPtr>, python_list_wrap<SensorPtr>>(actuator_wrap, sensor_wrap, t, step);
+    RLPower::update
+        <python_list_wrap<ActuatorPtr>, python_list_wrap<SensorPtr>>
+        (actuator_wrap, sensor_wrap, t, step);
 }
