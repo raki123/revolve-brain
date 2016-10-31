@@ -1,4 +1,4 @@
-/*
+    /*
  Copyright 2001 The University of Texas at Austin
 
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,10 @@
 #include "innovation.h"
 #include "util/util.h"
 
+#ifdef WITH_OPENMP
 #include <omp.h>
+#endif
+
 #include <algorithm>
 #include <vector>
 
@@ -125,11 +128,19 @@ void PopulationInnovations::init(int node_id, int innov_num) {
     cur_node_id = node_id;
     cur_innov_num = innov_num;
 
+#ifdef WITH_OPENMP
     innovations.resize( omp_get_max_threads() );
+#else
+    innovations.resize( 1 );
+#endif
 }
 
 void PopulationInnovations::add(const IndividualInnovation &innov) {
+#ifdef WITH_OPENMP
     innovations[omp_get_thread_num()].push_back(innov);
+#else
+    innovations[0].push_back(innov);
+#endif
 }
 
 void PopulationInnovations::apply() {

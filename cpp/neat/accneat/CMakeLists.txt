@@ -4,7 +4,12 @@ PROJECT( accneat )
 
 SET(CMAKE_CXX_STANDARD 11)
 
-FIND_PACKAGE(OpenMP)
+IF(NOT WITHOUT_OPENMP)
+    FIND_PACKAGE(OpenMP REQUIRED)
+    message("BUILDING WITH OPENMP SUPPORT. To disable it, run add `-DWITHOUT_OPENMP=1` to your cmake parameters ")
+ELSE()
+    message("BUILDING WITHOUT OPENMP SUPPORT")
+ENDIF()
 
 #TODO enable cuda
 
@@ -49,10 +54,15 @@ SET(accneat_cxx_sources
 INCLUDE_DIRECTORIES( "src" )
 
 add_library( accneat ${accneat_sources} ${accneat_cxx_sources})
-target_link_libraries( accneat "gomp")
-SET_TARGET_PROPERTIES( accneat PROPERTIES
-  COMPILE_FLAGS "${OpenMP_CXX_FLAGS}"
-)
+
+IF(NOT WITHOUT_OPENMP)
+    target_compile_definitions( accneat PRIVATE WITH_OPENMP)
+    target_link_libraries( accneat "gomp")
+    SET_TARGET_PROPERTIES( accneat PROPERTIES
+        COMPILE_FLAGS "${OpenMP_CXX_FLAGS}"
+    )
+ENDIF()
+
 
 add_executable(neat src/main.cpp)
 target_link_libraries(neat accneat)

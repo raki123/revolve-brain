@@ -21,7 +21,10 @@
 #include "util/util.h"
 
 #include <assert.h>
+
+#ifdef WITH_OPENMP
 #include <omp.h>
+#endif
 
 using namespace NEAT;
 using namespace std;
@@ -309,7 +312,9 @@ void SpeciesPopulation::next_generation() {
         static Timer timer("reproduce");
         timer.start();
 
+#ifdef WITH_OPENMP
 #pragma omp parallel for
+#endif
         for(size_t iorg = 0; iorg < norgs; iorg++) {
             SpeciesOrganism &baby = orgs.curr()[iorg];
             reproduce_parms_t &parms = reproduce_parms[iorg];
@@ -332,7 +337,9 @@ void SpeciesPopulation::next_generation() {
         timer.start();
 
         {
+#ifdef WITH_OPENMP
 #pragma omp parallel for
+#endif
             for(size_t i = 0; i < norgs; i++) {
                 SpeciesOrganism &org = orgs.curr()[i];
                 Species *origin_species = reproduce_parms[i].species;
