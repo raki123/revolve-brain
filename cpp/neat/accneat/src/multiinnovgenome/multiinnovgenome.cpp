@@ -45,7 +45,7 @@ Genome::Stats MultiInnovGenome::get_stats() {
     return {nodes_size, links_size};
 }
 
-void MultiInnovGenome::print(std::ostream& out)
+void MultiInnovGenome::print(std::ostream& out) const
 {
     for (auto g = innov_genome_list->begin(); g != innov_genome_list->end(); g++) {
         (*g)->print(out);

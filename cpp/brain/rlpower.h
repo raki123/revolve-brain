@@ -14,10 +14,6 @@
 
 namespace revolve {
 namespace brain {
-
-    typedef std::vector<double> Spline;
-    typedef std::vector<Spline *> Policy;
-
     class RLPower : public revolve::brain::Brain {
 
     public:
@@ -49,7 +45,7 @@ namespace brain {
         virtual void update(const std::vector<ActuatorPtr> &actuators,
                             const std::vector<SensorPtr> &sensors,
                             double t,
-                            double step);
+                            double step) override;
 
     protected:
 //        /**
@@ -98,8 +94,10 @@ namespace brain {
             //boost::mutex::scoped_lock lock(networkMutex_);
 
             // Evaluate policy on certain time limit
-            if ((t - start_eval_time_) > RLPower::FREQUENCY_RATE &&
-                generation_counter_ < RLPower::MAX_EVALUATIONS) {
+            if (!this->isOffline()
+                && (t - start_eval_time_) > RLPower::FREQUENCY_RATE
+                && generation_counter_ < RLPower::MAX_EVALUATIONS)
+            {
                 this->generatePolicy();
                 start_eval_time_ = t;
                 evaluator_->start();

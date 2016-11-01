@@ -17,8 +17,11 @@
 #include "protoinnovlinkgene.h"
 #include "recurrencychecker.h"
 #include "util/util.h"
+
+#include <yaml-cpp/yaml.h>
 #include <assert.h>
 #include <cstring>
+#include <iostream>
 
 using namespace NEAT;
 using namespace std;
@@ -166,7 +169,7 @@ Genome::Stats InnovGenome::get_stats() {
     return {nodes.size(), links.size()};
 }
 
-void InnovGenome::print(std::ostream &out) {
+void InnovGenome::print(std::ostream &out) const {
     out<<"genomestart "<<genome_id<<std::endl;
 
     //Output the traits
@@ -183,6 +186,76 @@ void InnovGenome::print(std::ostream &out) {
 
     out << "genomeend " << genome_id << std::endl;
 }
+
+#define YAML_HEADER_VERSION 1
+#define YAML_HEADER_TYPE "innovgenome"
+
+void NEAT::InnovGenome::save(std::ostream& out) const
+{
+    YAML::Node config;
+
+    // save header
+    YAML::Node header = config["header"];
+    header["type"] = YAML_HEADER_TYPE;
+    header["version"] = YAML_HEADER_VERSION;
+
+    // Save the traits
+    for(auto &t: traits)
+        config["traits"].push_back(t);
+
+    // Save the nodes
+    for(auto &n: nodes)
+        config["nodes"].push_back(n);
+
+    // Save the links
+    for(auto &g: links)
+        config["links"].push_back(g);
+
+    // write out to file
+    out << config;
+}
+
+bool NEAT::InnovGenome::load(std::istream& in)
+{
+    YAML::Node config = YAML::Load(in);
+
+    // read and validate header
+    YAML::Node header = config["header"];
+    if (header["type"].as<std::string>() != YAML_HEADER_TYPE
+     || header["version"].as<int>() != YAML_HEADER_VERSION) {
+        std::clog<<"impossible to open genome, incorrect header"<<std::endl;
+        return false;
+    }
+
+
+
+    // Read the traits
+    YAML::Node c_traits = config["traits"];
+    this->traits.reserve(c_traits.size());
+    for(auto trait: c_traits)
+        this->traits.push_back(
+            trait.as<Trait>()
+        );
+
+    // Read the nodes
+    YAML::Node c_nodes = config["nodes"];
+    this->nodes.reserve(c_nodes.size());
+    for(auto node: c_nodes)
+        this->nodes.push_back(
+            node.as<InnovNodeGene>()
+        );
+
+    // Read the links
+    YAML::Node c_links = config["links"];
+    this->links.reserve(c_links.size());
+    for(auto link: c_links)
+        this->links.push_back(
+            link.as<InnovLinkGene>()
+        );
+
+    return true;
+}
+
 
 int InnovGenome::get_last_node_id() {
     return nodes.back().node_id + 1;

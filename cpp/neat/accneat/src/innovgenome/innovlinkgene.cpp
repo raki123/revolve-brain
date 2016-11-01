@@ -114,7 +114,7 @@ InnovLinkGene::~InnovLinkGene() {
 }
 
 
-void InnovLinkGene::print_to_file(std::ostream &outFile) {
+void InnovLinkGene::print_to_file(std::ostream &outFile) const{
     outFile<<"gene ";
 
     //Start off with the trait number for this gene
@@ -126,4 +126,50 @@ void InnovLinkGene::print_to_file(std::ostream &outFile) {
     outFile << innovation_num << " ";
     outFile << mutation_num << " ";
     outFile << enable << std::endl;
+}
+
+bool NEAT::InnovLinkGene::operator==(const NEAT::InnovLinkGene& rhs) const
+{
+    return this->_weight == rhs._weight
+        && this->_in_node_id == rhs._in_node_id
+        && this->_out_node_id == rhs._out_node_id
+        && this->_is_recurrent == rhs._is_recurrent
+        && this->_trait_id == rhs._trait_id
+        && this->innovation_num == rhs.innovation_num
+        && this->mutation_num == rhs.mutation_num
+        && this->enable == rhs.enable
+        && this->frozen == rhs.frozen;
+}
+
+
+bool YAML::convert<NEAT::InnovLinkGene>::decode(const YAML::Node& node, NEAT::InnovLinkGene& rhs) {
+    rhs._trait_id      = node["trait_id"]      .as<int>();
+    rhs._in_node_id    = node["in_node_id"]    .as<int>();
+    rhs._out_node_id   = node["out_node_id"]   .as<int>();
+    rhs._weight        = node["weight"]        .as<real_t>();
+    rhs._is_recurrent  = node["recurrent"]     .as<bool>();
+    rhs.innovation_num = node["innovation_num"].as<int>();
+    rhs.mutation_num   = node["mutation_num"]  .as<real_t>();
+    rhs.enable         = node["enable"]        .as<bool>();
+    rhs.frozen         = node["frozen"]        .as<bool>();
+
+    return true;
+}
+
+#include <string>
+
+YAML::Node YAML::convert<NEAT::InnovLinkGene>::encode(const NEAT::InnovLinkGene& rhs) {
+    YAML::Node node;
+
+    node["trait_id"]       = rhs._trait_id;
+    node["in_node_id"]     = rhs._in_node_id;
+    node["out_node_id"]    = rhs._out_node_id;
+    node["weight"]         = rhs._weight;
+    node["recurrent"]      = rhs._is_recurrent;
+    node["innovation_num"] = rhs.innovation_num;
+    node["mutation_num"]   = rhs.mutation_num;
+    node["enable"]         = rhs.enable;
+    node["frozen"]         = rhs.frozen;
+
+    return node;
 }

@@ -76,10 +76,14 @@ public:
         return fittest;
     }
 
+protected:
+    void setFittest(std::shared_ptr<NeatEvaluation> new_fittest, float new_fitness);
+
 private:
     unsigned int n_inputs;
     unsigned int n_outputs;
     unsigned int generation;
+    unsigned int best_fitness_counter;
     int rng_seed;
 
     NEAT::Population *population;
@@ -89,7 +93,7 @@ private:
     std::shared_ptr<NeatEvaluation> fittest;
     float fittest_fitness;
 
-    void singleEvalutionFinished(std::shared_ptr<NeatEvaluation> evaluation, float fitness);
+    void singleEvaluationFinished(std::shared_ptr<NeatEvaluation> evaluation, float fitness);
     void next_generation();
     void refill_evaluation_queue();
 };

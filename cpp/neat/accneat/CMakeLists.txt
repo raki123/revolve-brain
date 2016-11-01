@@ -11,6 +11,9 @@ ELSE()
     message("BUILDING WITHOUT OPENMP SUPPORT")
 ENDIF()
 
+# yaml cpp
+find_package(yaml-cpp REQUIRED)
+
 #TODO enable cuda
 
 SET(accneat_sources
@@ -54,6 +57,8 @@ SET(accneat_cxx_sources
 INCLUDE_DIRECTORIES( "src" )
 
 add_library( accneat ${accneat_sources} ${accneat_cxx_sources})
+
+target_link_libraries( accneat ${YAML_CPP_LIBRARIES})
 
 IF(NOT WITHOUT_OPENMP)
     target_compile_definitions( accneat PRIVATE WITH_OPENMP)

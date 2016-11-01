@@ -81,11 +81,12 @@ SUPGBrain::SUPGBrain(EvaluatorPtr evaluator,
     if (actuators.size() != neuron_coordinates.size()) {
         std::stringstream ss;
         ss << "actuator size [" << actuators.size() << "] and neuron coordinates size [" << neuron_coordinates.size() << "] are different!";
+        std::cerr<<"THROWING EXCEPTION:\n"<<ss.str()<<std::endl;
         throw std::invalid_argument( ss.str());
     }
 
     unsigned int p = 0;
-    std::cout<<"sensor->sensorId()"<<std::endl;
+    std::cout<<"sensor->sensorId() ["<<sensors.size()<<" sensors]"<<std::endl;
     for (auto sensor : sensors) {
         std::cout << "sensor: " << sensor->sensorId() << "(inputs: " << sensor->inputs() << ")" << std::endl;
         p += sensor->inputs();
@@ -127,6 +128,12 @@ double SUPGBrain::getFitness()
     return fitness;
 }
 
+#include <string>
+#include <fstream>
+#include <iostream>
+#include <innovgenome/innovgenome.h>
+
+
 void SUPGBrain::nextBrain()
 {
     bool init_supgs;
@@ -140,6 +147,20 @@ void SUPGBrain::nextBrain()
         init_supgs = false;
         how_many_neurons = neurons.size();
         current_evalaution->finish(getFitness());
+
+//         // temporary genome save & load test
+//         {
+//             std::fstream genome_save;
+//             genome_save.open("/tmp/genome.yaml", std::ios::out);
+//             current_evalaution->getOrganism()->genome->save(genome_save);
+//         }
+
+//         {
+//             std::fstream genome_load;
+//             genome_load.open("/tmp/genome.yaml", std::ios::in);
+//             NEAT::InnovGenome genome;
+//             genome.load(genome_load);
+//         }
     }
 
     current_evalaution = neat->getEvaluation();

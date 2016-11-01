@@ -41,8 +41,28 @@ InnovNodeGene::InnovNodeGene (const char *argline) {
 InnovNodeGene::~InnovNodeGene() {
 }
 
-void InnovNodeGene::print_to_file(std::ostream &outFile) {
+void InnovNodeGene::print_to_file(std::ostream &outFile) const{
     outFile<<"node "<<node_id<<" ";
     outFile<<trait_id<<" ";
     outFile<<(int)type<<std::endl;
+}
+
+bool YAML::convert<NEAT::InnovNodeGene>::decode(const YAML::Node& node, InnovNodeGene& rhs) {
+
+    rhs.node_id = node["node_id"].as<int>();
+    rhs.set_trait_id(node["trait_id"].as<int>());
+    rhs.set_type(node["type"].as<nodetype>());
+    rhs.frozen = node["frozen"].as<bool>();
+
+    return true;
+}
+
+YAML::Node YAML::convert<NEAT::InnovNodeGene>::encode(const InnovNodeGene& rhs) {
+    YAML::Node node;
+    node["node_id"] = rhs.node_id;
+    node["trait_id"] = rhs.get_trait_id();
+    node["type"] = rhs.get_type();
+    node["frozen"] = rhs.frozen;
+
+    return node;
 }

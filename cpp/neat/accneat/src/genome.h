@@ -30,8 +30,12 @@ namespace NEAT {
 
         virtual void init_phenotype(class Network &net) = 0;
 
-        virtual void print(std::ostream &out) = 0;
+        virtual void print(std::ostream &out) const = 0;
         virtual void verify() = 0;
+
+
+        virtual void save(std::ostream &out) const = 0;
+        virtual bool load(std::istream &in) = 0;
 
         struct Stats {
             size_t nnodes;

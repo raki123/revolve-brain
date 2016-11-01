@@ -19,7 +19,7 @@ public:
 
     virtual void init_phenotype(class Network &net) override;
 
-    virtual void print(std::ostream &out) override;
+    virtual void print(std::ostream &out) const override;
     virtual void verify() override;
 
     virtual Stats get_stats() override;

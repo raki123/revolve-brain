@@ -57,7 +57,7 @@ namespace NEAT {
         Trait(const Trait &t1, const Trait &t2);
 
         // Dump trait to a stream
-        void print_to_file(std::ostream &outFile);
+        void print_to_file(std::ostream &outFile) const;
 
         // Perturb the trait parameters slightly
         void mutate(rng_t &rng);
@@ -65,5 +65,15 @@ namespace NEAT {
     };
 
 } // namespace NEAT
+
+#include <yaml-cpp/yaml.h>
+
+namespace YAML {
+template<>
+struct convert<NEAT::Trait> {
+  static Node encode(const NEAT::Trait& rhs);
+  static bool decode(const Node& node, NEAT::Trait& rhs);
+};
+}
 
 #endif

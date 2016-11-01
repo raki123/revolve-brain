@@ -9,6 +9,7 @@
 #include <vector>
 #include <memory>
 #include <iostream>
+#include <cstdlib>
 
 namespace revolve {
 namespace brain {
@@ -30,16 +31,14 @@ public:
 protected:
     SUPGBrain(EvaluatorPtr evaluator);
 
-    template<typename ActuatorContainer, typename SensorContainer>
-    void update(const ActuatorContainer &actuators,
-                const SensorContainer &sensors,
-                double t,
-                double step)
+//// Templates ---------------------------------------------------------
+    template<typename SensorContainer>
+    void learner(const SensorContainer &sensors, double t)
     {
-
         // Evaluate policy on certain time limit
-        if ((t-start_eval_time) > SUPGBrain::FREQUENCY_RATE) {
-
+        if (!this->isOffline()
+            && (t-start_eval_time) > SUPGBrain::FREQUENCY_RATE)
+        {
             // check if to stop the experiment. Negative value for MAX_EVALUATIONS will never stop the experiment
             if (SUPGBrain::MAX_EVALUATIONS > 0 && generation_counter > SUPGBrain::MAX_EVALUATIONS) {
                 std::cout << "Max Evaluations (" << SUPGBrain::MAX_EVALUATIONS << ") reached. stopping now." << std::endl;
@@ -51,7 +50,14 @@ protected:
             start_eval_time = t;
             evaluator->start();
         }
+    }
 
+    template<typename ActuatorContainer, typename SensorContainer>
+    void controller(const ActuatorContainer &actuators,
+                    const SensorContainer &sensors,
+                    double t,
+                    double step)
+    {
         assert(n_outputs == actuators.size());
 
         // Read sensor data and feed the neural network
@@ -86,10 +92,20 @@ protected:
         delete[] inputs;
     }
 
+    template<typename ActuatorContainer, typename SensorContainer>
+    void update(const ActuatorContainer &actuators,
+                const SensorContainer &sensors,
+                double t,
+                double step)
+    {
+        learner<SensorContainer>(sensors, t);
+        controller<ActuatorContainer, SensorContainer>(actuators, sensors, t, step);
+    }
+
     void init_async_neat();
 
-private:
-    double getFitness();
+protected:
+    virtual double getFitness();
     void nextBrain();
 
     static long GetMAX_EVALUATIONSenv();
@@ -102,7 +118,7 @@ protected:
     unsigned int n_inputs, n_outputs;
     std::vector< std::vector< float > > neuron_coordinates;
 
-private:
+
     std::unique_ptr<AsyncNeat> neat;
     EvaluatorPtr evaluator;
     double start_eval_time;

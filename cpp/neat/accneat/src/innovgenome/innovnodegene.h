@@ -43,8 +43,18 @@ namespace NEAT {
         inline void set_type(nodetype t) {type = t;}
 
         // Print the node to a file
-        void  print_to_file(std::ostream &outFile);
+        void  print_to_file(std::ostream &outFile) const;
     };
 
 } // namespace NEAT
 
+
+#include <yaml-cpp/yaml.h>
+
+namespace YAML {
+template<>
+struct convert<NEAT::InnovNodeGene> {
+  static Node encode(const NEAT::InnovNodeGene& rhs);
+  static bool decode(const Node& node, NEAT::InnovNodeGene& rhs);
+};
+}

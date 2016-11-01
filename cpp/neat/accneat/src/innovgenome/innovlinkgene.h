@@ -84,11 +84,23 @@ namespace NEAT {
 
         ~InnovLinkGene();
 
+        bool operator==(const InnovLinkGene& rhs) const;
+
         //Print gene to a file- called from Genome
-        void print_to_file(std::ostream &outFile);
+        void print_to_file(std::ostream &outFile) const;
+
+        friend struct YAML::convert<NEAT::InnovLinkGene>;
     };
 
 } // namespace NEAT
 
+#include <yaml-cpp/yaml.h>
 
+namespace YAML {
+template<>
+struct convert<NEAT::InnovLinkGene> {
+  static Node encode(const NEAT::InnovLinkGene& rhs);
+  static bool decode(const Node& node, NEAT::InnovLinkGene& rhs);
+};
+}
 #endif

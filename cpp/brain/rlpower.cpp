@@ -17,6 +17,7 @@
 #include <random>
 #include <iostream>
 #include <fstream>
+#include <cstdlib>
 
 #include <gsl/gsl_errno.h>
 #include <gsl/gsl_spline.h>
@@ -117,7 +118,7 @@ void RLPower::generatePolicy() {
     generation_counter_++;
     if (generation_counter_ == RLPower::MAX_EVALUATIONS) {
         std::cout << "Finish!!!" << std::endl;
-        exit(0);
+        std::exit(0);
     }
 
     // increase spline points if it is time

@@ -6,6 +6,8 @@
 #include <iostream>
 #include <limits>
 #include <stdexcept>
+#include <fstream>
+#include <sstream>
 
 #define DEFAULT_RNG_SEED 1
 
@@ -13,6 +15,7 @@ AsyncNeat::AsyncNeat(unsigned int n_inputs, unsigned int n_outputs, int rng_seed
   : n_inputs(n_inputs)
   , n_outputs(n_outputs)
   , generation(1)
+  , best_fitness_counter(0)
   , rng_seed(rng_seed)
   , fittest(nullptr)
   , fittest_fitness(std::numeric_limits<float>().min())
@@ -53,7 +56,7 @@ std::shared_ptr<NeatEvaluation> AsyncNeat::getEvaluation()
     std::shared_ptr<NeatEvaluation> new_evaluation = this->evaluatingQueue.front();
     new_evaluation->add_finished_callback([this, new_evaluation] (float fitness) {
         this->evaluatingList.remove(new_evaluation);
-        this->singleEvalutionFinished(new_evaluation, fitness);
+        this->singleEvaluationFinished(new_evaluation, fitness);
     });
 
     this->evaluatingQueue.pop_front();
@@ -82,10 +85,10 @@ void AsyncNeat::refill_evaluation_queue()
 }
 
 
-void AsyncNeat::singleEvalutionFinished(std::shared_ptr< NeatEvaluation > evaluation, float fitness)
+void AsyncNeat::singleEvaluationFinished(std::shared_ptr< NeatEvaluation > evaluation, float fitness)
 {
     if (fitness > this->fittest_fitness) {
-        this->fittest = evaluation;
+        this->setFittest(evaluation, fitness);
     }
 
     // need to wait for all generational evaluations to finish before creating a new generation
@@ -95,3 +98,21 @@ void AsyncNeat::singleEvalutionFinished(std::shared_ptr< NeatEvaluation > evalua
     }
 
 }
+
+void AsyncNeat::setFittest(std::shared_ptr<NeatEvaluation> new_fittest, float new_fitness)
+{
+    this->fittest = new_fittest;
+    this->fittest_fitness = new_fitness;
+    this->best_fitness_counter++;
+
+    std::ostringstream filename;
+    filename << "/tmp/supg/genome_" << this->best_fitness_counter << "_" << generation << ".yaml";
+    std::fstream genome_save;
+    genome_save.open(filename.str(), std::ios::out);
+
+
+    std::cout << "New best fitness! " << new_fitness << " saved at \"" << filename.str() << '\"' << std::endl;
+
+    fittest->getOrganism()->genome->save(genome_save);
+}
+
