@@ -35,6 +35,9 @@ include_directories("neat/accneat/src")
 # Gnu mathematical library
 find_package(GSL REQUIRED)
 
+# add CPG
+add_subdirectory("brain/cpg")
+
 # end Libraries stuff
 include_directories(${Boost_INCLUDE_DIRS} ${PROJECT_SOURCE_DIR} ${GSL_INCLUDE_DIRS})
 
@@ -56,7 +59,7 @@ add_library(revolve-brain-static STATIC ${BRAIN_SRCS})
 add_library(revolve-brain SHARED)
 
 # Linking ######################################################################
-target_link_libraries(revolve-brain-static accneat ${Boost_LIBRARIES} ${PYTHON_LIBRARIES} ${GSL_LIBRARIES})
+target_link_libraries(revolve-brain-static accneat cpg ${Boost_LIBRARIES} ${PYTHON_LIBRARIES} ${GSL_LIBRARIES})
 target_link_libraries(revolve-brain revolve-brain-static)
 
 
