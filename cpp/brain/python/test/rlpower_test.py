@@ -7,6 +7,20 @@ from actuator_test import Actuator
 import unittest
 import random
 
+robot_name = "unit_test_robot"
+
+class RLPowerConf:
+    def __init__(self):
+        self.algorithm_type = None
+        self.evaluation_rate = None
+        self.interpolation_spline_size = None
+        self.max_evaluations = None
+        self.max_ranked_policies = None
+        self.noise_sigma = None
+        self.sigma_tau_correction = None
+        self.source_y_size = None
+        self.update_step = None
+
 class Evaluator(revolve_brain_python.Evaluator):
     def __init__(self):
         super().__init__()
@@ -35,7 +49,7 @@ class RLPowerTestInstance(unittest.TestCase):
     def test_isInstantiated(self):
         self.evaluator = Evaluator()
 
-        self.controller = revolve_brain_python.RLPower(self.evaluator, 12, 12)
+        self.controller = revolve_brain_python.RLPower(robot_name, RLPowerConf(), self.evaluator, 12, 12)
         self.assertIsInstance(self.controller, revolve_brain_python.RLPower)
         self.assertIsInstance(self.controller, revolve_brain_python.Brain)
 
@@ -54,6 +68,8 @@ class RLPowerTestRun(unittest.TestCase):
         self.sensors = [Sensor(i) for i in range(0,2)]
 
         self.controller = revolve_brain_python.RLPower(
+            robot_name,
+            RLPowerConf(),
             self.evaluator,
             len(self.actuators) * Actuator.SIZE,
             len(self.sensors) * Sensor.SIZE

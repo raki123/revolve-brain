@@ -127,7 +127,7 @@ namespace revolve {
             struct Config {
                 std::string algorithm_type;
                 unsigned int evaluation_rate;
-                unsigned int intepolation_spline_size;
+                unsigned int interpolation_spline_size;
                 unsigned int max_evaluations;
                 unsigned int max_ranked_policies;
                 double noise_sigma;
@@ -216,7 +216,7 @@ namespace revolve {
             EvaluatorPtr evaluator_ = NULL; // Pointer to the fitness evaluator
 
             unsigned int generation_counter_; // Number of current generation
-            unsigned int intepolation_spline_size_; // Number of 'interpolation_cache_' sample points
+            unsigned int interpolation_spline_size_; // Number of 'interpolation_cache_' sample points
             unsigned int max_ranked_policies_; // Maximal number of stored ranked policies
             unsigned int max_evaluations_; // Maximal number of evaluations
             unsigned int nActuators_; // Number of actuators

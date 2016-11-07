@@ -48,7 +48,7 @@ RLPower::RLPower(std::string modelName,
     algorithm_type_ = brain.algorithm_type;
     std::cout << std::endl <<"Initialising RLPower, type " << algorithm_type_ << std::endl << std::endl;
     evaluation_rate_ = brain.evaluation_rate;
-    intepolation_spline_size_ = brain.intepolation_spline_size;
+    interpolation_spline_size_ = brain.interpolation_spline_size;
     max_evaluations_ = brain.max_evaluations;
     max_ranked_policies_ = brain.max_ranked_policies;
     noise_sigma_ = brain.noise_sigma;
@@ -56,7 +56,7 @@ RLPower::RLPower(std::string modelName,
     source_y_size = brain.source_y_size;
     update_step_ = brain.update_step;
 
-    step_rate_ = intepolation_spline_size_ / source_y_size;
+    step_rate_ = interpolation_spline_size_ / source_y_size;
 
     // Generate first random policy
     this->generateInitPolicy();
@@ -98,7 +98,7 @@ void RLPower::generateInitPolicy() {
         interpolation_cache_ = std::make_shared<Policy>(nActuators_);
 
     for (unsigned int i = 0; i < nActuators_; i++) {
-        interpolation_cache_->at(i).resize(intepolation_spline_size_, 0);
+        interpolation_cache_->at(i).resize(interpolation_spline_size_, 0);
     }
 
     this->generateCache();
@@ -314,7 +314,7 @@ void RLPower::increaseSplinePoints() {
     source_y_size++;
 
     // LOG code
-    step_rate_ = intepolation_spline_size_ / source_y_size;
+    step_rate_ = interpolation_spline_size_ / source_y_size;
     std::cout << "New samplingSize_=" << source_y_size << ", and stepRate_=" << step_rate_ << std::endl;
 
     // Copy current policy for resizing
@@ -381,10 +381,10 @@ void RLPower::generateOutput(const double time,
     }
 
     // adjust X on the cache coordinate space
-    x = (x / CYCLE_LENGTH) * intepolation_spline_size_;
+    x = (x / CYCLE_LENGTH) * interpolation_spline_size_;
     // generate previous and next values
-    int x_a = ((int) x) % intepolation_spline_size_;
-    int x_b = (x_a + 1) % intepolation_spline_size_;
+    int x_a = ((int) x) % interpolation_spline_size_;
+    int x_b = (x_a + 1) % interpolation_spline_size_;
 
     // linear interpolation for every actuator
     for (unsigned int i = 0; i < nActuators_; i++) {
@@ -402,7 +402,7 @@ double RLPower::getFitness() {
 }
 
 void RLPower::printCurrent() {
-    for (unsigned int i = 0; i < intepolation_spline_size_; i++) {
+    for (unsigned int i = 0; i < interpolation_spline_size_; i++) {
         for (unsigned int j = 0; j < nActuators_; j++) {
             std::cout << current_policy_->at(j)[i] << " ";
         }
