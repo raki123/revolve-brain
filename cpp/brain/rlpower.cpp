@@ -24,14 +24,14 @@
 using namespace revolve::brain;
 
 RLPower::RLPower(std::string modelName,
-                 sdf::ElementPtr brain,
+                 Config brain,
                  EvaluatorPtr evaluator,
                  unsigned int n_actuators,
                  unsigned int n_sensors) :
         evaluator_(evaluator),
         generation_counter_(0),
-        nActuators_(actuators.size()),
-        nSensors_(sensors.size()),
+        nActuators_(n_actuators),
+        nSensors_(n_sensors),
         cycle_start_time_(-1),
         start_eval_time_(0),
         robot_name_(modelName) {
@@ -45,33 +45,17 @@ RLPower::RLPower(std::string modelName,
 //                                     &RLPower::modify, this);
 
     // Read out brain configuration attributes
-    algorithm_type_ = brain->HasAttribute("type") ? brain->GetAttribute("type")->GetAsString() : "A";
+    algorithm_type_ = brain.algorithm_type;
     std::cout << std::endl <<"Initialising RLPower, type " << algorithm_type_ << std::endl << std::endl;
+    evaluation_rate_ = brain.evaluation_rate;
+    intepolation_spline_size_ = brain.intepolation_spline_size;
+    max_evaluations_ = brain.max_evaluations;
+    max_ranked_policies_ = brain.max_ranked_policies;
+    noise_sigma_ = brain.noise_sigma;
+    sigma_tau_correction_ = brain.sigma_tau_correction;
+    source_y_size = brain.source_y_size;
+    update_step_ = brain.update_step;
 
-    evaluation_rate_ = brain->HasAttribute("evaluation_rate") ?
-                       std::stod(brain->GetAttribute("evaluation_rate")->GetAsString()) :
-                       RLPower::EVALUATION_RATE;
-    intepolation_spline_size_ = brain->HasAttribute("intepolation_spline_size") ?
-                                std::stoul(brain->GetAttribute("intepolation_spline_size")->GetAsString()) :
-                                RLPower::INTERPOLATION_CACHE_SIZE;
-    max_evaluations_ = brain->HasAttribute("max_evaluations") ?
-                       std::stoul(brain->GetAttribute("max_evaluations")->GetAsString()) :
-                       RLPower::MAX_EVALUATIONS;
-    max_ranked_policies_ = brain->HasAttribute("max_ranked_policies") ?
-                           std::stoul(brain->GetAttribute("max_ranked_policies")->GetAsString()) :
-                           RLPower::MAX_RANKED_POLICIES;
-    noise_sigma_ = brain->HasAttribute("init_sigma") ?
-                   std::stod(brain->GetAttribute("init_sigma")->GetAsString()) :
-                   RLPower::SIGMA_START_VALUE;
-    sigma_tau_correction_ = brain->HasAttribute("sigma_tau_correction") ?
-                            std::stod(brain->GetAttribute("sigma_tau_correction")->GetAsString()) :
-                            RLPower::SIGMA_TAU_CORRECTION;
-    source_y_size = brain->HasAttribute("init_spline_size") ?
-                    std::stoul(brain->GetAttribute("init_spline_size")->GetAsString()) :
-                    RLPower::INITIAL_SPLINE_SIZE;
-    update_step_ = brain->HasAttribute("update_step") ?
-                   std::stoul(brain->GetAttribute("update_step")->GetAsString()) :
-                   RLPower::UPDATE_STEP;
     step_rate_ = intepolation_spline_size_ / source_y_size;
 
     // Generate first random policy
@@ -458,3 +442,15 @@ void RLPower::writeElite() {
     }
     outputFile.close();
 }
+
+const unsigned int RLPower::MAX_EVALUATIONS = 1000; // max number of evaluations
+const unsigned int RLPower::MAX_RANKED_POLICIES = 10; // max length of policies vector
+const unsigned int RLPower::INTERPOLATION_CACHE_SIZE = 100; // number of data points for the interpolation cache
+const unsigned int RLPower::INITIAL_SPLINE_SIZE = 3; // number of initially sampled spline points
+const unsigned int RLPower::UPDATE_STEP = 100; // after # generations, it increases the number of spline points
+const double RLPower::EVALUATION_RATE = 30.0; // evaluation time for each policy
+const double RLPower::SIGMA_START_VALUE = 0.8; // starting value for sigma
+const double RLPower::SIGMA_TAU_CORRECTION = 0.2;
+
+const double RLPower::CYCLE_LENGTH = 5; // seconds
+const double RLPower::SIGMA_DECAY_SQUARED = 0.98; // sigma decay
