@@ -62,28 +62,42 @@ public:
     real_t getPhi() const;
 
     real_t getWeight() const;
-
     void setWeight(real_t weight);
-    // value from 0 to 100, does not throw exceptions if value is outside the allowed domain
+    // value from 0 to 1, does not throw exceptions if value is outside the allowed domain
     real_t setWeightPercentage(real_t weight);
+    real_t calculateWeightPercentage(real_t weight) const;
+    real_t calculateWeightFromPercentage(real_t weight) const;
 
     real_t getC() const;
-
     void setC(real_t c);
-    // value from 0 to 100, does not throw exceptions if value is outside the allowed domain
+    // value from 0 to 1, does not throw exceptions if value is outside the allowed domain
     real_t setCPercentage(real_t c);
+    real_t calculateCPercentage(real_t c) const;
+    real_t calculateCFromPercentage(real_t c) const;
 
     real_t getAmplitude() const;
-
     void setAmplitude(real_t amplitude);
-    // value from 0 to 100, does not throw exceptions if value is outside the allowed domain
+    // value from 0 to 1, does not throw exceptions if value is outside the allowed domain
     real_t setAmplitudePercentage(real_t amplitude);
+    real_t calculateAmplitudePercentage(real_t amplitude) const;
+    real_t calculateAmplitudeFromPercentage(real_t amplitude) const;
 
     real_t getOffset() const;
-
     void setOffset(real_t offset);
-    // value from 0 to 100, does not throw exceptions if value is outside the allowed domain
+    // value from 0 to 1, does not throw exceptions if value is outside the allowed domain
     real_t setOffsetPercentage(real_t offset);
+    real_t calculateOffsetPercentage(real_t offset) const;
+    real_t calculateOffsetFromPercentage(real_t offset) const;
+
+public:
+    const real_t WEIGHT_MIN = 0;
+    const real_t WEIGHT_MAX = 4.5;
+    const real_t C_MIN = -2;
+    const real_t C_MAX =  2;
+    const real_t AMPLITUDE_MIN = -10;
+    const real_t AMPLITUDE_MAX =  10;
+    const real_t OFFSET_MIN = -0.1;
+    const real_t OFFSET_MAX =  0.1;
 
 protected:
     // current value

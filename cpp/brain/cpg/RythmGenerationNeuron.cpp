@@ -82,8 +82,6 @@ real_t RythmGenerationNeuron::getWeight() const {
     return weight;
 }
 
-#define WEIGHT_MIN 0
-#define WEIGHT_MAX 4.5
 // the weight that determines the shape [0, 4.5]
 void RythmGenerationNeuron::setWeight(real_t weight) {
     if (weight < WEIGHT_MIN || weight > WEIGHT_MAX)
@@ -95,8 +93,6 @@ real_t RythmGenerationNeuron::getC() const {
     return c;
 }
 
-#define C_MIN -2
-#define C_MAX 2
 // the phase difference [-2, 2]
 void RythmGenerationNeuron::setC(real_t c) {
     if (c < C_MIN || c > C_MAX)
@@ -108,8 +104,6 @@ real_t RythmGenerationNeuron::getAmplitude() const {
     return amplitude;
 }
 
-#define AMPLITUDE_MIN -10
-#define AMPLITUDE_MAX 10
 //  the amplitude determines influence of a flexor/extensor on the final output signal [−10, 10]
 void RythmGenerationNeuron::setAmplitude(real_t amplitude) {
     if (amplitude < AMPLITUDE_MIN || amplitude > AMPLITUDE_MAX)
@@ -121,8 +115,6 @@ real_t RythmGenerationNeuron::getOffset() const {
     return offset;
 }
 
-#define OFFSET_MIN -0.1
-#define OFFSET_MAX 0.1
 //  the offset dims shape of the final output signal to the starting position [-0.1, 0.1]
 void RythmGenerationNeuron::setOffset(real_t offset) {
     if (offset < OFFSET_MIN || offset > OFFSET_MAX)
@@ -130,35 +122,93 @@ void RythmGenerationNeuron::setOffset(real_t offset) {
     RythmGenerationNeuron::offset = offset;
 }
 
-real_t percentage_of_range(real_t percentage, real_t range_start, real_t range_end)
+
+// FROM PERCENTAGE ------------------------------------------------------------
+real_t percentage_from_range(real_t percentage, real_t range_start, real_t range_end)
 {
-    if (percentage > 100)
+    if (percentage > 1)
         return range_end;
     else if (percentage < 0)
         return range_start;
 
     real_t range = range_end - range_start;
-    real_t distance = (percentage/100) * range;
+    real_t distance = percentage * range;
     return range_start + distance;
 }
 
+real_t revolve::brain::cpg::RythmGenerationNeuron::calculateWeightFromPercentage(real_t weight) const
+{
+    return percentage_from_range(weight, WEIGHT_MIN, WEIGHT_MAX);
+}
+
+real_t revolve::brain::cpg::RythmGenerationNeuron::calculateCFromPercentage(real_t c) const
+{
+    return percentage_from_range(c, C_MIN, C_MAX);
+}
+
+real_t revolve::brain::cpg::RythmGenerationNeuron::calculateAmplitudeFromPercentage(real_t amplitude) const
+{
+    return percentage_from_range(amplitude, AMPLITUDE_MIN, AMPLITUDE_MAX);
+}
+
+real_t revolve::brain::cpg::RythmGenerationNeuron::calculateOffsetFromPercentage(real_t offset) const
+{
+    return percentage_from_range(offset, OFFSET_MIN, OFFSET_MAX);
+}
+
+
+// TO PERCENTAGE --------------------------------------------------------------
+real_t percentage_of_range(real_t value, real_t range_start, real_t range_end)
+{
+    if (value > range_end)
+        return 1;
+    else if (value < range_start)
+        return 0;
+
+    real_t range = range_end - range_start;
+    value = value - range_start;
+    return value / range;
+}
+
+real_t revolve::brain::cpg::RythmGenerationNeuron::calculateWeightPercentage(real_t weight) const
+{
+    return percentage_of_range(weight, WEIGHT_MIN, WEIGHT_MAX);
+}
+
+real_t revolve::brain::cpg::RythmGenerationNeuron::calculateCPercentage(real_t c) const
+{
+    return percentage_of_range(c, C_MIN, C_MAX);
+}
+
+real_t revolve::brain::cpg::RythmGenerationNeuron::calculateAmplitudePercentage(real_t amplitude) const
+{
+    return percentage_of_range(amplitude, AMPLITUDE_MIN, AMPLITUDE_MAX);
+}
+
+real_t revolve::brain::cpg::RythmGenerationNeuron::calculateOffsetPercentage(real_t offset) const
+{
+    return percentage_of_range(offset, OFFSET_MIN, OFFSET_MAX);
+}
+
+
+
 real_t RythmGenerationNeuron::setWeightPercentage(real_t weight) {
-    this->weight = percentage_of_range(weight, WEIGHT_MIN, WEIGHT_MAX);
+    this->weight = calculateWeightFromPercentage(weight);
     return this->weight;
 }
 
 real_t RythmGenerationNeuron::setCPercentage(real_t c) {
-    this->c = percentage_of_range(c, C_MIN, C_MAX);
+    this->c = calculateCFromPercentage(c);
     return this->c;
 }
 
 real_t RythmGenerationNeuron::setAmplitudePercentage(real_t amplitude) {
-    this->amplitude = percentage_of_range(amplitude, AMPLITUDE_MIN, AMPLITUDE_MAX);
+    this->amplitude = calculateAmplitudeFromPercentage(amplitude);
     return this->amplitude;
 }
 
 real_t RythmGenerationNeuron::setOffsetPercentage(real_t offset) {
-    this->offset = percentage_of_range(offset, OFFSET_MIN, OFFSET_MAX);
+    this->offset = calculateOffsetFromPercentage(offset);
     return this->offset;
 }
 
