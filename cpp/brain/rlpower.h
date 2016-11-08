@@ -96,6 +96,8 @@ namespace brain {
                     double t,
                     double step) {
             //boost::mutex::scoped_lock lock(networkMutex_);
+            if (start_eval_time_ < 0)
+                start_eval_time_ = t;
 
             // Evaluate policy on certain time limit
             if ((t - start_eval_time_) > RLPower::FREQUENCY_RATE &&

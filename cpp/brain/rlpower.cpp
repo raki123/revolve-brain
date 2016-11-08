@@ -28,7 +28,7 @@ RLPower::RLPower(EvaluatorPtr evaluator,
                  unsigned int n_sensors) :
         nActuators_(n_actuators),
         nSensors_(n_sensors),
-        start_eval_time_(0),
+        start_eval_time_(-1),
         generation_counter_(0),
         evaluator_(evaluator),
         cycle_start_time_(-1) {
