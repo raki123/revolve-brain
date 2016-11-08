@@ -33,7 +33,7 @@ RLPower::RLPower(std::string modelName,
         nActuators_(n_actuators),
         nSensors_(n_sensors),
         cycle_start_time_(-1),
-        start_eval_time_(0),
+        start_eval_time_(-1),
         robot_name_(modelName) {
 
 //        // Create transport node
