@@ -58,7 +58,7 @@ BOOST_PYTHON_MODULE(revolve_brain_python)
         boost::noncopyable >
         (
             "RLPower",
-            boost::python::init< boost::shared_ptr<Evaluator>, unsigned int, unsigned int >()
+            boost::python::init< std::string, boost::python::object, boost::shared_ptr<Evaluator>, unsigned int, unsigned int >()
         )
         .def("update", &RLPower_python::update)
     ;
