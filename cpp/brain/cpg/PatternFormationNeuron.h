@@ -34,7 +34,7 @@ public:
     virtual ~PatternFormationNeuron();
 
     /**
-     * Update the rythm generator to the step (t+1)
+     * Update the pattern formation neuron to the step (t+1)
      * @param inputs std::vector<real> getting sensor and RGE inputs. But really, anything you want.
      * MUST be the same size as the weights in the constructor, ot will throw an
      * revolve::brain::cpg::Neuron::invalid_input_exception exception.
