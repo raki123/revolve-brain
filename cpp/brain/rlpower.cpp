@@ -55,6 +55,7 @@ RLPower::RLPower(std::string modelName,
     sigma_tau_correction_ = brain.sigma_tau_correction;
     source_y_size = brain.source_y_size;
     update_step_ = brain.update_step;
+    policy_load_path_ = brain.policy_load_path;
 
     step_rate_ = interpolation_spline_size_ / source_y_size;
 
@@ -399,15 +400,6 @@ void RLPower::generateOutput(const double time,
 double RLPower::getFitness() {
     //Calculate fitness for current policy
     return evaluator_->fitness();
-}
-
-void RLPower::printCurrent() {
-    for (unsigned int i = 0; i < interpolation_spline_size_; i++) {
-        for (unsigned int j = 0; j < nActuators_; j++) {
-            std::cout << current_policy_->at(j)[i] << " ";
-        }
-        std::cout << std::endl;
-    }
 }
 
 void RLPower::writeCurrent() {
