@@ -3,23 +3,15 @@
 //
 
 #include "rlpower.h"
-#include "sensor.h"
-#include "actuator.h"
-
-#include <algorithm>
-#include <stdexcept>
-#include <cstdlib>
-#include <map>
-#include <string>
-#include <sstream>
-#include <cmath>
 
 #include <random>
-#include <iostream>
 #include <fstream>
+#include <exception>
 
+#include <dirent.h>
 #include <gsl/gsl_errno.h>
 #include <gsl/gsl_spline.h>
+#include <yaml-cpp/yaml.h>
 
 using namespace revolve::brain;
 
@@ -56,11 +48,16 @@ RLPower::RLPower(std::string modelName,
     source_y_size = brain.source_y_size;
     update_step_ = brain.update_step;
     policy_load_path_ = brain.policy_load_path;
+    std::cout << "Policy path is " << policy_load_path_ << std::endl;
 
     step_rate_ = interpolation_spline_size_ / source_y_size;
 
-    // Generate first random policy
-    this->generateInitPolicy();
+    if (policy_load_path_ == "") {
+        // Generate first random policy
+        this->generateInitPolicy();
+    } else{
+        this->loadPolicy(policy_load_path_);
+    }
 
     // Start the evaluator
     evaluator_->start();
@@ -90,6 +87,39 @@ void RLPower::generateInitPolicy() {
         Spline spline(source_y_size);
         for (unsigned int j = 0; j < source_y_size; j++) {
             spline[j] = dist(mt);
+        }
+        current_policy_->at(i) = spline;
+    }
+
+    // Init of empty cache
+    if (!interpolation_cache_)
+        interpolation_cache_ = std::make_shared<Policy>(nActuators_);
+
+    for (unsigned int i = 0; i < nActuators_; i++) {
+        interpolation_cache_->at(i).resize(interpolation_spline_size_, 0);
+    }
+
+    this->generateCache();
+}
+
+void RLPower::loadPolicy(std::string const policy_path) {
+    YAML::Node policy_file = YAML::LoadFile(policy_path);
+
+    // Init first random controller
+    if (!current_policy_)
+        current_policy_ = std::make_shared<Policy>(nActuators_);
+
+    std::cout << "evaluation: " << policy_file[0]["evaluation"] << std::endl;
+    std::cout << "steps: " << policy_file[0]["steps"] << std::endl;
+    std::cout << "velocity: " << policy_file[0]["population"][0]["velocity"] << std::endl;
+
+    unsigned int k = 0;
+    unsigned int steps = policy_file[0]["steps"].as<uint>();
+    YAML::Node policy = policy_file[0]["population"][0]["policy"];
+    for (unsigned int i = 0; i < nActuators_; i++) {
+        Spline spline(source_y_size);
+        for (unsigned int j = 0; j < steps; j++) {
+            spline[j] = policy[k++].as<double>();
         }
         current_policy_->at(i) = spline;
     }

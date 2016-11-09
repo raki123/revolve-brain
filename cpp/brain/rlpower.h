@@ -104,14 +104,16 @@ namespace revolve {
                         double t,
                         double step) {
                 //        boost::mutex::scoped_lock lock(networkMutex_);
-                if (start_eval_time_ < 0)
-                    start_eval_time_ = t;
+                if (policy_load_path_ == "") {
+                    if (start_eval_time_ < 0)
+                        start_eval_time_ = t;
 
-                // Evaluate policy on certain time limit
-                if ((t - start_eval_time_) > evaluation_rate_ && generation_counter_ < max_evaluations_) {
-                    this->updatePolicy();
-                    start_eval_time_ = t;
-                    evaluator_->start();
+                    // Evaluate policy on certain time limit
+                    if ((t - start_eval_time_) > evaluation_rate_ && generation_counter_ < max_evaluations_) {
+                        this->updatePolicy();
+                        start_eval_time_ = t;
+                        evaluator_->start();
+                    }
                 }
 
                 // generate outputs
@@ -166,6 +168,11 @@ namespace revolve {
              * Evaluate the current policy and generate new
              */
             void updatePolicy();
+
+            /**
+             * Load saved policy from JSON file
+             */
+            void loadPolicy(std::string const policy_path);
 
             /**
              * Generate interpolated spline based on number of sampled control points in 'source_y'
