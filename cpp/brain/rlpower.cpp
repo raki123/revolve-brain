@@ -6,10 +6,7 @@
 
 #include <random>
 #include <fstream>
-#include <exception>
 
-#include <dirent.h>
-#include <gsl/gsl_errno.h>
 #include <gsl/gsl_spline.h>
 #include <yaml-cpp/yaml.h>
 
