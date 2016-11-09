@@ -70,6 +70,30 @@ public:
         const real_t min;
         const real_t max;
     };
+
+protected:
+    static real_t percentage_from_range(real_t percentage, real_t range_start, real_t range_end) {
+        if (percentage > 1)
+            return range_end;
+        else if (percentage < 0)
+            return range_start;
+
+        real_t range = range_end - range_start;
+        real_t distance = percentage * range;
+        return range_start + distance;
+    }
+
+    static real_t percentage_of_range(real_t value, real_t range_start, real_t range_end)
+    {
+        if (value > range_end)
+            return 1;
+        else if (value < range_start)
+            return 0;
+
+        real_t range = range_end - range_start;
+        value = value - range_start;
+        return value / range;
+    }
 };
 
 }

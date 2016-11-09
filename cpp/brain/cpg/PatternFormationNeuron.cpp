@@ -92,3 +92,33 @@ void PatternFormationNeuron::setWeights(const std::vector<real_t> &weights) {
         this->weights[i] /= weight_sum;
     }
 }
+
+// FROM PERCENTAGE ------------------------------------------------------------
+real_t PatternFormationNeuron::calculateAlphaFromPercentage(real_t alpha) const {
+    return percentage_from_range(alpha, ALPHA_MIN, ALPHA_MAX);
+}
+
+real_t PatternFormationNeuron::calculateThetaFromPercentage(real_t theta) const {
+    return percentage_from_range(theta, THETA_MIN, THETA_MAX);
+}
+
+// TO PERCENTAGE --------------------------------------------------------------
+real_t PatternFormationNeuron::calculateAlphaPercentage(real_t alpha) const {
+    return percentage_of_range(alpha, ALPHA_MIN, ALPHA_MAX);
+}
+
+real_t PatternFormationNeuron::calculateThetaPercentage(real_t theta) const {
+    return percentage_of_range(theta, THETA_MIN, THETA_MAX);
+}
+
+
+real_t PatternFormationNeuron::setAlphaPercentage(real_t alpha) {
+    this->alpha = calculateAlphaFromPercentage(alpha);
+    return this->alpha;
+}
+
+real_t PatternFormationNeuron::setThetaPercentage(real_t theta) {
+    this->theta = calculateThetaFromPercentage(theta);
+    return this->theta;
+}
+

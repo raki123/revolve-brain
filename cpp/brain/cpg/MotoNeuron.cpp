@@ -33,7 +33,7 @@ real_t MotoNeuron::output(real_t pfe, real_t pff) const
 
     result = -2 * (pfe - pff);
     result = 1 + std::exp(result/v_max);
-    result = (1 / result) - 0.5;
+    result = (2 / result) - 1;
     result *= v_max;
 
     return result;

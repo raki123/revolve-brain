@@ -124,18 +124,6 @@ void RythmGenerationNeuron::setOffset(real_t offset) {
 
 
 // FROM PERCENTAGE ------------------------------------------------------------
-real_t percentage_from_range(real_t percentage, real_t range_start, real_t range_end)
-{
-    if (percentage > 1)
-        return range_end;
-    else if (percentage < 0)
-        return range_start;
-
-    real_t range = range_end - range_start;
-    real_t distance = percentage * range;
-    return range_start + distance;
-}
-
 real_t revolve::brain::cpg::RythmGenerationNeuron::calculateWeightFromPercentage(real_t weight) const
 {
     return percentage_from_range(weight, WEIGHT_MIN, WEIGHT_MAX);
@@ -158,18 +146,6 @@ real_t revolve::brain::cpg::RythmGenerationNeuron::calculateOffsetFromPercentage
 
 
 // TO PERCENTAGE --------------------------------------------------------------
-real_t percentage_of_range(real_t value, real_t range_start, real_t range_end)
-{
-    if (value > range_end)
-        return 1;
-    else if (value < range_start)
-        return 0;
-
-    real_t range = range_end - range_start;
-    value = value - range_start;
-    return value / range;
-}
-
 real_t revolve::brain::cpg::RythmGenerationNeuron::calculateWeightPercentage(real_t weight) const
 {
     return percentage_of_range(weight, WEIGHT_MIN, WEIGHT_MAX);

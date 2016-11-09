@@ -64,10 +64,18 @@ public:
     real_t getAlpha() const;
 
     void setAlpha(real_t alpha);
+    // value from 0 to 1, does not throw exceptions if value is outside the allowed domain
+    real_t setAlphaPercentage(real_t alpha);
+    real_t calculateAlphaPercentage(real_t alpha) const;
+    real_t calculateAlphaFromPercentage(real_t alpha) const;
 
     real_t getTheta() const;
 
     void setTheta(real_t theta);
+    // value from 0 to 1, does not throw exceptions if value is outside the allowed domain
+    real_t setThetaPercentage(real_t theta);
+    real_t calculateThetaPercentage(real_t theta) const;
+    real_t calculateThetaFromPercentage(real_t theta) const;
 
     const std::vector<real_t> &getWeights() const;
 
@@ -76,6 +84,12 @@ public:
      * @param weights new weights
      */
     void setWeights(const std::vector<real_t> &weights);
+
+public:
+    const real_t ALPHA_MIN = 0;
+    const real_t ALPHA_MAX = 10;
+    const real_t THETA_MIN = -5;
+    const real_t THETA_MAX =  5;
 
 protected:
     real_t alpha;
