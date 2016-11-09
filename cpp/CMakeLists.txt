@@ -1,3 +1,4 @@
+cmake_minimum_required(VERSION 3.0)
 project(revolve-brain)
 
 # C++11 ########################################################################
@@ -45,12 +46,14 @@ file(GLOB_RECURSE BRAIN_SRCS
         brain/phototaxisevaluator.cpp
         brain/rlpower.cpp
         brain/neural_network.cpp
+        brain/CPGBrain.cpp
         brain/supgbrain.cpp
         brain/supgbrainphototaxis.cpp
         brain/supg/supgneuron.cpp
         brain/supg/supggenomemanager.cpp
         neat/asyncneat.cpp
-        neat/neatevaluation.cpp )
+        neat/neatevaluation.cpp
+)
 
 # Compiling ####################################################################
 add_library(revolve-brain-static STATIC ${BRAIN_SRCS})

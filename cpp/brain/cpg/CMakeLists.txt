@@ -5,4 +5,5 @@ add_library(cpg STATIC
         RythmGenerationNeuron.cpp
         PatternFormationNeuron.cpp
         MotoNeuron.cpp
+        CPGNetwork.cpp
 )
