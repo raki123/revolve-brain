@@ -55,6 +55,7 @@ RLPower::RLPower(std::string modelName,
     sigma_tau_correction_ = brain.sigma_tau_correction;
     source_y_size = brain.source_y_size;
     update_step_ = brain.update_step;
+    policy_load_path_ = brain.policy_load_path;
 
     step_rate_ = interpolation_spline_size_ / source_y_size;
 

@@ -9,6 +9,8 @@
 #include "evaluator.h"
 
 #include <cmath>
+#include <string>
+
 #include <boost/thread/mutex.hpp>
 
 
@@ -136,6 +138,7 @@ namespace revolve {
                 double sigma_tau_correction;
                 unsigned int source_y_size;
                 unsigned int update_step;
+                std::string policy_load_path;
             };
 
         private:
@@ -230,6 +233,7 @@ namespace revolve {
 
             std::string robot_name_; // Name of the robot
             std::string algorithm_type_; // Type of the used algorithm
+            std::string policy_load_path_; // Load path for previously saved policies
             std::map<double, PolicyPtr, std::greater<double>> ranked_policies_; // Container for best ranked policies
         };
 
