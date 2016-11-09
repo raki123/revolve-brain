@@ -199,11 +199,6 @@ namespace revolve {
             double getFitness();
 
             /**
-             * Writes all current splines to file
-             */
-            void printCurrent();
-
-            /**
              * Writes current spline to file
              */
             void writeCurrent();

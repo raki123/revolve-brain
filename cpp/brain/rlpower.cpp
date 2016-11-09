@@ -401,15 +401,6 @@ double RLPower::getFitness() {
     return evaluator_->fitness();
 }
 
-void RLPower::printCurrent() {
-    for (unsigned int i = 0; i < interpolation_spline_size_; i++) {
-        for (unsigned int j = 0; j < nActuators_; j++) {
-            std::cout << current_policy_->at(j)[i] << " ";
-        }
-        std::cout << std::endl;
-    }
-}
-
 void RLPower::writeCurrent() {
     std::ofstream outputFile;
     outputFile.open(robot_name_ + ".log", std::ios::app | std::ios::out | std::ios::ate);
