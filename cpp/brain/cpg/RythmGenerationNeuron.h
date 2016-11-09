@@ -32,8 +32,8 @@ public:
      * @param delta_time time passed since the last update. Value in seconds expected to be
      * positive and relativly small. Big time steps could have weird effects on the network.
      * @return std::vector<real> of size 2. First element has the output of the
-     * @throws invalid_input_exception if input vector is not of the correct size (1)
      * RythmGenerationNeuron, second element has the update phi value
+     * @throws invalid_input_exception if input vector is not of the correct size (1)
      */
     virtual std::vector<real_t> update(std::vector<real_t> inputs, real_t delta_time) override;
 
