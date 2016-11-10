@@ -117,7 +117,7 @@ namespace revolve {
                 }
 
                 // generate outputs
-                double *output_vector = new double[nActuators_];
+                double *output_vector = new double[n_actuators_];
                 this->generateOutput(t, output_vector);
 
                 // Send new signals to the actuators
@@ -226,9 +226,9 @@ namespace revolve {
             unsigned int interpolation_spline_size_; // Number of 'interpolation_cache_' sample points
             unsigned int max_ranked_policies_; // Maximal number of stored ranked policies
             unsigned int max_evaluations_; // Maximal number of evaluations
-            unsigned int nActuators_; // Number of actuators
-            unsigned int nSensors_; // Number of sensors
-            unsigned int source_y_size; //
+            unsigned int n_actuators_; // Number of actuators
+            unsigned int n_sensors_; // Number of sensors
+            unsigned int source_y_size_; //
             unsigned int step_rate_; //
             unsigned int update_step_; // Number of evaluations after which sampling size increases
 
