@@ -41,11 +41,17 @@ CPGNetwork::~CPGNetwork()
     delete mn;
 }
 
+#include <iostream>
+
 real_t CPGNetwork::update(const std::vector<real_t> &sensor_readings, double step)
 {
+    std::cout << "dio cane1" << std::endl;
     updateRythmGeneration(step);
-    updatePatternFormation(step);
+    std::cout << "dio cane2" << std::endl;
+    updatePatternFormation(sensor_readings, step);
+    std::cout << "dio cane3" << std::endl;
     updateMotoNeuron(step);
+    std::cout << "dio cane4" << std::endl;
 
     return mn_out;
 }
@@ -59,10 +65,25 @@ void CPGNetwork::updateRythmGeneration(double step)
     rgf_out = rgf->update({phi_e}, step)[0];
 }
 
-void CPGNetwork::updatePatternFormation(double step)
+void CPGNetwork::updatePatternFormation(const std::vector<real_t> &sensor_readings, double step)
 {
-    pfe_out = pfe->update({rge_out}, step)[0];
-    pff_out = pff->update({rgf_out}, step)[0];
+    std::cout << "ehii0" << std::endl;
+    std::vector<real_t> pfe_inputs = std::vector<real_t>(sensor_readings);
+    std::vector<real_t> pff_inputs = std::vector<real_t>(sensor_readings);
+    pfe_inputs.push_back(rge_out);
+    pff_inputs.push_back(rgf_out);
+
+    try {
+
+        std::cout << "ehii1" << pfe << std::endl;
+        pfe_out = pfe->update(pfe_inputs, step)[0];
+        std::cout << "ehii2" << std::endl;
+        pff_out = pff->update(pff_inputs, step)[0];
+        std::cout << "ehii3" << std::endl;
+    } catch (const std::exception& e) {
+        std::cerr<<"exception!! "<<e.what()<<std::endl;
+        throw;
+    }
 }
 
 void CPGNetwork::updateMotoNeuron(double step)

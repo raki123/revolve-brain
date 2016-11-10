@@ -23,7 +23,7 @@ public:
 
 protected:
     void updateRythmGeneration(double step);
-    void updatePatternFormation(double step);
+    void updatePatternFormation(const std::vector<real_t> &sensor_readings, double step);
     void updateMotoNeuron(double step);
 
 protected:

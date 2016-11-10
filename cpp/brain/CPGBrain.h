@@ -12,6 +12,8 @@
 #include "brain.h"
 #include "evaluator.h"
 
+#include <iostream>
+
 namespace revolve {
 namespace brain {
 
@@ -27,6 +29,47 @@ public:
     virtual void update(const std::vector<ActuatorPtr> &actuators,
                         const std::vector<SensorPtr> &sensors,
                         double t, double step) override;
+
+protected:
+    template<typename ActuatorContainer, typename SensorContainer>
+    void update(const ActuatorContainer &actuators,
+                const SensorContainer &sensors,
+                double t,
+                double step)
+    {
+        std::cout << "porca madonna1" << std::endl;
+        // Read sensor data and feed the neural network
+        double *inputs = new double[n_inputs];
+        unsigned int p = 0;
+        for (auto sensor : sensors) {
+            sensor->read(&inputs[p]);
+            p += sensor->inputs();
+        }
+        assert(p == n_inputs);
+        std::cout << "porca madonna2" << std::endl;
+
+        std::vector<cpg::real_t> inputs_readings(sensors.size(), 0);
+        for (int i=0; i<n_inputs; i++)
+            inputs_readings[i] = (cpg::real_t) inputs[i];
+        delete[] inputs;
+
+        std::cout << "porca madonna3" << std::endl;
+        double *outputs = new double[cpgs.size()];
+        for(int i=0; i<cpgs.size(); i++) {
+            cpg::CPGNetwork* cpg_network = cpgs[i];
+            outputs[i] = cpg_network->update(inputs_readings, step);
+        }
+        std::cout << "porca madonna4" << std::endl;
+
+        p = 0;
+        for (auto actuator: actuators) {
+            actuator->update(&outputs[p], step);
+            p += actuator->outputs();
+        }
+        assert(p == cpgs.size());
+
+        delete[] outputs;
+    }
 
 protected:
     std::string robot_name;

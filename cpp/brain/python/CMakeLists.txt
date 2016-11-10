@@ -50,6 +50,7 @@ python_add_module(revolve_brain_python
     brain.cpp
     rlpower_python.cpp
     supgbrain_python.cpp
+    CPGBrain_python.cpp
 )
 
 # link libraries
@@ -65,9 +66,11 @@ file(COPY test/sensor_test.py DESTINATION .)
 file(COPY test/actuator_test.py DESTINATION .)
 file(COPY test/rlpower_test.py DESTINATION .)
 file(COPY test/supg_test.py DESTINATION .)
+file(COPY test/cpg_test.py DESTINATION .)
 add_test(00-Import /usr/bin/env python3 -m unittest import_test.py)
 add_test(01-Sensor /usr/bin/env python3 -m unittest sensor_test.py)
 add_test(01-Actuator /usr/bin/env python3 -m unittest actuator_test.py)
 add_test(03-NeuralNetwork /usr/bin/env python3 -m unittest neuralnetwork_test.py)
 add_test(04-RLPower /usr/bin/env python3 -m unittest rlpower_test.py)
 add_test(05-SUPG /usr/bin/env python3 -m unittest supg_test.py)
+add_test(05-CPG /usr/bin/env python3 -m unittest cpg_test.py)
