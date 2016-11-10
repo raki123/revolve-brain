@@ -45,7 +45,6 @@ RLPower::RLPower(std::string modelName,
     source_y_size_ = brain.source_y_size;
     update_step_ = brain.update_step;
     policy_load_path_ = brain.policy_load_path;
-    std::cout << "Policy path is " << policy_load_path_ << std::endl;
 
     step_rate_ = interpolation_spline_size_ / source_y_size_;
 
@@ -101,6 +100,10 @@ void RLPower::generateInitPolicy() {
 
 void RLPower::loadPolicy(std::string const policy_path) {
     YAML::Node policy_file = YAML::LoadFile(policy_path);
+    if (policy_file.IsNull()) {
+        std::cout << "Failed to load the policy file." << std::endl;
+        return;
+    }
 
     // Init first random controller
     if (!current_policy_)
@@ -115,8 +118,8 @@ void RLPower::loadPolicy(std::string const policy_path) {
     YAML::Node policy = policy_file[0]["population"][0]["policy"];
 
     if (source_y_size_ * n_actuators_ != policy.size()) {
-        std::cout << "Number of n_spline_points is not equal to n_actuators * n_steps!" << std::endl;
-        std::exit(1);
+        std::cout << "Number of (n_spline_points) is not equal to (n_actuators * n_steps)!" << std::endl;
+        return;
     }
 
     for (unsigned int i = 0; i < n_actuators_; i++) {
