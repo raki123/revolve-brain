@@ -9,6 +9,7 @@ class ImportTest(unittest.TestCase):
         self.assertIsNotNone(revolve_brain_python.Brain)
         self.assertIsNotNone(revolve_brain_python.NeuralNetwork)
         self.assertIsNotNone(revolve_brain_python.RLPower)
+        self.assertIsNotNone(revolve_brain_python.CPGBrain)
 
 
 if __name__ == "__main__":

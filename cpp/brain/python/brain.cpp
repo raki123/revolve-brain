@@ -7,6 +7,7 @@
 #include "brain/python/sensor_wrap.h"
 #include "brain/python/rlpower_python.h"
 #include "brain/python/supgbrain_python.h"
+#include "brain/python/CPGBrain_python.h"
 #include "brain/python/python_array.h"
 #include "neat/asyncneat.h"
 
@@ -63,6 +64,22 @@ BOOST_PYTHON_MODULE(revolve_brain_python)
         .def("update", &RLPower_python::update)
     ;
     //boost::python::implicitly_convertible<RLPower*, Brain*>();
+
+    // cpg controller class
+    boost::python::class_< CPGBrain_python,
+        boost::python::bases<Brain>,
+        boost::noncopyable >
+        (
+            "CPGBrain",
+            boost::python::init<
+                std::string,
+                boost::shared_ptr<Evaluator>,
+                unsigned int,
+                unsigned int>()
+        )
+        .def("update", &CPGBrain_python::update)
+    ;
+
 
     // supg controller class
     boost::python::class_< SUPGBrain_python,
