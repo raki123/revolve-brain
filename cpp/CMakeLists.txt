@@ -71,19 +71,27 @@ install(TARGETS revolve-brain DESTINATION lib)
 # Tests ########################################################################
 #if tests are enabled
 enable_testing()
+add_library(test-shared STATIC
+    test/testevaluator.cpp
+    test/testactuator.cpp
+    test/testsensor.cpp
+)
 
 add_executable(testAsyncNeat neat/test/testasyncneat.cpp)
 add_executable(testCustomGenomeManager neat/test/testcustomgenomemanager.cpp)
 add_executable(testMultiNNSpecies neat/test/testmultinnspeciesneat.cpp)
 add_executable(testSUPGBrain test/testsupgbrain.cpp)
+add_executable(testCPGBrain test/testcpgbrain.cpp)
 target_link_libraries(testAsyncNeat revolve-brain)
 target_link_libraries(testCustomGenomeManager revolve-brain)
 target_link_libraries(testMultiNNSpecies revolve-brain)
 target_link_libraries(testSUPGBrain revolve-brain)
+target_link_libraries(testCPGBrain revolve-brain test-shared)
 add_test(testAsyncNeat testAsyncNeat)
 add_test(testCustomGenomeManager testCustomGenomeManager)
 add_test(testMultiNNSpecies testMultiNNSpecies)
 add_test(testSUPGBrain testSUPGBrain)
+add_test(testCPGBrain testCPGBrain)
 
 
 IF(WITH_PYTHON)
