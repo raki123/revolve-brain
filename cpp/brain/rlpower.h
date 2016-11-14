@@ -9,6 +9,8 @@
 #include "evaluator.h"
 
 #include <cmath>
+#include <string>
+
 #include <boost/thread/mutex.hpp>
 
 
@@ -102,18 +104,20 @@ namespace revolve {
                         double t,
                         double step) {
                 //        boost::mutex::scoped_lock lock(networkMutex_);
-                if (start_eval_time_ < 0)
-                    start_eval_time_ = t;
+                if (policy_load_path_ == "") {
+                    if (start_eval_time_ < 0)
+                        start_eval_time_ = t;
 
-                // Evaluate policy on certain time limit
-                if ((t - start_eval_time_) > evaluation_rate_ && generation_counter_ < max_evaluations_) {
-                    this->updatePolicy();
-                    start_eval_time_ = t;
-                    evaluator_->start();
+                    // Evaluate policy on certain time limit
+                    if ((t - start_eval_time_) > evaluation_rate_ && generation_counter_ < max_evaluations_) {
+                        this->updatePolicy();
+                        start_eval_time_ = t;
+                        evaluator_->start();
+                    }
                 }
 
                 // generate outputs
-                double *output_vector = new double[nActuators_];
+                double *output_vector = new double[n_actuators_];
                 this->generateOutput(t, output_vector);
 
                 // Send new signals to the actuators
@@ -136,6 +140,7 @@ namespace revolve {
                 double sigma_tau_correction;
                 unsigned int source_y_size;
                 unsigned int update_step;
+                std::string policy_load_path;
             };
 
         private:
@@ -163,6 +168,11 @@ namespace revolve {
              * Evaluate the current policy and generate new
              */
             void updatePolicy();
+
+            /**
+             * Load saved policy from JSON file
+             */
+            void loadPolicy(std::string const policy_path);
 
             /**
              * Generate interpolated spline based on number of sampled control points in 'source_y'
@@ -199,11 +209,6 @@ namespace revolve {
             double getFitness();
 
             /**
-             * Writes all current splines to file
-             */
-            void printCurrent();
-
-            /**
              * Writes current spline to file
              */
             void writeCurrent();
@@ -221,9 +226,9 @@ namespace revolve {
             unsigned int interpolation_spline_size_; // Number of 'interpolation_cache_' sample points
             unsigned int max_ranked_policies_; // Maximal number of stored ranked policies
             unsigned int max_evaluations_; // Maximal number of evaluations
-            unsigned int nActuators_; // Number of actuators
-            unsigned int nSensors_; // Number of sensors
-            unsigned int source_y_size; //
+            unsigned int n_actuators_; // Number of actuators
+            unsigned int n_sensors_; // Number of sensors
+            unsigned int source_y_size_; //
             unsigned int step_rate_; //
             unsigned int update_step_; // Number of evaluations after which sampling size increases
 
@@ -235,6 +240,7 @@ namespace revolve {
 
             std::string robot_name_; // Name of the robot
             std::string algorithm_type_; // Type of the used algorithm
+            std::string policy_load_path_; // Load path for previously saved policies
             std::map<double, PolicyPtr, std::greater<double>> ranked_policies_; // Container for best ranked policies
         };
 

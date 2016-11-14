@@ -54,7 +54,7 @@ add_library(revolve-brain-static STATIC ${BRAIN_SRCS})
 add_library(revolve-brain SHARED)
 
 # Linking ######################################################################
-target_link_libraries(revolve-brain-static accneat ${Boost_LIBRARIES} ${PYTHON_LIBRARIES} ${GSL_LIBRARIES})
+target_link_libraries(revolve-brain-static accneat ${Boost_LIBRARIES} ${PYTHON_LIBRARIES} ${GSL_LIBRARIES} yaml-cpp)
 target_link_libraries(revolve-brain revolve-brain-static)
 
 
