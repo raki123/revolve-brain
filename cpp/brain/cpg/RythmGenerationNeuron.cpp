@@ -50,10 +50,14 @@ real_t RythmGenerationNeuron::nextPhi(const real_t otherPhi, real_t delta_time) 
     const real_t thisPhi = this->phi;
 
     // (2 * pi * c') + w * sin(otherPhi-thisPhi)
-    const real_t deltaPhi =
-            2 * PI * this->c +
-            this->weight * std::sin(otherPhi-thisPhi);
+    real_t deltaPhi =
+        2 * PI * this->c +
+        this->weight * std::sin(otherPhi-thisPhi);
 
+    // consider delta_time
+    deltaPhi *= delta_time;
+
+    // create phi(t+1)
     real_t new_phi = thisPhi + deltaPhi;
 
     //TODO compensate for phi error
@@ -61,8 +65,6 @@ real_t RythmGenerationNeuron::nextPhi(const real_t otherPhi, real_t delta_time) 
 //        new_phi -= PI*2;
 //    else if (new_phi < -PI*2)
 //        new_phi += PI*2;
-
-    //TODO consider delta_time
     return new_phi;
 }
 

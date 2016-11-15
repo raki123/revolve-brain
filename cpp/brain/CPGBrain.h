@@ -37,7 +37,6 @@ protected:
                 double t,
                 double step)
     {
-        std::cout << "porca madonna1" << std::endl;
         // Read sensor data and feed the neural network
         double *inputs = new double[n_inputs];
         unsigned int p = 0;
@@ -46,20 +45,17 @@ protected:
             p += sensor->inputs();
         }
         assert(p == n_inputs);
-        std::cout << "porca madonna2" << std::endl;
 
         std::vector<cpg::real_t> inputs_readings(sensors.size(), 0);
         for (int i=0; i<n_inputs; i++)
             inputs_readings[i] = (cpg::real_t) inputs[i];
         delete[] inputs;
 
-        std::cout << "porca madonna3" << std::endl;
         double *outputs = new double[cpgs.size()];
         for(int i=0; i<cpgs.size(); i++) {
             cpg::CPGNetwork* cpg_network = cpgs[i];
             outputs[i] = cpg_network->update(inputs_readings, step);
         }
-        std::cout << "porca madonna4" << std::endl;
 
         p = 0;
         for (auto actuator: actuators) {

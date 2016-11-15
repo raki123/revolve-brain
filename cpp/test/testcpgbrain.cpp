@@ -38,7 +38,7 @@ int main(int argc, char *argv[]) {
 
     float delta_time = 0.1;
 
-    for (float time = 0; time < 100; time += delta_time) {
+    for (float time = 0; time < 10000; time += delta_time) {
         testBrain.test_update(actuators,
                               sensors,
                               time,delta_time);
