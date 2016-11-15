@@ -9,6 +9,7 @@
 #include "testsensor.h"
 
 #include <iostream>
+#include <random>
 #include <boost/shared_ptr.hpp>
 #include <boost/make_shared.hpp>
 
@@ -36,12 +37,17 @@ int main(int argc, char *argv[]) {
         sensors.size()
     );
 
-    float delta_time = 0.1;
 
-    for (float time = 0; time < 10000; time += delta_time) {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<double> dis(0,1);
+    double delta_time = 0.1;
+
+    for (double time = 0; time < 10000; time += delta_time) {
         testBrain.test_update(actuators,
                               sensors,
                               time,delta_time);
+        delta_time = dis(gen);
     }
 
 
