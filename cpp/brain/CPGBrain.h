@@ -37,6 +37,17 @@ protected:
                 double t,
                 double step)
     {
+        learner(t);
+        controller(actuators, sensors, step);
+    }
+
+    virtual void learner(double t);
+
+    template<typename ActuatorContainer, typename SensorContainer>
+    void controller(const ActuatorContainer &actuators,
+                            const SensorContainer &sensors,
+                            double step)
+    {
         // Read sensor data and feed the neural network
         double *inputs = new double[n_inputs];
         unsigned int p = 0;
@@ -68,11 +79,20 @@ protected:
     }
 
 protected:
-    std::string robot_name;
-    EvaluatorPtr evaluator;
-    unsigned int n_inputs;
+    const std::string robot_name;
 
+    // controller data
+    unsigned int n_inputs;
     std::vector<cpg::CPGNetwork*> cpgs;
+
+    // learner data
+    const EvaluatorPtr evaluator;
+    double start_eval_time_;
+    unsigned int generation_counter_; // Number of current generation
+
+    // learner parameters
+    const double evaluation_rate_;
+    const unsigned int max_evaluations_; // Maximal number of evaluations
 };
 
 }
