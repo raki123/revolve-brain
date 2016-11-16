@@ -57,7 +57,7 @@ protected:
         }
         assert(p == n_inputs);
 
-        std::vector<cpg::real_t> inputs_readings(sensors.size(), 0);
+        std::vector<cpg::real_t> inputs_readings(n_inputs, 0);
         for (int i=0; i<n_inputs; i++)
             inputs_readings[i] = (cpg::real_t) inputs[i];
         delete[] inputs;
