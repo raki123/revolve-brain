@@ -15,7 +15,7 @@ ExtendedNeuralNetwork::ExtendedNeuralNetwork(std::string modelName,
 {
 	modelName_ = modelName;
 	
-	//evaluator_ = evaluator;
+	evaluator_ = evaluator;
 	inputs_ = Config.inputs_;
 	outputs_ = Config.outputs_;
 	allNeurons_ = Config.allNeurons_;

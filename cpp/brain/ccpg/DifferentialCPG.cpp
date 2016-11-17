@@ -6,9 +6,7 @@ namespace revolve {
 namespace brain {
 
 
-/* *
- * Constructor from a map of parameter names and values
- */
+
 DifferentialCPG::DifferentialCPG(const std::string &id,
 				 const std::map<std::string, double> &params):
 Neuron(id)
@@ -44,7 +42,7 @@ double DifferentialCPG::CalculateOutput(double t)
 
 	double maxOut = 10000.0;
 
-	// // limit output:
+	// limit output:
 	// if (result > maxOut) {
 	// 	result = maxOut;
 	// }

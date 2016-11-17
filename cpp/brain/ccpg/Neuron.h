@@ -40,24 +40,66 @@ namespace brain {
 class Neuron
 {
 public:
+  	/* *
+	* Constructor for a neuron.
+	* @param id: string to identify the neuron
+	* @return pointer to the neuron
+	*/
 	Neuron(const std::string &id);
 	virtual ~Neuron() {};
+	
+	/* *
+	* Method to calculate the output of the neuron
+	* @param t: current time
+	* @return the output of the neuron at time t
+	*/
 	virtual double CalculateOutput(double t) = 0;
 
+	/* *
+	 * Add an incoming connection to the neuron.
+	 * @param socketName: name of the socket the connection "arrives" at
+	 * @param connection: name of the connection to be added
+	 */
 	void AddIncomingConnection(const std::string &socketName,
 				   NeuralConnectionPtr connection);
+	
+	/* *
+	 * Deletes all incoming connections 
+	 */
 	void DeleteIncomingConections();
 	
+	
+	/* *
+	 * @return the current output of the neuron
+	 */
 	double GetOutput() const;
 
+	/* *
+	 * Method to set the input of the neuron
+	 * @param value: the value the input should be set to
+	 */
 	virtual void SetInput(double value) {};
-
+	
+	/* *
+	 * Calculate the output and save it for when FlipState is called
+	 * @param t: current time
+	 */
 	void Update(double t);
 
+	/* *
+	 * Set the output to the already calculated new output
+	 */
 	void FlipState();
 
+	/* *
+	 * Compute the id for the socket of the next imcoming neural connection
+	 * @return id for the socket of the next imcoming neural connection
+	 */
 	std::string GetSocketId() const;
 
+	/* *
+	 * @return id of the neuron
+	 */
 	const std::string &Id() const;
 
 protected:

@@ -6,9 +6,6 @@ namespace revolve {
 namespace brain {
 
 
-/* *
- * Constructor from a map of parameter names and values
- */
 LinearNeuron::LinearNeuron(const std::string &id,
 			   const std::map<std::string, double> &params):
 Neuron(id)

@@ -3,11 +3,6 @@
 namespace revolve {
 namespace brain {
 
-// InputNeuron::InputNeuron(sdf::ElementPtr neuron)
-// {
-// 	input_ = 0;
-// }
-
 
 InputNeuron::InputNeuron(const std::string &id,
 			 const std::map<std::string, double> &params):
