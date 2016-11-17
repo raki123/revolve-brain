@@ -65,8 +65,6 @@ double VOscillator::CalculateOutput(double t)
 			otherInputs += inConnection->GetInputNeuron()->GetOutput() * inConnection->GetWeight();
 		}
 
-		
-
 	}
 
 	stateDeriv_ = (- (alpha_ / energy_) * vInput * ( xInput*xInput + vInput*vInput )

@@ -11,7 +11,7 @@ namespace brain {
 class VOscillator : public Neuron
 {
 public:
-	/* *
+	/**
 	* Constructor for a Voscilator neuron
 	* @param id: string to identify the neuron
 	* @param params: parameters that specify the behavior of the neuron
@@ -19,7 +19,7 @@ public:
 	*/	VOscillator(const std::string &id,
 		    const std::map<std::string, double> &params);
 	
-	/* *
+	/**
 	* Method to calculate the output of the neuron
 	* @param t: current time
 	* @return the output of the neuron at time t
@@ -28,11 +28,11 @@ public:
 
 
 protected:
-	double alpha_;
+	double alpha_; //TODO:: find out what these parameters mean
 	double tau_;
 	double energy_;
 
-	double lastTime_;
+	double lastTime_; //last time the output was calculated
 	double stateDeriv_;
 };
 

@@ -11,7 +11,7 @@ namespace brain {
 class LeakyIntegrator : public Neuron
 {
 public:
-  	/* *
+  	/**
 	* Constructor for a leaky integrator neuron
 	* @param id: string to identify the neuron
 	* @param params: parameters that specify the behavior of the neuron
@@ -20,7 +20,7 @@ public:
 	LeakyIntegrator(const std::string &id,
 			const std::map<std::string, double> &params);
 	
-	/* *
+	/**
 	* Method to calculate the output of the neuron
 	* @param t: current time
 	* @return the output of the neuron at time t
@@ -29,13 +29,13 @@ public:
 
 
 protected:
-	double bias_;
-	double tau_;
+	double bias_; //bias of the neuron
+	double tau_; //tau of the neuron
 
-	double lastTime_;
+	double lastTime_; //last time the output was calculated
 
-	double stateDeriv_;
-	double state_;
+	double stateDeriv_; //current value of the derivation of the state
+	double state_; //current state value
 };
 
 }

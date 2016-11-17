@@ -10,7 +10,7 @@ namespace brain {
 class LinearNeuron : public Neuron
 {
 public:
-	/* *
+	/**
 	* Constructor for a linear neuron
 	* @param id: string to identify the neuron
 	* @param params: parameters that specify the behavior of the neuron
@@ -19,7 +19,7 @@ public:
 	LinearNeuron(const std::string &id,
 		     const std::map<std::string, double> &params);
 	
-	/* *
+	/**
 	* Method to calculate the output of the neuron
 	* @param t: current time
 	* @return the output of the neuron at time t
@@ -28,8 +28,8 @@ public:
 
 
 protected:
-	double gain_;
-	double bias_;
+	double gain_; //gain of the neuron
+	double bias_; //bias of the neuron
 };
 
 }
