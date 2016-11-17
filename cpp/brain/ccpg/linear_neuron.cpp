@@ -1,17 +1,17 @@
-#include "SigmoidNeuron.h"
-#include <cmath>
+#include "linear_neuron.h"
+#include <sstream>
 #include <iostream>
 
 namespace revolve {
 namespace brain {
 
 
-SigmoidNeuron::SigmoidNeuron(const std::string &id,
-			     const std::map<std::string, double> &params):
+LinearNeuron::LinearNeuron(const std::string &id,
+			   const std::map<std::string, double> &params):
 Neuron(id)
 {
 	if (!params.count("rv:bias") || !params.count("rv:gain")) {
-		std::cerr << "A `" << "Sigmoid" << "` neuron requires `rv:bias` and `rv:gain` elements." << std::endl;
+		std::cerr << "A `" << "Simple" << "` neuron requires `rv:bias` and `rv:gain` elements." << std::endl;
 		throw std::runtime_error("Robot brain error");
 	}
 	this->bias_ = params.find("rv:bias")->second;
@@ -19,7 +19,7 @@ Neuron(id)
 }
 
 
-double SigmoidNeuron::CalculateOutput(double /*t*/)
+double LinearNeuron::CalculateOutput(double t)
 {
 	double inputValue = 0;
 
@@ -29,7 +29,9 @@ double SigmoidNeuron::CalculateOutput(double /*t*/)
 		inputValue += inConnection->GetInputNeuron()->GetOutput() * inConnection->GetWeight();
 	}
 
-	return 1.0 / ( 1.0 + exp( - this->gain_ * (inputValue - this->bias_) ) );
+	double result = this->gain_ * (inputValue - this->bias_);
+
+	return result;
 }
 
 

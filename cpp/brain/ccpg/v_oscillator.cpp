@@ -1,4 +1,4 @@
-#include "VOscillator.h"
+#include "v_oscillator.h"
 #include <cmath>
 #include <iostream>
 

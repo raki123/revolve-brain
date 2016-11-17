@@ -1,4 +1,4 @@
-#include "XOscillator.h"
+#include "x_oscillator.h"
 #include <iostream>
 
 namespace revolve {

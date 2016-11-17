@@ -1,4 +1,4 @@
-#include "InputNeuron.h"
+#include "input_neuron.h"
 
 namespace revolve {
 namespace brain {

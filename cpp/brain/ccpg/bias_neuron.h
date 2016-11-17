@@ -1,24 +1,23 @@
-#ifndef REVOLVE_GAZEBO_BRAIN_LINEARNEURON_H_
-#define REVOLVE_GAZEBO_BRAIN_LINEARNEURON_H_
+#ifndef REVOLVE_GAZEBO_BRAIN_BIASNEURON_H_
+#define REVOLVE_GAZEBO_BRAIN_BIASNEURON_H_
 
-#include "Neuron.h"
-#include "NeuralConnection.h"
+#include "neuron.h"
+#include "neural_connection.h"
 
 namespace revolve {
 namespace brain {
 
-class LinearNeuron : public Neuron
+class BiasNeuron : public Neuron
 {
 public:
 	/**
-	* Constructor for a linear neuron
+	* Constructor for a bias neuron
 	* @param id: string to identify the neuron
 	* @param params: parameters that specify the behavior of the neuron
-	* @return pointer to the linear neuron
+	* @return pointer to the bias neuron
 	*/
-	LinearNeuron(const std::string &id,
-		     const std::map<std::string, double> &params);
-	
+	BiasNeuron(const std::string &id,
+		   const std::map<std::string, double> &params);
 	/**
 	* Method to calculate the output of the neuron
 	* @param t: current time
@@ -35,4 +34,4 @@ protected:
 }
 }
 
-#endif // REVOLVE_GAZEBO_BRAIN_LINEARNEURON_H_
+#endif // REVOLVE_GAZEBO_BRAIN_BIASNEURON_H_

@@ -1,7 +1,7 @@
 #ifndef REVOLVE_GAZEBO_BRAIN_NEURALCONNECTION_H_
 #define REVOLVE_GAZEBO_BRAIN_NEURALCONNECTION_H_
 
-#include "Neuron.h"
+#include "neuron.h"
 
 namespace revolve {
 namespace brain {

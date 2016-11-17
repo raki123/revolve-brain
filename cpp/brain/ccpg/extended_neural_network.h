@@ -3,23 +3,23 @@
 
 #include "brain/brain.h"
 #include "brain/evaluator.h"
-#include "Neuron.h"
-#include "NeuralConnection.h"
+#include "neuron.h"
+#include "neural_connection.h"
 #include <map>
 #include <vector>
 #include <string>
 
 
-#include "LinearNeuron.h"
-#include "SigmoidNeuron.h"
-#include "OscillatorNeuron.h"
-#include "VOscillator.h"
-#include "XOscillator.h"
-#include "LeakyIntegrator.h"
-#include "BiasNeuron.h"
-#include "DifferentialCPG.h"
+#include "linear_neuron.h"
+#include "sigmoid_neuron.h"
+#include "oscillator_neuron.h"
+#include "v_oscillator.h"
+#include "x_oscillator.h"
+#include "leaky_integrator.h"
+#include "bias_neuron.h"
+#include "differential_cpg.h"
 
-#include "InputNeuron.h"
+#include "input_neuron.h"
 
 
 namespace revolve {

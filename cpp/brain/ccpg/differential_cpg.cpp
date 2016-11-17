@@ -1,4 +1,4 @@
-#include "DifferentialCPG.h"
+#include "differential_cpg.h"
 #include <sstream>
 #include <iostream>
 

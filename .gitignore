@@ -37,6 +37,7 @@
 
 # IDE-specific files
 .idea
+*.kdev4
 
 # Miscelaneous
 build

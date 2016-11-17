@@ -1,4 +1,4 @@
-#include "LeakyIntegrator.h"
+#include "leaky_integrator.h"
 #include <cmath>
 #include <iostream>
 

@@ -1,4 +1,4 @@
-#include "NeuralConnection.h"
+#include "neural_connection.h"
 
 namespace revolve {
 namespace brain {

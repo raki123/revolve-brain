@@ -1,4 +1,4 @@
-#include "OscillatorNeuron.h"
+#include "oscillator_neuron.h"
 #include <cmath>
 #include <iostream>
 

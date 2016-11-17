@@ -1,4 +1,4 @@
-#include "ExtendedNeuralNetwork.h"
+#include "extended_neural_network.h"
 
 #include <fstream>
 #include <iostream>

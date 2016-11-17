@@ -48,18 +48,18 @@ file(GLOB_RECURSE BRAIN_SRCS
         brain/supg/supggenomemanager.cpp
         neat/asyncneat.cpp
         neat/neatevaluation.cpp 
-        brain/ccpg/ExtendedNeuralNetwork.cpp
-	brain/ccpg/Neuron.cpp
-	brain/ccpg/DifferentialCPG.cpp
-	brain/ccpg/BiasNeuron.cpp
-	brain/ccpg/InputNeuron.cpp
-	brain/ccpg/LeakyIntegrator.cpp
-	brain/ccpg/LinearNeuron.cpp
-	brain/ccpg/NeuralConnection.cpp
-	brain/ccpg/OscillatorNeuron.cpp
-	brain/ccpg/SigmoidNeuron.cpp
-	brain/ccpg/VOscillator.cpp
-	brain/ccpg/XOscillator.cpp)
+        brain/ccpg/extended_neural_network.cpp
+	brain/ccpg/neuron.cpp
+	brain/ccpg/differential_cpg.cpp
+	brain/ccpg/bias_neuron.cpp
+	brain/ccpg/input_neuron.cpp
+	brain/ccpg/leaky_integreator.cpp
+	brain/ccpg/linear_neuron.cpp
+	brain/ccpg/neural_connection.cpp
+	brain/ccpg/oscillator_neuron.cpp
+	brain/ccpg/sigmoid_neuron.cpp
+	brain/ccpg/v_oscillator.cpp
+	brain/ccpg/x_oscillator.cpp)
 
 # Compiling ####################################################################
 add_library(revolve-brain-static STATIC ${BRAIN_SRCS})
