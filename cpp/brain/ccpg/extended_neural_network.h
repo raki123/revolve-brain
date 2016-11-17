@@ -30,6 +30,7 @@ class ExtendedNeuralNetwork : public Brain
 {
 public:
   
+  	struct ExtNNConfig;
 	/**
 	 * Constructor for a neural network including neurons that are of a different type than the usual ones.
 	 * @param modelName: name of the model
@@ -59,7 +60,6 @@ public:
 			    double t,
 			    double step);
 
-	struct ExtNNConfig;
 protected:
 
 	// Mutex for updating the network
