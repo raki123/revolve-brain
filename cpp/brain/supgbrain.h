@@ -32,25 +32,6 @@ protected:
     SUPGBrain(EvaluatorPtr evaluator);
 
 //// Templates ---------------------------------------------------------
-    template<typename SensorContainer>
-    void learner(const SensorContainer &sensors, double t)
-    {
-        // Evaluate policy on certain time limit
-        if (!this->isOffline()
-            && (t-start_eval_time) > SUPGBrain::FREQUENCY_RATE)
-        {
-            // check if to stop the experiment. Negative value for MAX_EVALUATIONS will never stop the experiment
-            if (SUPGBrain::MAX_EVALUATIONS > 0 && generation_counter > SUPGBrain::MAX_EVALUATIONS) {
-                std::cout << "Max Evaluations (" << SUPGBrain::MAX_EVALUATIONS << ") reached. stopping now." << std::endl;
-                std::exit(0);
-            }
-            generation_counter++;
-            std::cout << "################# EVALUATING NEW BRAIN !!!!!!!!!!!!!!!!!!!!!!!!! (generation " << generation_counter << " )" << std::endl;
-            this->nextBrain();
-            start_eval_time = t;
-            evaluator->start();
-        }
-    }
 
     template<typename ActuatorContainer, typename SensorContainer>
     void controller(const ActuatorContainer &actuators,
@@ -98,13 +79,14 @@ protected:
                 double t,
                 double step)
     {
-        learner<SensorContainer>(sensors, t);
+        this->learner(t); // CAREFUL, virtual function
         controller<ActuatorContainer, SensorContainer>(actuators, sensors, t, step);
     }
 
     void init_async_neat();
 
 protected:
+    virtual void learner(double t);
     virtual double getFitness();
     void nextBrain();
 

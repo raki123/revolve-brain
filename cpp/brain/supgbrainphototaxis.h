@@ -22,8 +22,6 @@
 
 #include "fakelightsensor.h"
 #include "supgbrain.h"
-#include <functional>
-#include <cmath>
 
 namespace revolve {
 namespace brain {
@@ -50,78 +48,10 @@ protected:
     SUPGBrainPhototaxis(EvaluatorPtr evaluator);
 
     virtual double getFitness() override;
+    virtual double getPhaseFitness();
+    virtual void learner(double t) override;
 
     //// Templates ---------------------------------------------------------
-    template<typename SensorContainer>
-    void learner(const SensorContainer &sensors, double t)
-    {
-
-        // Evaluate policy on certain time limit
-        if (!this->isOffline()
-            && (t-start_eval_time) > SUPGBrain::FREQUENCY_RATE)
-        {
-            // check if to stop the experiment. Negative value for MAX_EVALUATIONS will never stop the experiment
-            if (SUPGBrain::MAX_EVALUATIONS > 0 && generation_counter > SUPGBrain::MAX_EVALUATIONS) {
-                std::cout << "Max Evaluations (" << SUPGBrain::MAX_EVALUATIONS << ") reached. stopping now." << std::endl;
-                std::exit(0);
-            }
-
-            generation_counter++;
-            std::cout << "################# EVALUATING NEW BRAIN !!!!!!!!!!!!!!!!!!!!!!!!! (generation " << generation_counter << " )" << std::endl;
-            this->nextBrain();
-
-            //TODO control phase here
-            delete current_light_left;
-            delete current_light_right;
-            std::vector<float> relative_coordinates;
-
-            static const double pi = std::acos(-1);
-            static const double angle_15 = pi/12;
-            static const double angle_52_5 = 7*pi/24;
-
-            const double radius = light_radius_distance;
-            const float x_52_5 = std::cos(angle_52_5) * radius;
-            const float y_52_5 = std::sin(angle_52_5) * radius;
-            const float x_15   = std::cos(angle_15) * radius;
-            const float y_15   = std::sin(angle_15) * radius;
-
-            switch (phase) {
-                case CENTER:
-                    relative_coordinates = {0, static_cast<float>(radius)};
-                    break;
-                case LEFT:
-                    relative_coordinates = {-x_52_5, y_52_5};
-                    break;
-                case RIGHT:
-                    relative_coordinates = { x_52_5, y_52_5};
-                    break;
-                case MORELEFT:
-                    relative_coordinates = {-x_15, y_15};
-                    break;
-                case MORERIGHT:
-                    relative_coordinates = { x_15, y_15};
-                    break;
-                case END:
-                    std::cerr << "TODO start new brain" << std::endl;
-            }
-
-            current_light_left = light_constructor_left(relative_coordinates);
-            current_light_right = light_constructor_right(relative_coordinates);
-
-            start_eval_time = t;
-            evaluator->start();
-        }
-    }
-
-    template<typename ActuatorContainer, typename SensorContainer>
-    void update(const ActuatorContainer &actuators,
-                const SensorContainer &sensors,
-                double t,
-                double step)
-    {
-        SUPGBrainPhototaxis::learner<SensorContainer>(sensors, t);
-        SUPGBrain::controller<ActuatorContainer, SensorContainer>(actuators, sensors, t, step);
-    }
 
     enum PHASE {
         CENTER = 0,
@@ -139,6 +69,7 @@ protected:
                     *current_light_right;
 
     double light_radius_distance;
+    double partial_fitness;
 };
 
 }
