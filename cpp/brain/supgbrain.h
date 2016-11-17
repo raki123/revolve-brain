@@ -59,7 +59,7 @@ protected:
         double *outputs = new double[n_outputs];
         for (unsigned int i = 0; i < neurons.size(); i++) {
             neurons[i]->activate(t);
-            outputs[i] = neurons[i]->get_outputs()[0];
+            outputs[i] = neurons[i]->get_outputs()[0] * 2 - 1;
         }
 
         // send signals to actuators
