@@ -103,7 +103,7 @@ void SUPGBrainPhototaxis::learner(double t)
             case MORELEFT:  phase = MORERIGHT; break;
             case MORERIGHT: phase = END;       break;
             case END:
-                std::cout << "SUPGBrainPhototaxis::learner - INIT! (2)" << std::endl;
+                std::cout << "SUPGBrainPhototaxis::learner - INIT!" << std::endl;
         }
 
         if (phase == END) {
@@ -148,7 +148,7 @@ void SUPGBrainPhototaxis::learner(double t)
             relative_coordinates = { x_15, y_15};
             break;
         case END:
-            std::cout << "SUPGBrainPhototaxis::learner - INIT!" << std::endl;
+            std::cerr << "#### SUPGBrainPhototaxis::learner - END PHASE SHOULD NOT BE POSSIBLE HERE!" << std::endl;
         }
 
         current_light_left = light_constructor_left(relative_coordinates);
