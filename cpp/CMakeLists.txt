@@ -47,7 +47,7 @@ file(GLOB_RECURSE BRAIN_SRCS
         brain/supg/supgneuron.cpp
         brain/supg/supggenomemanager.cpp
         neat/asyncneat.cpp
-        neat/neatevaluation.cpp 
+        neat/neatevaluation.cpp
         brain/ccpg/extended_neural_network.cpp
 	brain/ccpg/neuron.cpp
 	brain/ccpg/differential_cpg.cpp
@@ -72,7 +72,6 @@ target_link_libraries(revolve-brain revolve-brain-static)
 
 # Install ######################################################################
 install(TARGETS revolve-brain DESTINATION lib)
-
 
 # Tests ########################################################################
 #if tests are enabled

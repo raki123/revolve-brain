@@ -1,6 +1,8 @@
 #include "differential_cpg.h"
-#include <sstream>
+
+#include <cmath>
 #include <iostream>
+#include <sstream>
 
 namespace revolve {
 namespace brain {
@@ -52,7 +54,7 @@ double DifferentialCPG::CalculateOutput(double t)
 
 	// saturate output:
 	double gain = 2.0 / maxOut;
-	result = (2.0 / (1.0 + exp(-result * gain)) - 1.0) * maxOut;
+	result = (2.0 / (1.0 + std::exp(-result * gain)) - 1.0) * maxOut;
 
 	return result;
 }
