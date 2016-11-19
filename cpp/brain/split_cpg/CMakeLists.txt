@@ -1,7 +1,9 @@
 cmake_minimum_required(VERSION 3.0)
 
 add_library(split_cpg STATIC
-	    extended_neural_network.cpp
+	    extended_neural_network_controller.cpp
+	    weight_vector_learner.cpp
+	    simple_split_brain.cpp
 	    neuron.cpp
 	    differential_cpg.cpp
 	    bias_neuron.cpp

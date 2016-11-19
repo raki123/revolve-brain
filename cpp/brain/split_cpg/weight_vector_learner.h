@@ -1,24 +1,17 @@
-/*
- * Specifies a utility `Learner` base class, which is supposed to change the genome of the robot.
- */
+#ifndef REVOLVE_LEARNER_WEIGHT_VECTOR_H_
+#define REVOLVE_LEARNER_WEIGHT_VECTOR_H_
 
-#ifndef REVOLVE_BRAIN_SPLIT_BRAIN_LEARNER_H_
-#define REVOLVE_BRAIN_SPLIT_BRAIN_LEARNER_H_
-
-#include <string>
+#include "learner.h"
+#include <vector>
 
 namespace revolve {
 namespace brain {
 
-template <typename G>
-class Learner {
+class WeightVectorLearner : public Learner<std::vector<double>>
+{
 public:
-    /**
-     * Constuctor for the Learner
-     * @return pointer to the learner
-     */
-    Learner();
-    virtual ~Learner() {};
+    WeightVectorLearner();
+    virtual ~WeightVectorLearner() {};
     
     /**
      * Method to report the fitness of a robot
@@ -27,8 +20,8 @@ public:
      * @param fitness: value of the fitness evaluation
      */   
     virtual void reportFitness(std::string id, 
-			       G genome,
-			       double fitness) = 0;
+			       std::vector<double> genome,
+			       double fitness);
 			       
     /**
      * Get new genome for robot
@@ -36,11 +29,12 @@ public:
      * @param id: identifier of the robot (in case there are multiple ones)
      * @return new genome
      */
-    virtual G newGenome(std::string id) =0;
-
+    virtual std::vector<double> newGenome(std::string id);
+protected:
+    std::vector<double> oldWeights;
 };
 
 }
 }
 
-#endif /* REVOLVE_BRAIN_SPLIT_BRAIN_LEARNER_H_ */
+#endif /* REVOLVE_LEARNER_WEIGHT_VECTOR_H_ */

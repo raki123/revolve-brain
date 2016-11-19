@@ -5,6 +5,11 @@
 #ifndef REVOLVE_BRAIN_SPLIT_BRAIN_CONTROLLER_H_
 #define REVOLVE_BRAIN_SPLIT_BRAIN_CONTROLLER_H_
 
+#include "../actuator.h"
+#include "../sensor.h"
+#include <vector>
+
+
 namespace revolve {
 namespace brain {
 
@@ -16,7 +21,7 @@ public:
      * @param genome: genome specifying the way the the robot is controlled
      * @return pointer to the controller
      */
-    Controller(G genome) : genome(genome) {};
+//     Controller(G genome) : genome(genome) {};
     virtual ~Controller() {};
     
     /**

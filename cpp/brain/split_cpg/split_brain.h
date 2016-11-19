@@ -21,14 +21,13 @@ public:
      * @param learner: learner used
      * @return pointer to the brain
      */
-    SplitBrain(Controller<G> &controller,
-	       Learner<G> &learner);
+    SplitBrain();
     virtual ~SplitBrain() {};
 
     
 protected:
-    Controller<G> controller;	//control unit responsible for the movement of the robot
-    Learner<G> learner; 	//learner used to get new genomes
+    boost::shared_ptr<Controller<G>> controller;	//control unit responsible for the movement of the robot
+    boost::shared_ptr<Learner<G>> learner; 		//learner used to get new genomes
 };
 
 }
