@@ -29,7 +29,7 @@ add_subdirectory("neat/accneat")
 include_directories("neat/accneat/src")
 
 # add split_cpg
-add_subdirectory("brain/split_cpg")
+#add_subdirectory("brain/split_cpg")
 
 ### RLPOWER DEPENDENCIES ###
 # GSL
@@ -57,7 +57,7 @@ add_library(revolve-brain-static STATIC ${BRAIN_SRCS})
 add_library(revolve-brain SHARED)
 
 # Linking ######################################################################
-target_link_libraries(revolve-brain-static accneat split_cpg ${Boost_LIBRARIES} ${PYTHON_LIBRARIES} ${GSL_LIBRARIES} yaml-cpp)
+target_link_libraries(revolve-brain-static accneat ${Boost_LIBRARIES} ${PYTHON_LIBRARIES} ${GSL_LIBRARIES} yaml-cpp)
 target_link_libraries(revolve-brain revolve-brain-static)
 
 
