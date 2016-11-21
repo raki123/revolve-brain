@@ -17,8 +17,8 @@
  *
  */
 
-#ifndef SUPGBRAINPHOTOTAXIS_H
-#define SUPGBRAINPHOTOTAXIS_H
+#ifndef REVOLVE_BRAIN_SUPGBRAINPHOTOTAXIS_H
+#define REVOLVE_BRAIN_SUPGBRAINPHOTOTAXIS_H
 
 #include "fakelightsensor.h"
 #include "supgbrain.h"
@@ -26,7 +26,7 @@
 namespace revolve {
 namespace brain {
 
-class SUPGBrainPhototaxis :  SUPGBrain
+class SUPGBrainPhototaxis : protected SUPGBrain
 {
 public:
     /**
@@ -75,4 +75,4 @@ protected:
 }
 }
 
-#endif // SUPGBRAINPHOTOTAXIS_H
+#endif // REVOLVE_BRAIN_SUPGBRAINPHOTOTAXIS_H

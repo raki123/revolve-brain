@@ -43,7 +43,6 @@ include_directories(${Boost_INCLUDE_DIRS} ${PROJECT_SOURCE_DIR} ${GSL_INCLUDE_DI
 
 file(GLOB_RECURSE BRAIN_SRCS
         brain/fakelightsensor.cpp
-        brain/phototaxisevaluator.cpp
         brain/rlpower.cpp
         brain/neural_network.cpp
         brain/CPGBrain.cpp
