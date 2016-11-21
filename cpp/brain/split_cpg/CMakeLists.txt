@@ -15,4 +15,5 @@ add_library(split_cpg STATIC
 	    sigmoid_neuron.cpp
 	    v_oscillator.cpp
 	    x_oscillator.cpp
+	    controller.h
 )

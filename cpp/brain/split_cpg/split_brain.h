@@ -5,7 +5,6 @@
 #ifndef REVOLVE_BRAIN_SPLIT_BRAIN_H_
 #define REVOLVE_BRAIN_SPLIT_BRAIN_H_
 
-#include "../brain.h"
 #include "controller.h"
 #include "learner.h"
 
@@ -13,7 +12,7 @@ namespace revolve {
 namespace brain {
 
 template <typename G>
-class SplitBrain : public Brain {
+class SplitBrain {
 public:
     /**
      * Constructor for a split brain
@@ -21,7 +20,7 @@ public:
      * @param learner: learner used
      * @return pointer to the brain
      */
-    SplitBrain();
+    SplitBrain() {};
     virtual ~SplitBrain() {};
 
     
