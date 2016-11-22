@@ -4,6 +4,7 @@
 #include "learner.h"
 #include <vector>
 
+
 namespace revolve {
 namespace brain {
 
@@ -29,9 +30,11 @@ public:
      * @param id: identifier of the robot (in case there are multiple ones)
      * @return new genome
      */
-    virtual std::vector<double> newGenome(std::string id);
+    virtual std::vector<double> getNewGenome(std::string id);
 protected:
     std::vector<double> oldWeights;
+    std::vector<double> newWeights; 
+    double oldFitness = 0;
 };
 
 }

@@ -16,25 +16,19 @@ namespace brain {
 template <typename G>
 class Controller {
 public:
-    /**
-     * Constuctor for the Controller
-     * @param genome: genome specifying the way the the robot is controlled
-     * @return pointer to the controller
-     */
-//     Controller(G genome) : genome(genome) {};
     virtual ~Controller() {};
     
     /**
      * Get method for the genome
      * @return current genome
      */
-    virtual G getGenome() { return genome; };
+    virtual G getGenome() = 0;
     
     /**
      * Set method for the genome
      * @param newGenome: new genome to use instead of the old one
      */
-    virtual void setGenome(G newGenome) { this->genome = newGenome; };
+    virtual void setGenome(G newGenome) = 0;
     
     /**
      * Update step called for the controller.
@@ -49,8 +43,6 @@ public:
                         double t,
                         double step) = 0;
     
-protected:
-     G genome; //genome used to control the robot
     
 };
 

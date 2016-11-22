@@ -7,20 +7,14 @@
 
 #include "controller.h"
 #include "learner.h"
+#include "../brain.h"
 
 namespace revolve {
 namespace brain {
 
 template <typename G>
-class SplitBrain {
+class SplitBrain : public Brain {
 public:
-    /**
-     * Constructor for a split brain
-     * @param controller: controller used
-     * @param learner: learner used
-     * @return pointer to the brain
-     */
-    SplitBrain() {};
     virtual ~SplitBrain() {};
 
     

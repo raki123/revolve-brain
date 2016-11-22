@@ -1,8 +1,8 @@
 #ifndef REVOLVE_GAZEBO_BRAIN_EXTENDEDNEURALNETWORK_H_
 #define REVOLVE_GAZEBO_BRAIN_EXTENDEDNEURALNETWORK_H_
 
-#include "brain/brain.h"
-#include "brain/evaluator.h"
+#include "../brain.h"
+#include "../evaluator.h"
 #include "neuron.h"
 #include "neural_connection.h"
 #include <map>
@@ -18,7 +18,6 @@
 #include "leaky_integrator.h"
 #include "bias_neuron.h"
 #include "differential_cpg.h"
-
 #include "input_neuron.h"
 
 

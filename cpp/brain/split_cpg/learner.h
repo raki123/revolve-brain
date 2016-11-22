@@ -13,11 +13,6 @@ namespace brain {
 template <typename G>
 class Learner {
 public:
-    /**
-     * Constuctor for the Learner
-     * @return pointer to the learner
-     */
-    Learner();
     virtual ~Learner() {};
     
     /**
@@ -36,7 +31,7 @@ public:
      * @param id: identifier of the robot (in case there are multiple ones)
      * @return new genome
      */
-    virtual G newGenome(std::string id) =0;
+    virtual G getNewGenome(std::string id) = 0;
 
 };
 

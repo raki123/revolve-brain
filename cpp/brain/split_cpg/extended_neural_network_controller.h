@@ -3,22 +3,22 @@
 
 #include "controller.h"
 #include "../evaluator.h"
-#include "neuron.h"
-#include "neural_connection.h"
+#include "../extnn/neuron.h"
+#include "../extnn/neural_connection.h"
 #include <map>
 #include <vector>
 #include <string>
 
 
-#include "linear_neuron.h"
-#include "sigmoid_neuron.h"
-#include "oscillator_neuron.h"
-#include "v_oscillator.h"
-#include "x_oscillator.h"
-#include "leaky_integrator.h"
-#include "bias_neuron.h"
-#include "differential_cpg.h"
-#include "input_neuron.h"
+#include "../extnn/linear_neuron.h"
+#include "../extnn/sigmoid_neuron.h"
+#include "../extnn/oscillator_neuron.h"
+#include "../extnn/v_oscillator.h"
+#include "../extnn/x_oscillator.h"
+#include "../extnn/leaky_integrator.h"
+#include "../extnn/bias_neuron.h"
+#include "../extnn/differential_cpg.h"
+#include "../extnn/input_neuron.h"
 
 
 namespace revolve {
@@ -96,13 +96,13 @@ protected:
 	 * Gets the weight of all the connections
 	 * @return weights of all neural connections
 	 */
-	std::vector<double> getGenome();
+	virtual std::vector<double> getGenome();
 	
 	/**
 	 * Changes the weights of the neural connections
 	 * @param weights: new weights to be assigned
 	 */
-	void setGenome(std::vector<double> weights);
+	virtual void setGenome(std::vector<double> weights);
 	
 	/**
 	 * Delete all hidden neurons and all connections
