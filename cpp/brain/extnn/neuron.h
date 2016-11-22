@@ -2,7 +2,7 @@
 #define REVOLVE_GAZEBO_BRAIN_NEURON_H_
 
 //#include "Types.h"
-#include "brain/brain.h"
+#include "../brain.h"
 #include <cstdlib>
 #include <utility>
 #include <map>

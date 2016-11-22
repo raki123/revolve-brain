@@ -1,36 +1,35 @@
-#ifndef REVOLVE_GAZEBO_BRAIN_EXTENDEDNEURALNETWORK_H_
-#define REVOLVE_GAZEBO_BRAIN_EXTENDEDNEURALNETWORK_H_
+#ifndef REVOLVE_BRAIN_EXTNNCONTROLLER_H_
+#define REVOLVE_BRAIN_EXTNNCONTROLLER_H_
 
-#include "brain/brain.h"
-#include "brain/evaluator.h"
-#include "neuron.h"
-#include "neural_connection.h"
+#include "controller.h"
+#include "../evaluator.h"
+#include "../extnn/neuron.h"
+#include "../extnn/neural_connection.h"
 #include <map>
 #include <vector>
 #include <string>
 
 
-#include "linear_neuron.h"
-#include "sigmoid_neuron.h"
-#include "oscillator_neuron.h"
-#include "v_oscillator.h"
-#include "x_oscillator.h"
-#include "leaky_integrator.h"
-#include "bias_neuron.h"
-#include "differential_cpg.h"
-
-#include "input_neuron.h"
+#include "../extnn/linear_neuron.h"
+#include "../extnn/sigmoid_neuron.h"
+#include "../extnn/oscillator_neuron.h"
+#include "../extnn/v_oscillator.h"
+#include "../extnn/x_oscillator.h"
+#include "../extnn/leaky_integrator.h"
+#include "../extnn/bias_neuron.h"
+#include "../extnn/differential_cpg.h"
+#include "../extnn/input_neuron.h"
 
 
 namespace revolve {
 namespace brain {
   
 
-class ExtendedNeuralNetwork : public Brain
+class ExtNNController : public Controller<std::vector<double>>
 {
 public:
   
-  	struct ExtNNConfig;
+	struct ExtNNConfig;
 	/**
 	 * Constructor for a neural network including neurons that are of a different type than the usual ones.
 	 * @param modelName: name of the model
@@ -40,13 +39,13 @@ public:
 	 * @param sensors: vector list of robot's sensors
 	 * @return pointer to the neural network
 	 */
-	ExtendedNeuralNetwork(std::string modelName,
+	ExtNNController(std::string modelName,
 			      ExtNNConfig Config,
 			      EvaluatorPtr evaluator,
 			      const std::vector< ActuatorPtr > &actuators ,
 			      const std::vector< SensorPtr > &sensors);
 
-	virtual ~ExtendedNeuralNetwork();
+	virtual ~ExtNNController();
 
 	/**
 	* Method for updating sensors readings, actuators positions
@@ -97,13 +96,13 @@ protected:
 	 * Gets the weight of all the connections
 	 * @return weights of all neural connections
 	 */
-	std::vector<double> GetWeights();
+	virtual std::vector<double> getGenome();
 	
 	/**
 	 * Changes the weights of the neural connections
 	 * @param weights: new weights to be assigned
 	 */
-	void LoadWeights(std::vector<double> weights);
+	virtual void setGenome(std::vector<double> weights);
 	
 	/**
 	 * Delete all hidden neurons and all connections
@@ -156,10 +155,12 @@ public:
 		int numHiddenNeurons_; // number of hidden neurons
 	};
 
+
+
 };
 
 
 }
 }
 
-#endif // REVOLVE_GAZEBO_BRAIN_EXTENDEDNEURALNETWORK_H_
+#endif // REVOLVE_BRAIN_EXTNNCONTROLLER_H_
