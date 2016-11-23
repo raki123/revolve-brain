@@ -13,6 +13,7 @@
 #include "evaluator.h"
 
 #include <iostream>
+#include <map>
 
 namespace revolve {
 namespace brain {
@@ -65,7 +66,7 @@ protected:
         double *outputs = new double[cpgs.size()];
         for(int i=0; i<cpgs.size(); i++) {
             cpg::CPGNetwork* cpg_network = cpgs[i];
-            outputs[i] = cpg_network->update(inputs_readings, step);
+            outputs[i] = cpg_network->update(inputs_readings, step) * 100;
         }
 
         p = 0;
@@ -83,6 +84,7 @@ protected:
 
     // controller data
     unsigned int n_inputs;
+    unsigned int n_actuators;
     std::vector<cpg::CPGNetwork*> cpgs;
 
     // learner data
@@ -93,6 +95,44 @@ protected:
     // learner parameters
     const double evaluation_rate_;
     const unsigned int max_evaluations_; // Maximal number of evaluations
+    bool evaluator_started = false;
+
+// RLPOWER SECTION ------------------------------------------------------------
+protected:
+    typedef std::vector<cpg::real_t> Genome;
+    typedef std::shared_ptr<Genome> GenomePtr;
+    typedef std::vector<GenomePtr> Policy;
+    typedef std::shared_ptr<Policy> PolicyPtr;
+
+    /**
+     * @brief Evaluate the current policy and generate new
+     *
+     * @param fitness fitness of the current evaluation
+     */
+    void updatePolicy(double fitness);
+
+    /**
+     * Randomly select two policies and return the one with higher fitness
+     * @return an iterator from 'ranked_policies_' map
+     */
+    std::map<double, PolicyPtr>::iterator binarySelection();
+
+    /**
+     * @brief update the new parameters in the cpgs
+     */
+    void genomeToPhenotype();
+
+private:
+    PolicyPtr current_policy_ = nullptr; // Pointer to the current policy
+    std::map<double, PolicyPtr, std::greater<cpg::real_t>> ranked_policies_; // Container
+
+    static const double SIGMA_DECAY_SQUARED;// = 0.98; // sigma decay
+
+    char algorithm_type_ = 'B'; // Type of the used algorithm
+    unsigned int max_ranked_policies_; // 10 - Maximal number of stored ranked policies
+    double noise_sigma_; // 0.008 - Noise in generatePolicy() function
+    double sigma_tau_correction_ = 0.2; // Tau deviation for self-adaptive sigma
+
 };
 
 }

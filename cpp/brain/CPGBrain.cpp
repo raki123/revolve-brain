@@ -3,6 +3,8 @@
 //
 
 #include "CPGBrain.h"
+#include <random>
+#include <cmath>
 
 using namespace revolve::brain;
 
@@ -13,6 +15,7 @@ CPGBrain::CPGBrain(std::string robot_name,
     : Brain()
     , robot_name(robot_name)
     , n_inputs(n_sensors)
+    , n_actuators(n_actuators)
     , cpgs(n_actuators, nullptr)
     , evaluator(evaluator)
     , start_eval_time_(-1)
@@ -20,10 +23,31 @@ CPGBrain::CPGBrain(std::string robot_name,
         // TODO read this values from config file
     , evaluation_rate_(30)
     , max_evaluations_(1000)
+    , noise_sigma_(0.1)
+    , max_ranked_policies_(10)
 {
     for(int i=0; i<n_actuators; i++) {
         cpgs[i] = new cpg::CPGNetwork(n_sensors);
     }
+
+
+    std::random_device rd;
+    std::mt19937 mt(rd());
+    std::normal_distribution<double> dist(0, this->noise_sigma_);
+
+    // Init first random controller
+    if (!current_policy_)
+        current_policy_ = std::make_shared<Policy>(n_actuators);
+
+    for (unsigned int i = 0; i < n_actuators; i++) {
+        GenomePtr spline = std::make_shared<Genome>(12, 0);
+        for (unsigned int j = 0; j < 12; j++) {
+            spline->at(j) = dist(mt);
+        }
+        current_policy_->at(i) = spline;
+    }
+
+    genomeToPhenotype();
 }
 
 CPGBrain::~CPGBrain()
@@ -48,12 +72,217 @@ void CPGBrain::learner(double t)
     if (start_eval_time_ < 0)
         start_eval_time_ = t;
 
+    if (!evaluator_started && (t - start_eval_time_) > (evaluation_rate_ / 10)) {
+        evaluator->start();
+        evaluator_started = true;
+    }
+
     if ((t - start_eval_time_) > evaluation_rate_ && generation_counter_ < max_evaluations_) {
-        //TODO learner
         double fitness = evaluator->fitness();
+        //TODO learner
+
+        this->updatePolicy(fitness);
+
         std::cout << "EVALUATION! fitness = " << fitness << std::endl;
         start_eval_time_ = t;
-        evaluator->start();
+        //evaluator->start();
+        evaluator_started = false;
     }
 }
 
+void CPGBrain::updatePolicy(double curr_fitness) {
+    unsigned int source_y_size = 12; //TODO
+
+    // Insert ranked policy in list
+    PolicyPtr policy_copy = std::make_shared<Policy>(n_actuators);
+    for (unsigned int i = 0; i < n_actuators; i++) {
+        GenomePtr genome = current_policy_->at(i);
+        policy_copy->at(i) = std::make_shared<Genome>(genome->begin(), genome->end());
+    }
+    ranked_policies_.insert({curr_fitness, policy_copy});
+
+    // Remove worst policies
+    while (ranked_policies_.size() > max_ranked_policies_) {
+        auto last = std::prev(ranked_policies_.end());
+        ranked_policies_.erase(last);
+    }
+
+    // Print-out current status to the terminal
+    std::cout << robot_name << ":" << generation_counter_ << " ranked_policies_:";
+    for (auto const &it : ranked_policies_) {
+        double fitness = it.first;
+        std::cout << " " << fitness;
+    }
+    std::cout << std::endl;
+
+    // Write fitness and genomes log to output files
+//     this->writeCurrent();
+//     this->writeElite();
+
+    // Update generation counter and check is it finished
+    generation_counter_++;
+    if (generation_counter_ == max_evaluations_) {
+        std::exit(0);
+    }
+
+    /// Actual policy generation
+
+    /// Determine which mutation operator to use
+    /// Default, for algorithms A and B, is used standard normal distribution with decaying sigma
+    /// For algorithms C and D, is used normal distribution with self-adaptive sigma
+    std::random_device rd;
+    std::mt19937 mt(rd());
+
+    if (algorithm_type_ == 'C' || algorithm_type_ == 'D') {
+        // uncorrelated mutation with one step size
+        std::mt19937 sigma_mt(rd());
+        std::normal_distribution<double> sigma_dist(0, 1);
+        noise_sigma_ = noise_sigma_ * std::exp(sigma_tau_correction_ * sigma_dist(sigma_mt));
+    } else {
+        // Default is decaying sigma
+        if (ranked_policies_.size() >= max_ranked_policies_)
+            noise_sigma_ *= SIGMA_DECAY_SQUARED;
+    }
+    std::normal_distribution<double> dist(0, noise_sigma_);
+
+    /// Determine which selection operator to use
+    /// Default, for algorithms A and C, is used ten parent crossover
+    /// For algorithms B and D, is used two parent crossover with binary tournament selection
+    if (ranked_policies_.size() < max_ranked_policies_) {
+        // Generate random policy if number of stored policies is less then 'max_ranked_policies_'
+        for (unsigned int i = 0; i < n_actuators; i++) {
+            for (unsigned int j = 0; j < source_y_size; j++) {
+                current_policy_->at(i)->at(j) = dist(mt) + .5;
+            }
+        }
+    } else {
+        // Generate new policy using weighted crossover operator
+        double total_fitness = 0;
+        if (algorithm_type_ == 'B' || algorithm_type_ == 'D') {
+            // k-selection tournament
+            auto parent1 = binarySelection();
+            auto parent2 = parent1;
+            while (parent2 == parent1) {
+                parent2 = binarySelection();
+            }
+
+            double fitness1 = parent1->first;
+            double fitness2 = parent2->first;
+
+            PolicyPtr policy1 = parent1->second;
+            PolicyPtr policy2 = parent2->second;
+
+            // TODO: Verify what should be total fitness in binary
+            total_fitness = fitness1 + fitness2;
+
+            // For each spline
+            for (unsigned int i = 0; i < n_actuators; i++) {
+                // And for each control point
+                for (unsigned int j = 0; j < source_y_size; j++) {
+                    // Apply modifier
+                    double param_point = 0;
+                    param_point += ((policy1->at(i)->at(j) - current_policy_->at(i)->at(j))) * (fitness1 / total_fitness);
+                    param_point += ((policy2->at(i)->at(j) - current_policy_->at(i)->at(j))) * (fitness2 / total_fitness);
+
+                    // Add a mutation + current
+                    // TODO: Verify do we use current in this case
+                    param_point += dist(mt) + current_policy_->at(i)->at(j);
+
+                    // Set a newly generated point as current
+                    current_policy_->at(i)->at(j) = param_point;
+                }
+            }
+        } else {
+            // Default is all parents selection
+
+            // Calculate first total sum of fitnesses
+            for (auto const &it : ranked_policies_) {
+                double fitness = it.first;
+                total_fitness += fitness;
+            }
+
+            // For each spline
+            // TODO: Verify that this should is correct formula
+            for (unsigned int i = 0; i < n_actuators; i++) {
+                // And for each control point
+                for (unsigned int j = 0; j < source_y_size; j++) {
+
+                    // Apply modifier
+                    double spline_point = 0;
+                    for (auto const &it : ranked_policies_) {
+                        double fitness = it.first;
+                        PolicyPtr policy = it.second;
+
+                        spline_point += ((policy->at(i)->at(j) - current_policy_->at(i)->at(j))) * (fitness / total_fitness);
+                    }
+
+                    // Add a mutation + current
+                    // TODO: Verify do we use 'current_policy_' in this case
+                    spline_point += dist(mt) + current_policy_->at(i)->at(j);
+
+                    // Set a newly generated point as current
+                    current_policy_->at(i)->at(j) = spline_point;
+                }
+            }
+        }
+    }
+
+    for (unsigned int i = 0; i < n_actuators; i++) {
+        // And for each control point
+        cpg::CPGNetwork* cpg = cpgs[i];
+        std::vector<cpg::CPGNetwork::Limit> limits = cpg->get_genome_limits();
+        for (unsigned int j = 0; j < source_y_size; j++) {
+            cpg::real_t &value = current_policy_->at(i)->at(j);
+            cpg::CPGNetwork::Limit limit = limits[j];
+//             if (value < limit.lower)
+//                 value = limit.lower;
+//             else if (value > limit.upper)
+//                 value = limit.upper;
+            if (value < 0)
+                value = 0;
+            else if (value > 1)
+                value = 1;
+        }
+    }
+
+    // update the new parameters in the cpgs
+    genomeToPhenotype();
+}
+
+std::map<double, CPGBrain::PolicyPtr>::iterator CPGBrain::binarySelection() {
+    std::random_device rd;
+    std::mt19937 umt(rd());
+    std::uniform_int_distribution<unsigned int> udist(0, max_ranked_policies_ - 1);
+
+    // Select two different numbers from uniform distribution U(0, max_ranked_policies_ - 1)
+    unsigned int pindex1, pindex2;
+    pindex1 = udist(umt);
+    do {
+        pindex2 = udist(umt);
+    } while (pindex1 == pindex2);
+
+    // Set iterators to begin of the 'ranked_policies_' map
+    auto individual1 = ranked_policies_.begin();
+    auto individual2 = ranked_policies_.begin();
+
+    // Move iterators to indices positions
+    std::advance(individual1, pindex1);
+    std::advance(individual2, pindex2);
+
+    double fitness1 = individual1->first;
+    double fitness2 = individual2->first;
+
+    return fitness1 > fitness2 ? individual1 : individual2;
+}
+
+void CPGBrain::genomeToPhenotype()
+{
+    // update the new parameters in the cpgs
+    for (int i=0; i<n_actuators; i++) {
+        GenomePtr genome = current_policy_->at(i);
+        cpgs[i]->set_genome(*genome);
+    }
+}
+
+
+const double CPGBrain::SIGMA_DECAY_SQUARED = 0.98; // sigma decay
