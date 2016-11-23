@@ -27,7 +27,6 @@ public:
 
 
 protected:
-	double gain_; //gain of the neuron
 	double bias_; //bias of the neuron
 };
 
