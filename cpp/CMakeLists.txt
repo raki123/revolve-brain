@@ -52,7 +52,8 @@ file(GLOB_RECURSE BRAIN_SRCS
         brain/supg/supgneuron.cpp
         brain/supg/supggenomemanager.cpp
         neat/asyncneat.cpp
-        neat/neatevaluation.cpp)
+        neat/neatevaluation.cpp
+        brain/basic_neat_brain.cpp)
 
 # Compiling ####################################################################
 add_library(revolve-brain-static STATIC ${BRAIN_SRCS})

@@ -27,10 +27,12 @@ public:
                         double t,
                         double step) 
     {
-	if ((t - start_eval_time_) > evaluation_rate_ && generation_counter_ < max_evaluations_) {
+	if (start_eval_time_ == 0 || (t - start_eval_time_) > evaluation_rate_ && generation_counter_ < max_evaluations_) {
 	    double fitness = evaluator_->fitness();
-	    std::cout << fitness << std::endl;
-	    this->learner->reportFitness("test", convertForLearner_(this->controller->getGenome()), fitness);
+	    if(start_eval_time_ != 0) {
+		std::cout << fitness << std::endl;
+		this->learner->reportFitness("test", convertForLearner_(this->controller->getGenome()), fitness);
+	    }
 	    this->controller->setGenome(convertForController_(this->learner->getNewGenome("test")));
 	    start_eval_time_ = t;
 	    evaluator_->start();
