@@ -53,7 +53,6 @@ namespace NEAT {
     struct NetNode {
         link_size_t incoming_start;
         link_size_t incoming_end;
-	nodetype type;
     };
 
     //---

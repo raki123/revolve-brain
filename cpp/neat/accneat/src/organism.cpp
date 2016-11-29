@@ -70,6 +70,7 @@ void Organism::copy_into(Organism &dst) const {
     // Networks must be regenerated.
     revolve::brain::ExtNNController * ext = new revolve::brain::ExtNNController();
     dst.net.reset(ext);
+    dst.net->configure("TEST", this->net->getConfig());
 
 #undef copy
 }

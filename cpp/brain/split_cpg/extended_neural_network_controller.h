@@ -55,7 +55,9 @@ public:
 			    const std::vector< SensorPtr > &sensors,
 			    double t,
 			    double step);
-	unsigned int population_index; //TODO:: implement
+	unsigned int population_index; //TODO:: implement?
+	
+	ExtNNConfig getConfig();
 protected:
 
 	// Mutex for updating the network
@@ -111,8 +113,8 @@ protected:
 	std::string modelName_; //name of the robot
 	
 
-	double * inputs_;    // buffer of input values from the sensors
-	double * outputs_;     // buffer of output values for the actuators
+	std::vector<double> inputs_;    // buffer of input values from the sensors
+	std::vector<double> outputs_;     // buffer of output values for the actuators
 
 	std::vector<NeuronPtr> allNeurons_; //vector containing all neurons
 	std::vector<NeuronPtr> inputNeurons_; //vector containing the input neurons
@@ -131,8 +133,8 @@ protected:
 	int numHiddenNeurons_; // number of hidden neurons
 public:
 	struct ExtNNConfig {
-		double * inputs_;    // buffer of input values from the sensors
-		double * outputs_;     // buffer of output values for the actuators
+		std::vector<double> inputs_;    // buffer of input values from the sensors
+		std::vector<double> outputs_;     // buffer of output values for the actuators
 
 		std::vector<NeuronPtr> allNeurons_; //vector containing all neurons
 		std::vector<NeuronPtr> inputNeurons_; //vector containing the input neurons

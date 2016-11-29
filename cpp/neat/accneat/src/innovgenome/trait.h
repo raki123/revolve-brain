@@ -18,6 +18,7 @@
 
 #include "neat.h"
 #include "util/rng.h"
+#include <vector>
 
 namespace NEAT {
 
@@ -38,7 +39,7 @@ namespace NEAT {
 
     public:
         int trait_id; // Used in file saving and loading
-        real_t params[NUM_TRAIT_PARAMS]; // Keep traits in an array
+        std::vector<real_t> params; // Keep traits in an array
 
         Trait ();
 

@@ -19,14 +19,15 @@
 
 using namespace NEAT;
 
-Trait::Trait () {
-    for (int count=0;count<NUM_TRAIT_PARAMS;count++)
-        params[count]=0;
-    trait_id=0;
-}
+Trait::Trait ()
+   : params(NUM_TRAIT_PARAMS,0)
+   , trait_id(0)
+{}
 
-Trait::Trait(int id,real_t p1,real_t p2,real_t p3,real_t p4,real_t p5,real_t p6,real_t p7,real_t p8,real_t p9) {
-    trait_id=id;
+Trait::Trait(int id,real_t p1,real_t p2,real_t p3,real_t p4,real_t p5,real_t p6,real_t p7,real_t p8,real_t p9)
+   : params(NUM_TRAIT_PARAMS,0)
+   , trait_id(id)
+{
     params[0]=p1;
     params[1]=p2;
     params[2]=p3;
@@ -37,7 +38,9 @@ Trait::Trait(int id,real_t p1,real_t p2,real_t p3,real_t p4,real_t p5,real_t p6,
     params[7]=0;
 }
 
-Trait::Trait(const Trait& t) {
+Trait::Trait(const Trait& t) 
+   : params(NUM_TRAIT_PARAMS,0)
+{
     for(int count=0; count < NUM_TRAIT_PARAMS; count++)
         params[count]=(t.params)[count];
 
@@ -45,7 +48,9 @@ Trait::Trait(const Trait& t) {
 }
 
 
-Trait::Trait(Trait *t) {
+Trait::Trait(Trait *t) 
+   : params(NUM_TRAIT_PARAMS,0)
+{
     for(int count=0;count<NUM_TRAIT_PARAMS;count++)
         params[count]=(t->params)[count];
 
@@ -53,7 +58,10 @@ Trait::Trait(Trait *t) {
 }
 
 
-Trait::Trait(const char *argline) {
+Trait::Trait(const char *argline) 
+   : params(NUM_TRAIT_PARAMS,0)
+   , trait_id(0)
+{
 
     std::stringstream ss(argline);
     //Read in trait id
@@ -78,7 +86,9 @@ Trait::Trait(const char *argline) {
 
 }
 
-Trait::Trait(const Trait &t1, const Trait &t2) {
+Trait::Trait(const Trait &t1, const Trait &t2) 
+    : params(NUM_TRAIT_PARAMS, 0)
+{
     trait_id = t1.trait_id;
     for(int count=0; count < NUM_TRAIT_PARAMS; count++)
         params[count] = (t1.params[count] + t2.params[count]) / 2.0;
@@ -92,13 +102,13 @@ void Trait::print_to_file(std::ostream &outFile) {
   outFile<<std::endl;
 }
 
-void Trait::mutate(rng_t &rng) {
-//     for(int count=0;count<NUM_TRAIT_PARAMS;count++) {
-// 	
-//         if (rng.prob()>env->trait_param_mut_prob) { //TODO:: shouldnt it be <?
-//             params[count]+=(rng.posneg()*rng.prob())*env->trait_mutation_power;
-//             if (params[count]<0) params[count]=0;
-//             if (params[count]>1.0) params[count]=1.0;
-//         }
-//     }
+void Trait::mutate(rng_t &rng) {	
+    for(int count=0;count<NUM_TRAIT_PARAMS;count++) {
+	
+        if (rng.prob()<env->trait_param_mut_prob) { //TODO:: shouldnt it be <?
+            params[count]+=(rng.posneg()*rng.prob())*env->trait_mutation_power;
+            if (params[count]<0) params[count]=0;
+            if (params[count]>1.0) params[count]=1.0;
+        }
+    }
 }

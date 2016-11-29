@@ -43,7 +43,7 @@ InnovGenome::InnovGenome(rng_t rng_,
     : InnovGenome() {
 
     rng = rng_;
-    ntraits = noutputs + nhidden;
+    ntraits = noutputs + nhidden  + 1;
     for(size_t i = 0; i < ntraits; i++) {
         traits.emplace_back(i + 1,
                             rng.prob(),
@@ -59,10 +59,11 @@ InnovGenome::InnovGenome(rng_t rng_,
 
     {
         int node_id = 1;
+	int trait_id = 1;
 
         //Bias node
         add_node(nodes, InnovNodeGene(NT_HIDDEN, node_id++, BIAS));
-	nodes[nodes.size()-1].set_trait_id(node_id);
+	nodes[nodes.size()-1].set_trait_id(trait_id++);
 
         //Sensor nodes
         for(size_t i = 0; i < ninputs; i++) {
@@ -72,13 +73,13 @@ InnovGenome::InnovGenome(rng_t rng_,
         //Output nodes
         for(size_t i = 0; i < noutputs; i++) {
             add_node(nodes, InnovNodeGene(NT_OUTPUT, node_id++, SIGMOID));
-	    nodes[nodes.size()-1].set_trait_id(node_id);
+	    nodes[nodes.size()-1].set_trait_id(trait_id++);
         }
 
         //Hidden nodes
         for(size_t i = 0; i < nhidden; i++) {
-            add_node(nodes, InnovNodeGene(NT_HIDDEN, node_id++, SIGMOID));
-	    nodes[nodes.size()-1].set_trait_id(node_id);
+            add_node(nodes, InnovNodeGene(NT_HIDDEN, node_id++, SIMPLE));
+	    nodes[nodes.size()-1].set_trait_id(trait_id++);
         }
     }
 
@@ -185,6 +186,7 @@ void InnovGenome::duplicate_into(InnovGenome *offspring) const {
     offspring->traits = traits;
     offspring->links = links;
     offspring->nodes = nodes;
+    offspring->rng = rng;
 }
 
 InnovGenome &InnovGenome::operator=(const InnovGenome &other) {
@@ -192,6 +194,7 @@ InnovGenome &InnovGenome::operator=(const InnovGenome &other) {
     genome_id = other.genome_id;
     nodes = other.nodes;
     links = other.links;
+    traits = other.traits;
     return *this;
 }
 
@@ -669,7 +672,7 @@ void InnovGenome::init_phenotype(revolve::brain::ExtNNController::ExtNNConfig &c
 	std::map<std::string, double> params;
 	//get parameters from trait of neuron
 	if(traits.size() != 0) {
-	Trait neuronParams = traits[node.get_trait_id()];
+	Trait neuronParams = traits[node.get_trait_id()-1];
 	params["rv:bias"] = neuronParams.params[0];
 	params["rv:tau"] = neuronParams.params[1];
 	params["rv:gain"] = neuronParams.params[2];
@@ -695,7 +698,7 @@ void InnovGenome::init_phenotype(revolve::brain::ExtNNController::ExtNNConfig &c
 	    	newNeuron.reset(new revolve::brain::InputNeuron(neuronId, params));
 
 		config.inputNeurons_.push_back(newNeuron);
-		config.inputPositionMap_[newNeuron] = i;
+		config.inputPositionMap_[newNeuron] = config.numInputNeurons_;
 		config.numInputNeurons_++;
 		break;
 	    }
@@ -718,7 +721,6 @@ void InnovGenome::init_phenotype(revolve::brain::ExtNNController::ExtNNConfig &c
 			break;
 		     }
 		     default: {
-		       	    std::cout << "i get here 7.311" << std::endl;
 			throw std::runtime_error("Robot brain error"); 
 		     }
 		}
@@ -727,7 +729,6 @@ void InnovGenome::init_phenotype(revolve::brain::ExtNNController::ExtNNConfig &c
 		break;
 	    }
 	    case NT_OUTPUT: {
-// 		std::cout << (node.neuron_type == INPUT?"input":"wtf") << std::endl;
 		switch(node.neuron_type) {
 		     case SIGMOID: {
 			newNeuron.reset(new revolve::brain::SigmoidNeuron(neuronId, params));
@@ -746,33 +747,27 @@ void InnovGenome::init_phenotype(revolve::brain::ExtNNController::ExtNNConfig &c
 			break;
 		     }
 		     default: {
-		       std::cout << node.neuron_type << " " << BIAS << " " << INPUT << " " << SIGMOID << " " << SIMPLE << " " << DIFFERENTIAL_CPG << std:: endl;
-		       	    std::cout << "i get here 7.312" << std::endl;
 			throw std::runtime_error("Robot brain error"); 
 		     }
 		}
 		    config.outputNeurons_.push_back(newNeuron);
-		    config.outputPositionMap_[newNeuron] = i;
+		    config.outputPositionMap_[newNeuron] = config.numOutputNeurons_;
 		    config.numOutputNeurons_++;
 		break;
 	    }
 	    default: {
-		  std::cout << "i get here 7.313" << std::endl;
 		throw std::runtime_error("programmer is idiot error"); 
 	    }
 	}
 	config.allNeurons_.push_back(newNeuron);
 	config.idToNeuron_[neuronId] = newNeuron;
     }
-    std::cout << config.numInputNeurons_ << std::endl;
-    std::cout << config.numOutputNeurons_ << std::endl;
     
-    config.inputs_ = new double[config.numInputNeurons_];
-    config.outputs_ = new double[config.numOutputNeurons_];
-	    std::cout << "i get here 7.32 " << config.inputs_ << " " << config.inputs_[0] << std::endl;
+    config.inputs_ = std::vector<double>(config.numInputNeurons_,0);
+    config.outputs_ = std::vector<double>(config.numOutputNeurons_,0);
     size_t nlinks = 0;
     for(InnovLinkGene &link: links) {
-        if(link.enable) {
+//         if(link.enable) {
 	    nlinks++;
 	    revolve::brain::NeuronPtr dst = config.allNeurons_[get_node_index(link.out_node_id())];
 	    revolve::brain::NeuralConnectionPtr newConnection(new revolve::brain::NeuralConnection(
@@ -782,9 +777,8 @@ void InnovGenome::init_phenotype(revolve::brain::ExtNNController::ExtNNConfig &c
 	    // Add reference to this connection to the destination neuron
 	    dst->AddIncomingConnection(dst->GetSocketId(), newConnection);
 	    config.connections_.push_back(newConnection);
-        }
+//         }
     }
-	    std::cout << "i get here 7.33" << std::endl;
     assert(nlinks <= LINKS_MAX);
     
 }

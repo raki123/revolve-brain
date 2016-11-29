@@ -75,14 +75,18 @@ add_executable(testAsyncNeat neat/test/testasyncneat.cpp)
 add_executable(testCustomGenomeManager neat/test/testcustomgenomemanager.cpp)
 add_executable(testMultiNNSpecies neat/test/testmultinnspeciesneat.cpp)
 add_executable(testSUPGBrain test/testsupgbrain.cpp)
+add_executable(testNEATBrain test/testneatbrain.cpp)
 target_link_libraries(testAsyncNeat revolve-brain)
 target_link_libraries(testCustomGenomeManager revolve-brain)
 target_link_libraries(testMultiNNSpecies revolve-brain)
 target_link_libraries(testSUPGBrain revolve-brain)
+target_link_libraries(testNEATBrain revolve-brain)
 add_test(testAsyncNeat testAsyncNeat)
 add_test(testCustomGenomeManager testCustomGenomeManager)
 add_test(testMultiNNSpecies testMultiNNSpecies)
 add_test(testSUPGBrain testSUPGBrain)
+add_test(testNEATBrain testNEATBrain)
+
 
 
 IF(WITH_PYTHON)

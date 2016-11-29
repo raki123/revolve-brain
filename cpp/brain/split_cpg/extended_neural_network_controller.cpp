@@ -51,10 +51,25 @@ void ExtNNController::configure(std::string modelName,
 
 ExtNNController::~ExtNNController()
 {
-	delete [] inputs_;
-	delete [] outputs_;
 }
 
+ExtNNController::ExtNNConfig ExtNNController::getConfig() {
+	ExtNNConfig Config;
+	Config.inputs_ = inputs_;
+	Config.outputs_ = outputs_;
+	Config.allNeurons_ = allNeurons_;
+	Config.inputNeurons_ = inputNeurons_;
+	Config.outputNeurons_ = outputNeurons_;
+	Config.hiddenNeurons_ = hiddenNeurons_;
+	Config.outputPositionMap_ = outputPositionMap_;
+	Config.inputPositionMap_ = inputPositionMap_;
+	Config.idToNeuron_ = idToNeuron_;
+	Config.connections_ = connections_;
+	Config.numInputNeurons_ = numInputNeurons_;
+	Config.numOutputNeurons_ = numOutputNeurons_;
+	Config.numHiddenNeurons_ = numHiddenNeurons_;
+	return Config;
+}
 
 void ExtNNController::connectionHelper(const std::string &src,
 					     const std::string &dst,
@@ -154,48 +169,58 @@ void ExtNNController::update(const std::vector<ActuatorPtr>& actuators,
 				   double t,
 				   double step) 
 {
-
 	// Read sensor data into the input buffer
+	double * inputss = new double[inputs_.size()];
+	double * outputss = new double[outputs_.size()];
+	for(unsigned int i = 0; i < inputs_.size(); i++) {
+		inputss[i] = inputs_[i];
+	}
+	for(unsigned int i = 0; i < outputs_.size(); i++) {
+		outputss[i] = outputs_[i];
+	}
 	unsigned int p = 0;
 	for (auto sensor : sensors) {
-		sensor->read(&inputs_[p]);
+		sensor->read(inputss + p);
 		p += sensor->inputs();
 	}
-
 	// Feed inputs into the input neurons
 	for (auto it = inputNeurons_.begin(); it != inputNeurons_.end(); ++it) {
 		auto inNeuron = *it;
 		int pos = inputPositionMap_[inNeuron];
-		inNeuron->SetInput(inputs_[pos]);
+		inNeuron->SetInput(inputss[pos]);
 	}
-
 	// Calculate new states of all neurons
 	for (auto it = allNeurons_.begin(); it != allNeurons_.end(); ++it) {
 		(*it)->Update(t);
 	}
-
 	// Flip states of all neuron
 	for (auto it = allNeurons_.begin(); it != allNeurons_.end(); ++it) {
 		(*it)->FlipState();
 	}
-
 	// std::ofstream debF;
 	// debF.open("/home/dmitry/projects/debug/debug_signals", std::ofstream::out | std::ofstream::app);
 	for (auto it = outputNeurons_.begin(); it != outputNeurons_.end(); ++it) {
 		auto outNeuron = *it;
 		int pos = outputPositionMap_[outNeuron];
-		outputs_[pos] = outNeuron->GetOutput();
-
-		// debF << pos << "," << outputs_[pos] << std::endl;
+		outputss[pos] = outNeuron->GetOutput();
+		// debF << pos << "," << outputss[pos] << std::endl;
 	}
-
 	// debF.close();
 	// Send new signals to the actuators
 	p = 0;
 	for (auto actuator: actuators) {
-		actuator->update(&outputs_[p], step);
+		actuator->update(inputss + p, step);
 		p += actuator->outputs();
 	}
+	for(unsigned int i = 0; i < inputs_.size(); i++) {
+		inputs_[i] = inputss[i];
+	}
+	for(unsigned int i = 0; i < outputs_.size(); i++) {
+		outputs_[i] = outputss[i];
+	}
+	delete[] outputss;
+	delete[] inputss;
+
 }
 
 std::vector< double > ExtNNController::getGenome()

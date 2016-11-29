@@ -11,28 +11,19 @@ using namespace revolve::brain;
 
 
 BasicBrain::BasicBrain(EvaluatorPtr evaluator,
-                     const std::vector< ActuatorPtr >& actuators,
-                     const std::vector< SensorPtr >& sensors)
+                     unsigned int n_actuators,
+                     unsigned int n_sensors)
   : evaluator(evaluator)
   , start_eval_time(std::numeric_limits< double >::lowest())
   , generation_counter(0)
   , current_evalaution(NULL)
+  , firstcall(true)
 
 {
-    unsigned int p = 0;
-    std::cout<<"sensor->sensorId()"<<std::endl;
-    for (auto sensor : sensors) {
-        std::cout << "sensor: " << sensor->sensorId() << "(inputs: " << sensor->inputs() << ")" << std::endl;
-        p += sensor->inputs();
-    }
-    std::cout<<"END sensor->sensorId()"<<std::endl;
-    n_inputs = p;
 
-    p = 0;
-    for (auto actuator : actuators) {
-        p += actuator->outputs();
-    }
-    n_outputs = p;
+    n_inputs = n_sensors;
+
+    n_outputs = n_actuators;
     this->init_async_neat();
     std::cout << "brain initailized\n";
 }
@@ -83,5 +74,5 @@ void BasicBrain::nextBrain()
     }
 
     current_evalaution = neat->getEvaluation();
-    cppn = current_evalaution->getOrganism()->net.get();
+//     cppn = current_evalaution->getOrganism()->net.get();
 }

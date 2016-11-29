@@ -25,7 +25,6 @@ namespace NEAT {
             _b.reserve(n);
             _curr = &_a;
             _prev = &_b;
-         std::cout << "i get here 6" << std::endl;
             for(size_t i = 0; i < n; i++) {
                 _a.emplace_back(*seeds[i + population_index]);
                 size_t ipop = i + population_index;
@@ -42,14 +41,12 @@ namespace NEAT {
                 _b[i].genome->genome_id = ipop;
                 _b[i].genome->rng.seed(rng.integer());
             }
-            std::cout << "i get here 7" << std::endl;
         }
 
         void init_phenotypes() {
 #pragma omp parallel for
             for(size_t i = 0; i < _n; i++) {
                 Organism &org = curr()[i];
-		         std::cout << "i get here 7.2" << std::endl;
 		revolve::brain::ExtNNController::ExtNNConfig config;
                 dynamic_cast<InnovGenome *>(org.genome.get())->init_phenotype(config);
 		org.net->configure("TEST", config); 

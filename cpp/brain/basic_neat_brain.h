@@ -18,8 +18,8 @@ class BasicBrain : public Brain
 //METHODS
 public:
     BasicBrain(EvaluatorPtr evaluator,
-              const std::vector< ActuatorPtr >& actuators,
-              const std::vector< SensorPtr >& sensors);
+              unsigned int n_actuators,
+              unsigned int n_sensors);
     ~BasicBrain() {}
 
     virtual void update(const std::vector< ActuatorPtr >& actuators,
@@ -48,7 +48,7 @@ protected:
             start_eval_time = t;
             evaluator->start();
         }
-	cppn->update(actuators, sensors, t, step);
+	current_evalaution->getOrganism()->net->update(actuators, sensors, t, step);
     }
 
     void init_async_neat();
@@ -64,8 +64,8 @@ private:
     double start_eval_time;
     unsigned int generation_counter;
     std::shared_ptr< NeatEvaluation > current_evalaution;
-    ExtNNController *cppn;
-    bool firstcall = true;
+    //ExtNNController *cppn;
+    bool firstcall;
     /**
      * Number of evaluations before the program quits. Usefull to do long run
      * tests. If negative (default value), it will never stop.

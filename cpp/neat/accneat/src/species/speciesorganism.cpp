@@ -1,6 +1,7 @@
 #include "network/network.h"
 #include "speciesorganism.h"
 #include "species.h"
+#include "innovgenome/innovgenome.h"
 
 using namespace NEAT;
 using namespace std;
@@ -15,6 +16,9 @@ SpeciesOrganism::SpeciesOrganism(const Genome &genome) {
     this->genome = env->genome_manager->make_default();
     *this->genome = genome;
     this->net.reset(new revolve::brain::ExtNNController());
+    revolve::brain::ExtNNController::ExtNNConfig config;
+    dynamic_cast<InnovGenome *>(this->genome.get())->init_phenotype(config);
+    this->net->configure("TEST", config);
     init(0);
 }
 
