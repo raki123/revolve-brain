@@ -16,6 +16,7 @@ BasicBrain::BasicBrain(EvaluatorPtr evaluator,
   : evaluator(evaluator)
   , start_eval_time(std::numeric_limits< double >::lowest())
   , generation_counter(0)
+  , current_evalaution(NULL)
 
 {
     unsigned int p = 0;
@@ -32,8 +33,8 @@ BasicBrain::BasicBrain(EvaluatorPtr evaluator,
         p += actuator->outputs();
     }
     n_outputs = p;
-
     this->init_async_neat();
+    std::cout << "brain initailized\n";
 }
 
 void BasicBrain::init_async_neat() {
@@ -49,6 +50,7 @@ void BasicBrain::init_async_neat() {
         n_outputs,
         std::time(0)
     ));
+
     this->neat = std::move(neat);
 }
 
@@ -81,7 +83,5 @@ void BasicBrain::nextBrain()
     }
 
     current_evalaution = neat->getEvaluation();
-    cppn = reinterpret_cast< NEAT::CpuNetwork* > (
-        current_evalaution->getOrganism()->net.get()
-    );
+    cppn = current_evalaution->getOrganism()->net.get();
 }

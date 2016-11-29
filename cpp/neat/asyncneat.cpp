@@ -23,7 +23,7 @@ AsyncNeat::AsyncNeat(unsigned int n_inputs, unsigned int n_outputs, int rng_seed
         " [remember also to call AsyncNeat::CleanUp() after finised using all"
         " AsyncNEAT objects]");
     }
-
+    std::cout << "i get here 3" << std::endl;
     NEAT::rng_t rng{rng_seed};
     NEAT::rng_t rng_exp(rng.integer());
     std::vector<std::unique_ptr<NEAT::Genome>> genomes =
@@ -33,8 +33,11 @@ AsyncNeat::AsyncNeat(unsigned int n_inputs, unsigned int n_outputs, int rng_seed
                                                             n_inputs,
                                                             n_outputs,
                                                             n_inputs);
+    std::cout << "i get here 4" << std::endl;
     //Spawn the Population
+    std::cout << genomes.size() << std::endl;
     population = NEAT::Population::create(rng_exp, genomes);
+        std::cout << "i get here 5" << std::endl;
     refill_evaluation_queue();
 }
 

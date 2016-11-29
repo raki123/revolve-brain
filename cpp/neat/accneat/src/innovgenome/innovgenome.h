@@ -20,12 +20,13 @@
 #include "innovnodegene.h"
 #include "innovnodelookup.h"
 #include "innovation.h"
+#include "brain/split_cpg/extended_neural_network_controller.h"
 
 namespace NEAT {
 
     class InnovGenome : public Genome {
     public:
-        std::vector<Trait> traits;
+	std::vector<Trait> traits;
         std::vector<InnovNodeGene> nodes;
         std::vector<InnovLinkGene> links;
 
@@ -44,12 +45,11 @@ namespace NEAT {
         //Destructor kills off all lists (including the trait vector)
         virtual ~InnovGenome();
 
-        // Dump this genome to specified file
-        virtual void print(std::ostream &out) override;
-
         void duplicate_into(InnovGenome *offspring) const;
         InnovGenome &operator=(const InnovGenome &other);
 
+	// Dump this genome to specified file
+        virtual void print(std::ostream &out) override;
         // For debugging: A number of tests can be run on a genome to check its
         // integrity
         // Note: Some of these tests do not indicate a bug, but rather are meant
@@ -59,40 +59,11 @@ namespace NEAT {
 
         // ******* MUTATORS *******
 
-        // Perturb params in one trait
-        void mutate_random_trait();
-
-        // Change random link's trait. Repeat times times
-        void mutate_link_trait(int times);
-
-        // Change random node's trait times times
-        void mutate_node_trait(int times);
+	void mutate_random_trait();
 
         // Add Gaussian noise to linkweights either GAUSSIAN or COLDGAUSSIAN (from zero)
         void mutate_link_weights(real_t power,real_t rate,mutator mut_type);
 
-        // toggle links on or off
-        void mutate_toggle_enable(int times);
-
-        // Find first disabled gene and enable it
-        void mutate_gene_reenable();
-
-        // These last kinds of mutations return false if they fail
-        //   They can fail under certain conditions,  being unable
-        //   to find a suitable place to make the mutation.
-        //   Generally, if they fail, they can be called again if desired.
-
-        // Mutate genome by adding a node respresentation
-        bool mutate_add_node(CreateInnovationFunc create_innov,
-                             bool delete_split_link);
-
-        void mutate_delete_node();
-
-        void mutate_delete_link();
-
-        // Mutate the genome by adding a new link between 2 random InnovNodeGenes
-        bool mutate_add_link(CreateInnovationFunc create_innov,
-                             int tries);
 
         // ****** MATING METHODS *****
         static void mate(InnovGenome *genome1,
@@ -100,27 +71,11 @@ namespace NEAT {
                          InnovGenome *offspring,
                          real_t fitness1,
                          real_t fitness2);
-
-        //   For every point in each InnovGenome, where each InnovGenome shares
-        //   the innovation number, the InnovLinkGene is chosen randomly from
-        //   either parent.  If one parent has an innovation absent in
-        //   the other, the baby will inherit the innovation
-        //   Interspecies mating leads to all genes being inherited.
-        //   Otherwise, excess genes come from most fit parent.
-        static void mate_multipoint(InnovGenome *genome1,
-                                    InnovGenome *genome2,
-                                    InnovGenome *offspring,
-                                    real_t fitness1,
-                                    real_t fitness2);
-
-        //This method mates like multipoint but instead of selecting one
-        //   or the other when the innovation numbers match, it averages their
-        //   weights
-        static void mate_multipoint_avg(InnovGenome *genome1,
-                                        InnovGenome *genome2,
-                                        InnovGenome *offspring,
-                                        real_t fitness1,
-                                        real_t fitness2);
+	static void mate_multipoint(InnovGenome *genome1,
+                                  InnovGenome *genome2,
+                                  InnovGenome *offspring,
+                                  real_t fitness1,
+                                  real_t fitness2);
 
         // ******** COMPATIBILITY CHECKING METHODS ********
 
@@ -146,6 +101,7 @@ namespace NEAT {
         node_size_t get_node_index(int id);
 
         virtual void init_phenotype(class Network &net) override;
+	void init_phenotype(revolve::brain::ExtNNController::ExtNNConfig &config);
 
     public:
         void reset();
@@ -163,9 +119,7 @@ namespace NEAT {
 
     private:
         InnovLinkGene *find_link(int in_node_id, int out_node_id, bool is_recurrent);
-        void delete_if_orphaned_hidden_node(int node_id);
-        void delete_link(InnovLinkGene *link);
-
+	
         InnovNodeLookup node_lookup;
     };
 }

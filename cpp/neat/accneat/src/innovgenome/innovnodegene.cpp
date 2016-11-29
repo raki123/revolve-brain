@@ -17,8 +17,9 @@
 #include <sstream>
 using namespace NEAT;
 
-InnovNodeGene::InnovNodeGene(nodetype ntype,int nodeid) {
+InnovNodeGene::InnovNodeGene(nodetype ntype,int nodeid, neurontype neuron_type) {
     type=ntype; //NEURON or SENSOR type
+    this->neuron_type = neuron_type;
     node_id=nodeid;
     frozen=false;
     trait_id=1;
@@ -39,6 +40,14 @@ InnovNodeGene::InnovNodeGene (const char *argline) {
 }
 
 InnovNodeGene::~InnovNodeGene() {
+}
+
+InnovNodeGene & InnovNodeGene::operator=(const InnovNodeGene &other) {
+    this->type = other.get_type();
+    this->neuron_type = other.neuron_type;
+    this->node_id = other.node_id;
+    this->frozen = other.frozen;
+    this->trait_id = other.get_trait_id();
 }
 
 void InnovNodeGene::print_to_file(std::ostream &outFile) {

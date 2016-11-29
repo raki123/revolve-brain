@@ -26,15 +26,20 @@ namespace NEAT {
     public:
         bool frozen; // When frozen, cannot be mutated (meaning its trait pointer is fixed)
         nodetype type;
+	neurontype neuron_type;
+	
         int node_id;  // A node can be given an identification number for saving in files
 
         // Construct InnovNodeGene with invalid state.
         InnovNodeGene() {}
-        InnovNodeGene(nodetype ntype,int nodeid);
+        InnovNodeGene(nodetype ntype,int nodeid, neurontype neuron_type);
         // Construct the node out of a file specification using given list of traits
         InnovNodeGene (const char *argline);
 
         ~InnovNodeGene();
+	
+	InnovNodeGene &operator=(const InnovNodeGene &other);
+
 
         inline void set_trait_id(int id) { assert(id > 0); trait_id = id; }
         inline int get_trait_id() const {return trait_id;}

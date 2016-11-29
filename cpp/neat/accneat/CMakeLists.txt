@@ -11,14 +11,15 @@ ELSE ()
 ENDIF ()
 
 #TODO enable cuda
+include_directories("../../")
 
 SET(accneat_sources
-        src/experiments/experiment.cpp
-        src/experiments/maze/maze.cpp
-        src/experiments/static/cfg.cpp
-        src/experiments/static/regex.cpp
-        src/experiments/static/sequence.cpp
-        src/experiments/static/xor.cpp
+#         src/experiments/experiment.cpp
+#         src/experiments/maze/maze.cpp
+#         src/experiments/static/cfg.cpp
+#         src/experiments/static/regex.cpp
+#         src/experiments/static/sequence.cpp
+#         src/experiments/static/xor.cpp
         src/genomemanager.cpp
         src/innovgenome/innovation.cpp
         src/innovgenome/innovgenome.cpp
@@ -45,14 +46,14 @@ SET(accneat_sources
         src/util/util.cpp
         )
 
-SET(accneat_cxx_sources
-        src/experiments/static/staticevaluator.cxx
-        src/experiments/maze/mazeevaluator.cxx
-        )
+# SET(accneat_cxx_sources
+#         src/experiments/static/staticevaluator.cxx
+#         src/experiments/maze/mazeevaluator.cxx
+#         )
 
 INCLUDE_DIRECTORIES("src")
 
-add_library(accneat ${accneat_sources} ${accneat_cxx_sources})
+add_library(accneat ${accneat_sources} )#${accneat_cxx_sources})
 
 IF (NOT ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     target_compile_definitions(accneat PRIVATE WITH_OPENMP)

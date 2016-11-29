@@ -45,6 +45,7 @@ public:
 			      const std::vector< ActuatorPtr > &actuators ,
 			      const std::vector< SensorPtr > &sensors);
 
+	ExtendedNeuralNetwork() {};
 	virtual ~ExtendedNeuralNetwork();
 
 	/**

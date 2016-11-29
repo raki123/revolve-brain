@@ -93,11 +93,12 @@ void Trait::print_to_file(std::ostream &outFile) {
 }
 
 void Trait::mutate(rng_t &rng) {
-    for(int count=0;count<NUM_TRAIT_PARAMS;count++) {
-        if (rng.prob()>env->trait_param_mut_prob) {
-            params[count]+=(rng.posneg()*rng.prob())*env->trait_mutation_power;
-            if (params[count]<0) params[count]=0;
-            if (params[count]>1.0) params[count]=1.0;
-        }
-    }
+//     for(int count=0;count<NUM_TRAIT_PARAMS;count++) {
+// 	
+//         if (rng.prob()>env->trait_param_mut_prob) { //TODO:: shouldnt it be <?
+//             params[count]+=(rng.posneg()*rng.prob())*env->trait_mutation_power;
+//             if (params[count]<0) params[count]=0;
+//             if (params[count]>1.0) params[count]=1.0;
+//         }
+//     }
 }

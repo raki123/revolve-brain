@@ -71,13 +71,14 @@ void SpeciesPopulation::verify() {
 
 void SpeciesPopulation::spawn() {
     orgs.init_phenotypes();
-
+         std::cout << "i get here 7.5" << std::endl;
     //Separate the new SpeciesPopulation into species
     speciate();
 }
 
 void SpeciesPopulation::speciate() {
     last_species = 0;
+             std::cout << "i get here 8" << std::endl;
     for(SpeciesOrganism &org: orgs.curr()) {
         assert(org.species == nullptr);
         for(Species *s: species) {
@@ -87,6 +88,7 @@ void SpeciesPopulation::speciate() {
                 break;
             }
         }
+                 std::cout << "i get here 9" << std::endl;
         if(!org.species) {
             Species *s = new Species(++last_species);
             species.push_back(s);

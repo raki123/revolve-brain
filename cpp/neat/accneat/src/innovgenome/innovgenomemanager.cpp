@@ -129,63 +129,23 @@ void InnovGenomeManager::mutate(Genome &genome_,
     case MUTATE_OP_STRUCTURE: {
         if(!allow_add && !allow_del) {
             mutate(genome_, MUTATE_OP_WEIGHTS);
-        } else {
-            if(!allow_del || genome_.rng.boolean()) {
-                genome->mutate_add_link(create_innov_func(genome_),
-                                        env->newlink_tries);
-            } else {
-                genome->mutate_delete_link();
-            }
-        }
+        } 
     } break;
     case MUTATE_OP_ANY: {
         rng_t &rng = genome->rng;
         rng_t::prob_switch_t op = rng.prob_switch();
-
-        if( allow_add && op.prob_case(env->mutate_add_node_prob) ) {
-            bool delete_split_link = env->search_type != GeneticSearchType::COMPLEXIFY;
-            genome->mutate_add_node(create_innov_func(genome_), delete_split_link);
-        } else if( allow_add && op.prob_case(env->mutate_add_link_prob) ) {
-            genome->mutate_add_link(create_innov_func(genome_),
-                                    env->newlink_tries);
-        } else if( allow_del && op.prob_case(env->mutate_delete_link_prob) ) {
-            genome->mutate_delete_link();
-        } else if( allow_del && op.prob_case(env->mutate_delete_node_prob) ) {
-            genome->mutate_delete_node();
-        } else {
-            //Only do other mutations when not doing sturctural mutations
-            if( rng.under(env->mutate_random_trait_prob) ) {
-                genome->mutate_random_trait();
-            }
-            if( rng.under(env->mutate_link_trait_prob) ) {
-                genome->mutate_link_trait(1);
-            }
-            if( rng.under(env->mutate_node_trait_prob) ) {
-                genome->mutate_node_trait(1);
-            }
-            if( rng.under(env->mutate_link_weights_prob) ) {
-                genome->mutate_link_weights(env->weight_mut_power,
-                                            1.0,
-                                            GAUSSIAN);
-            }
-
-            if(env->search_type == GeneticSearchType::COMPLEXIFY) {
-                if( rng.under(env->mutate_toggle_enable_prob) ) {
-                    genome->mutate_toggle_enable(1);
-                }
-                if (rng.under(env->mutate_gene_reenable_prob) ) {
-                    genome->mutate_gene_reenable();
-                }
-            }
-        }
+	//Only do other mutations when not doing sturctural mutations
+	if( rng.under(env->mutate_random_trait_prob) ) {
+	    genome->mutate_random_trait();
+	}
+	if( rng.under(env->mutate_link_weights_prob) ) {
+	    genome->mutate_link_weights(env->weight_mut_power,
+					1.0,
+					GAUSSIAN);
+	}
     } break;
     default:
         panic();
-    }
-
-    if(genome->links.size() == 0) {
-        genome->mutate_add_link(create_innov_func(genome_),
-                                env->newlink_tries);
     }
 }
 

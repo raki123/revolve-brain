@@ -19,10 +19,14 @@ namespace NEAT {
         NT_BIAS = 0,
         NT_SENSOR = 1,
         NT_OUTPUT = 2,
-        NT_HIDDEN = 3,
-	NT_SIMPLE = 4,
-	NT_SIGMOID = 5,
-	NT_DIFFERENTIAL_CPG = 6
+        NT_HIDDEN = 3
+    };
+    enum neurontype {
+	SIMPLE = 0,
+	SIGMOID = 1,
+	DIFFERENTIAL_CPG = 2,
+	INPUT =3,
+	BIAS = 4
     };
 
     struct OrganismEvaluation {

@@ -34,17 +34,14 @@ public:
 	 * Constructor for a neural network including neurons that are of a different type than the usual ones.
 	 * @param modelName: name of the model
 	 * @param Config: configuration file
-	 * @param evaluator: pointer to the evaluator that is used
-	 * @param actuators: vector list of robot's actuators
-	 * @param sensors: vector list of robot's sensors
 	 * @return pointer to the neural network
 	 */
 	ExtNNController(std::string modelName,
-			      ExtNNConfig Config,
-			      EvaluatorPtr evaluator,
-			      const std::vector< ActuatorPtr > &actuators ,
-			      const std::vector< SensorPtr > &sensors);
-
+			      ExtNNConfig Config);
+	ExtNNController() {};
+	
+	void configure(std::string modelName,
+			      ExtNNConfig Config);
 	virtual ~ExtNNController();
 
 	/**
@@ -58,7 +55,7 @@ public:
 			    const std::vector< SensorPtr > &sensors,
 			    double t,
 			    double step);
-
+	unsigned int population_index; //TODO:: implement
 protected:
 
 	// Mutex for updating the network
@@ -113,7 +110,6 @@ protected:
 
 	std::string modelName_; //name of the robot
 	
-	EvaluatorPtr evaluator_ = NULL; //pointer to the evaluator that is used
 
 	double * inputs_;    // buffer of input values from the sensors
 	double * outputs_;     // buffer of output values for the actuators

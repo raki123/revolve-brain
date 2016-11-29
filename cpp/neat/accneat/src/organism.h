@@ -16,7 +16,7 @@
 #pragma once
 
 #include "genome.h"
-#include "network/network.h"
+#include "brain/split_cpg/extended_neural_network_controller.h"
 
 #include <memory>
 
@@ -36,7 +36,7 @@ namespace NEAT {
 
         OrganismEvaluation eval;
         std::unique_ptr<Genome> genome; //The Organism's genotype
-        std::unique_ptr<Network> net;  //The Organism's phenotype
+        std::unique_ptr<revolve::brain::ExtNNController> net;  //The Organism's phenotype
         int generation;  //Tells which generation this Organism is from
 
         Organism(const Organism &other);

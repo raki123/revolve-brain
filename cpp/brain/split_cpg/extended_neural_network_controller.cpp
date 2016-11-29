@@ -9,14 +9,10 @@ namespace brain {
 
 
 ExtNNController::ExtNNController(std::string modelName,
-					     ExtNNConfig Config,
-					     EvaluatorPtr evaluator,
-					     const std::vector< ActuatorPtr > & actuators,
-					     const std::vector< SensorPtr > & sensors)
+					     ExtNNConfig Config)
 {
 	modelName_ = modelName;
-	
-	evaluator_ = evaluator;
+
 	inputs_ = Config.inputs_;
 	outputs_ = Config.outputs_;
 	allNeurons_ = Config.allNeurons_;
@@ -32,6 +28,26 @@ ExtNNController::ExtNNController(std::string modelName,
 	numHiddenNeurons_ = Config.numHiddenNeurons_;
 }
 
+void ExtNNController::configure(std::string modelName,
+				ExtNNConfig Config)
+{
+	modelName_ = modelName;
+
+	inputs_ = Config.inputs_;
+	outputs_ = Config.outputs_;
+	allNeurons_ = Config.allNeurons_;
+	inputNeurons_ = Config.inputNeurons_;
+	outputNeurons_ = Config.outputNeurons_;
+	hiddenNeurons_ = Config.hiddenNeurons_;
+	outputPositionMap_ = Config.outputPositionMap_;
+	inputPositionMap_ = Config.inputPositionMap_;
+	idToNeuron_ = Config.idToNeuron_;
+	connections_ = Config.connections_;
+	numInputNeurons_ = Config.numInputNeurons_;
+	numOutputNeurons_ = Config.numOutputNeurons_;
+	numHiddenNeurons_ = Config.numHiddenNeurons_;
+	
+}
 
 ExtNNController::~ExtNNController()
 {
@@ -138,8 +154,6 @@ void ExtNNController::update(const std::vector<ActuatorPtr>& actuators,
 				   double t,
 				   double step) 
 {
-//   	std::cout << "yay! \n";
-	//boost::mutex::scoped_lock lock(networkMutex_);
 
 	// Read sensor data into the input buffer
 	unsigned int p = 0;
@@ -160,8 +174,7 @@ void ExtNNController::update(const std::vector<ActuatorPtr>& actuators,
 		(*it)->Update(t);
 	}
 
-
-	// Flip states of all neurons
+	// Flip states of all neuron
 	for (auto it = allNeurons_.begin(); it != allNeurons_.end(); ++it) {
 		(*it)->FlipState();
 	}
@@ -177,7 +190,6 @@ void ExtNNController::update(const std::vector<ActuatorPtr>& actuators,
 	}
 
 	// debF.close();
-	
 	// Send new signals to the actuators
 	p = 0;
 	for (auto actuator: actuators) {

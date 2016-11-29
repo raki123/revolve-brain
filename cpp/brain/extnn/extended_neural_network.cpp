@@ -31,7 +31,6 @@ ExtendedNeuralNetwork::ExtendedNeuralNetwork(std::string modelName,
 	numHiddenNeurons_ = Config.numHiddenNeurons_;
 }
 
-
 ExtendedNeuralNetwork::~ExtendedNeuralNetwork()
 {
 	delete [] inputs_;
