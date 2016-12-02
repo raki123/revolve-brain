@@ -4,6 +4,7 @@
 #include "neatevaluation.h"
 #include "organism.h"
 #include "population.h"
+#include "innovgenome/innovgenome.h"
 #include <list>
 #include <memory>
 
@@ -27,6 +28,7 @@ class AsyncNeat
 {
 public:
     AsyncNeat(unsigned int n_inputs, unsigned int n_outputs, int rng_seed);
+    AsyncNeat(unsigned int n_inputs, unsigned int n_outputs, int rng_seed, NEAT::InnovGenome::GenomeConfig startConfig);
     virtual ~AsyncNeat();
 
     /**

@@ -43,6 +43,7 @@ InnovGenome::InnovGenome(rng_t rng_,
     : InnovGenome() {
 
     rng = rng_;
+
     ntraits = noutputs + nhidden  + 1;
     for(size_t i = 0; i < ntraits; i++) {
         traits.emplace_back(i + 1,
@@ -130,6 +131,16 @@ InnovGenome::InnovGenome(rng_t rng_,
     }
 }
 
+InnovGenome::InnovGenome(rng_t rng_,
+                         GenomeConfig startConfig)
+    : InnovGenome() {
+
+    rng = rng_;
+    nodes = startConfig.nodes;
+    links = startConfig.links;
+    traits = startConfig.traits;
+}
+
 Genome &InnovGenome::operator=(const Genome &other) {
     return *this = dynamic_cast<const InnovGenome &>(other);
 }
@@ -213,7 +224,7 @@ void InnovGenome::mutate_link_weights(real_t power,real_t rate,mutator mut_type)
     //on the theory that the older genes are more fit since
     //they have stood the test of time
 
-    bool severe = rng.prob() > 0.5;  //Once in a while really shake things up
+    //bool severe = rng.prob() > 0.5;  //Once in a while really shake things up
 
     //Loop on all links  (ORIGINAL METHOD)
     for(InnovLinkGene &gene: links) {
@@ -226,51 +237,59 @@ void InnovGenome::mutate_link_weights(real_t power,real_t rate,mutator mut_type)
         //which a random float will signify that kind of mutation.
 
         //Don't mutate weights of frozen links
-        if (!(gene.frozen)) {
-            real_t gausspoint;
-            real_t coldgausspoint;
+	if(!gene.frozen) {
+	    if(rng.prob() < env->mutate_link_weights_prob) {
+		gene.weight() += rng.gauss(0,env->weight_mut_power);
+		gene.mutation_num = gene.weight();
 
-            if (severe) {
-                gausspoint=0.3;
-                coldgausspoint=0.1;
-            }
-            else if ((gene_total>=10.0)&&(num>endpart)) {
-                gausspoint=0.5;  //Mutate by modification % of connections
-                coldgausspoint=0.3; //Mutate the rest by replacement % of the time
-            }
-            else {
-                //Half the time don't do any cold mutations
-                if (rng.prob()>0.5) {
-                    gausspoint=1.0-rate;
-                    coldgausspoint=1.0-rate-0.1;
-                }
-                else {
-                    gausspoint=1.0-rate;
-                    coldgausspoint=1.0-rate;
-                }
-            }
-
-            //Possible methods of setting the perturbation:
-            real_t randnum = rng.posneg()*rng.prob()*power*powermod;
-            if (mut_type==GAUSSIAN) {
-                real_t randchoice = rng.prob();
-                if (randchoice > gausspoint)
-                    gene.weight()+=randnum;
-                else if (randchoice > coldgausspoint)
-                    gene.weight()=randnum;
-            }
-            else if (mut_type==COLDGAUSSIAN)
-                gene.weight()=randnum;
-
-            //Cap the weights at 8.0 (experimental)
-            if (gene.weight() > 8.0) gene.weight() = 8.0;
-            else if (gene.weight() < -8.0) gene.weight() = -8.0;
-
-            //Record the innovation
-            gene.mutation_num = gene.weight();
-
-            num+=1.0;
-        }
+		num+=1.0;
+	    }
+	}
+//         if (!(gene.frozen)) {
+//             real_t gausspoint;
+//             real_t coldgausspoint;
+// 
+//             if (severe) {
+//                 gausspoint=0.3;
+//                 coldgausspoint=0.1;
+//             }
+//             else if ((gene_total>=10.0)&&(num>endpart)) {
+//                 gausspoint=0.5;  //Mutate by modification % of connections
+//                 coldgausspoint=0.3; //Mutate the rest by replacement % of the time
+//             }
+//             else {
+//                 //Half the time don't do any cold mutations
+//                 if (rng.prob()>0.5) {
+//                     gausspoint=1.0-rate;
+//                     coldgausspoint=1.0-rate-0.1;
+//                 }
+//                 else {
+//                     gausspoint=1.0-rate;
+//                     coldgausspoint=1.0-rate;
+//                 }
+//             }
+// 
+//             //Possible methods of setting the perturbation:
+//             real_t randnum = rng.posneg()*rng.prob()*power*powermod;
+//             if (mut_type==GAUSSIAN) {
+//                 real_t randchoice = rng.prob();
+//                 if (randchoice > gausspoint)
+//                     gene.weight()+=randnum;
+//                 else if (randchoice > coldgausspoint)
+//                     gene.weight()=randnum;
+//             }
+//             else if (mut_type==COLDGAUSSIAN)
+//                 gene.weight()=randnum;
+// 
+//             //Cap the weights at 8.0 (experimental)
+//             if (gene.weight() > 8.0) gene.weight() = 8.0;
+//             else if (gene.weight() < -8.0) gene.weight() = -8.0;
+// 
+//             //Record the innovation
+//             gene.mutation_num = gene.weight();
+// 
+//             num+=1.0;
+//         }
 
     } //end for loop
 }
@@ -340,10 +359,10 @@ void InnovGenome::mate_multipoint(InnovGenome *genome1,
     //First, average the Traits from the 2 parents to form the baby's Traits
     //It is assumed that trait lists are the same length
     //In the future, may decide on a different method for trait mating
-    assert(genome1->traits.size() == genome2->traits.size());
-    for(size_t i = 0, n = genome1->traits.size(); i < n; i++) {
-        newtraits.emplace_back(genome1->traits[i], genome2->traits[i]);
-    }
+//     assert(genome1->traits.size() == genome2->traits.size());
+//     for(size_t i = 0, n = genome1->traits.size(); i < n; i++) {
+//         newtraits.emplace_back(genome1->traits[i], genome2->traits[i]);
+//     }
 
     //Figure out which genome is better
     //The worse genome should not be allowed to add extra structural baggage
@@ -528,6 +547,36 @@ void InnovGenome::mate_multipoint(InnovGenome *genome1,
             newlinks.push_back(newgene);
         }
 
+    }
+        //assert(genome1->traits.size() == genome2->traits.size());
+    for(size_t i = 0, n = newnodes.size(); i < n; i++) {
+        if(p1better) {
+	    if(genome1->get_node(newnodes[i].node_id) != nullptr && genome2->get_node(newnodes[i].node_id) == nullptr) {
+		newtraits.emplace_back(genome1->traits[genome1->get_node(newnodes[i].node_id)->get_trait_id()-1]);
+		newnodes[i].set_trait_id(newtraits.size());
+	    } else {
+		if(rng.boolean()) {
+		    newtraits.emplace_back(genome1->traits[genome1->get_node(newnodes[i].node_id)->get_trait_id()-1]);
+		    newnodes[i].set_trait_id(newtraits.size());
+		} else {
+		    newtraits.emplace_back(genome2->traits[genome2->get_node(newnodes[i].node_id)->get_trait_id()-1]);
+		    newnodes[i].set_trait_id(newtraits.size());
+		}
+	    }
+	} else {
+	    if(genome2->get_node(newnodes[i].node_id) != nullptr && genome1->get_node(newnodes[i].node_id) == nullptr) {
+		newtraits.emplace_back(genome2->traits[genome2->get_node(newnodes[i].node_id)->get_trait_id()-1]);
+		newnodes[i].set_trait_id(newtraits.size());
+	    } else {
+		if(rng.boolean()) {
+		    newtraits.emplace_back(genome1->traits[genome1->get_node(newnodes[i].node_id)->get_trait_id()-1]);
+		    newnodes[i].set_trait_id(newtraits.size());
+		} else {
+		    newtraits.emplace_back(genome2->traits[genome2->get_node(newnodes[i].node_id)->get_trait_id()-1]);
+		    newnodes[i].set_trait_id(newtraits.size());
+		}
+	    }
+	}
     }
 }
 

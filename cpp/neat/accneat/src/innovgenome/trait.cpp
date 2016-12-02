@@ -106,7 +106,7 @@ void Trait::mutate(rng_t &rng) {
     for(int count=0;count<NUM_TRAIT_PARAMS;count++) {
 	
         if (rng.prob()<env->trait_param_mut_prob) { //TODO:: shouldnt it be <?
-            params[count]+=(rng.posneg()*rng.prob())*env->trait_mutation_power;
+            params[count]+= rng.gauss(0,env->trait_mutation_power);
             if (params[count]<0) params[count]=0;
             if (params[count]>1.0) params[count]=1.0;
         }

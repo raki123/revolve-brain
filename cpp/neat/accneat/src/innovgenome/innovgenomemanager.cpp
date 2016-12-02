@@ -56,7 +56,7 @@ std::vector<std::unique_ptr<Genome>> InnovGenomeManager::create_seed_generation(
             start_genome.duplicate_into(g);
             g->rng.seed(_rng.integer());
             g->mutate_link_weights(1.0,1.0,COLDGAUSSIAN);
-            g->randomize_traits();
+            g->mutate_random_trait();
 
             genomes.emplace_back(std::unique_ptr<Genome>(g));
         }
@@ -73,6 +73,36 @@ std::vector<std::unique_ptr<Genome>> InnovGenomeManager::create_seed_generation(
     return genomes;
 }
 
+std::vector<std::unique_ptr<Genome>> InnovGenomeManager::create_seed_generation(size_t ngenomes,
+                                                                      rng_t rng,
+                                                                      InnovGenome::GenomeConfig startConfig) {
+    InnovGenome start_genome(rng,
+                             startConfig);
+
+    std::vector<std::unique_ptr<Genome>> genomes;
+    {
+        rng_t _rng = rng;
+        for(int i = 0; i < env->pop_size; i++) {
+            InnovGenome *g = new InnovGenome();
+            start_genome.duplicate_into(g);
+            g->rng.seed(_rng.integer());
+            g->mutate_link_weights(1.0,1.0,COLDGAUSSIAN);
+            g->mutate_random_trait();
+
+            genomes.emplace_back(std::unique_ptr<Genome>(g));
+        }
+    }
+
+    {
+        InnovGenome *g = to_innov(*genomes.back());
+
+        //Keep a record of the innovation and node number we are on
+        innovations.init(g->get_last_node_id(),
+                         g->get_last_gene_innovnum());
+    }
+
+    return genomes;
+}
 bool InnovGenomeManager::are_compatible(Genome &genome1,
                                         Genome &genome2) {
     return to_innov(genome1)->compatibility(to_innov(genome2)) < env->compat_threshold;
@@ -133,16 +163,15 @@ void InnovGenomeManager::mutate(Genome &genome_,
     } break;
     case MUTATE_OP_ANY: {
         rng_t &rng = genome->rng;
-        rng_t::prob_switch_t op = rng.prob_switch();
 	//Only do other mutations when not doing sturctural mutations
 	if( rng.under(env->mutate_random_trait_prob) ) {
 	    genome->mutate_random_trait();
 	}
-	if( rng.under(env->mutate_link_weights_prob) ) {
+// 	if( rng.under(env->mutate_link_weights_prob) ) {
 	    genome->mutate_link_weights(env->weight_mut_power,
 					1.0,
 					GAUSSIAN);
-	}
+// 	}
     } break;
     default:
         panic();

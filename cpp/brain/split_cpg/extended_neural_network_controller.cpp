@@ -203,21 +203,27 @@ void ExtNNController::update(const std::vector<ActuatorPtr>& actuators,
 		auto outNeuron = *it;
 		int pos = outputPositionMap_[outNeuron];
 		outputss[pos] = outNeuron->GetOutput();
+// 		std::cout << outputss[pos] << outNeuron->Id();
 		// debF << pos << "," << outputss[pos] << std::endl;
 	}
 	// debF.close();
 	// Send new signals to the actuators
 	p = 0;
 	for (auto actuator: actuators) {
-		actuator->update(inputss + p, step);
+		actuator->update(outputss + p, step);
 		p += actuator->outputs();
 	}
+// 	std::cout << "inputs: ";
 	for(unsigned int i = 0; i < inputs_.size(); i++) {
+// 		std::cout << inputss[i] << " ";
 		inputs_[i] = inputss[i];
 	}
+// 	std::cout << "outputs: ";
 	for(unsigned int i = 0; i < outputs_.size(); i++) {
+// 		std::cout << outputss[i] << " ";
 		outputs_[i] = outputss[i];
 	}
+// 	std::cout << std::endl;
 	delete[] outputss;
 	delete[] inputss;
 

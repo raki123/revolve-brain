@@ -13,7 +13,8 @@ Neuron(id)
 		std::cerr << "A `" << "Bias" << "` neuron requires `rv:bias` element." << std::endl;
 		throw std::runtime_error("Robot brain error");
 	}
-	this->bias_ = params.find("rv:bias")->second;
+	double min_value=-1.0, max_value=1.0;
+	this->bias_ = min_value + (max_value-min_value)*params.find("rv:bias")->second;
 }
 
 

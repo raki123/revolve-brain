@@ -2,6 +2,7 @@
 
 #include "genomemanager.h"
 #include "innovation.h"
+#include "innovgenome.h"
 
 namespace NEAT {
 
@@ -20,6 +21,9 @@ namespace NEAT {
                                                                             size_t ninputs,
                                                                             size_t noutputs,
                                                                             size_t nhidden) override;
+	std::vector<std::unique_ptr<Genome>> create_seed_generation(size_t ngenomes,
+                                                                            class rng_t rng,
+                                                                            InnovGenome::GenomeConfig startConfig);
 
         virtual bool are_compatible(Genome &genome1,
                                     Genome &genome2) override;

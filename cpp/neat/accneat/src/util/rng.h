@@ -82,6 +82,11 @@ namespace NEAT {
             std::normal_distribution<real_t> dist;
             return dist(engine);
         }
+        
+        real_t gauss(real_t mean, real_t sigma) {
+	    std::normal_distribution<real_t> dist(mean, sigma);
+	    return dist(engine);
+	}
 
         static void test();
     };

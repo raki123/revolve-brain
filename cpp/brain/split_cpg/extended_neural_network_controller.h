@@ -131,6 +131,8 @@ protected:
 	int numInputNeurons_; //number of input neurons
 	int numOutputNeurons_; // number of output neurons
 	int numHiddenNeurons_; // number of hidden neurons
+private:
+
 public:
 	struct ExtNNConfig {
 		std::vector<double> inputs_;    // buffer of input values from the sensors

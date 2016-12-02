@@ -2,6 +2,7 @@
 
 #include "neat.h"
 #include "genomemanager.h"
+#include "innovgenome/innovgenomemanager.h"
 #include "species/speciesorganism.h"
 #include <iostream>
 #include <limits>
@@ -23,21 +24,44 @@ AsyncNeat::AsyncNeat(unsigned int n_inputs, unsigned int n_outputs, int rng_seed
         " [remember also to call AsyncNeat::CleanUp() after finised using all"
         " AsyncNEAT objects]");
     }
-    std::cout << "i get here 3" << std::endl;
     NEAT::rng_t rng{rng_seed};
     NEAT::rng_t rng_exp(rng.integer());
     std::vector<std::unique_ptr<NEAT::Genome>> genomes =
-        NEAT::env->genome_manager->create_seed_generation(NEAT::env->pop_size,
+    NEAT::env->genome_manager->create_seed_generation(NEAT::env->pop_size,
                                                             rng_exp,
                                                             1,
-                                                            n_inputs,
-                                                            n_outputs,
-                                                            n_inputs);
-    std::cout << "i get here 4" << std::endl;
+							    1,
+							    1,
+							    1);
     //Spawn the Population
     std::cout << genomes.size() << std::endl;
     population = NEAT::Population::create(rng_exp, genomes);
-        std::cout << "i get here 5" << std::endl;
+    refill_evaluation_queue();
+}
+
+AsyncNeat::AsyncNeat(unsigned int n_inputs, unsigned int n_outputs, int rng_seed, NEAT::InnovGenome::GenomeConfig startConfig)
+  : n_inputs(n_inputs)
+  , n_outputs(n_outputs)
+  , generation(1)
+  , rng_seed(rng_seed)
+  , fittest(nullptr)
+  , fittest_fitness(std::numeric_limits<float>().min())
+{
+    if (NEAT::env->genome_manager == nullptr) {
+        throw std::invalid_argument("genome manager not initialized, "
+        "please run AsyncNeat::Init() function to initialize the genome manager"
+        " [remember also to call AsyncNeat::CleanUp() after finised using all"
+        " AsyncNEAT objects]");
+    }
+    NEAT::rng_t rng{rng_seed};
+    NEAT::rng_t rng_exp(rng.integer());
+    std::vector<std::unique_ptr<NEAT::Genome>> genomes =
+        dynamic_cast<NEAT::InnovGenomeManager *>(NEAT::env->genome_manager)->create_seed_generation(NEAT::env->pop_size,
+                                                            rng_exp,
+                                                            startConfig);
+    //Spawn the Population
+    std::cout << genomes.size() << std::endl;
+    population = NEAT::Population::create(rng_exp, genomes);
     refill_evaluation_queue();
 }
 

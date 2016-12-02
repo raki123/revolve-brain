@@ -51,11 +51,11 @@ namespace NEAT {
 
         class GenomeManager *genome_manager = nullptr;
 
-        real_t trait_param_mut_prob = 0.5;
-        real_t trait_mutation_power = 1.0; // Power of mutation on a signle trait param
+        real_t trait_param_mut_prob = 0.8;
+        real_t trait_mutation_power = 0.25; // Power of mutation on a signle trait param
         real_t linktrait_mut_sig = 1.0; // Amount that mutation_num changes for a trait change inside a link
         real_t nodetrait_mut_sig = 0.5; // Amount a mutation_num changes on a link connecting a node that changed its trait
-        real_t weight_mut_power = 1.8; // The power of a linkweight mutation
+        real_t weight_mut_power = 5.0; // The power of a linkweight mutation
 
         real_t recur_prob = 0.05; // Prob. that a link mutation which doesn't have to be recurrent will be made recurrent
 
@@ -71,9 +71,9 @@ namespace NEAT {
         real_t mutdiff_coeff = 3.0;
 
     // This global tells compatibility threshold under which two Genomes are considered the same species
-        real_t compat_threshold = 10.0;
+        real_t compat_threshold = 0;
 
-        real_t age_significance = 1.0; // How much does age matter?
+        real_t age_significance = 10; // How much does age matter?
         real_t survival_thresh = 0.4; // Percent of ave fitness for survival
         real_t mutate_only_prob = 0.25; // Prob. of a non-mating reproduction
         real_t mutate_random_trait_prob = 0.1;
@@ -92,8 +92,8 @@ namespace NEAT {
         real_t mate_only_prob = 0.2; // Prob. of mating without mutation
         real_t recur_only_prob = 0.2;  // Probability of forcing selection of ONLY links that are naturally recurrent
 
-        int pop_size = 1000;  // Size of population
-        int dropoff_age = 15;  // Age where Species starts to be penalized
+        int pop_size = 10;  // Size of population
+        int dropoff_age = 9999;  // Age where Species starts to be penalized
         int newlink_tries = 20;  // Number of tries mutate_add_link will attempt to find an open link
         int print_every = 1000; // Tells to print population to file every n generations
         int num_runs = 1;

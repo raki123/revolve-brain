@@ -149,15 +149,15 @@ void SpeciesPopulation::next_generation() {
 
     //Flag the lowest performing species over age 20 every 30 generations
     //NOTE: THIS IS FOR COMPETITIVE COEVOLUTION STAGNATION DETECTION
-    if(generation % 30 == 0) {
-        for(size_t i = sorted_species.size(); i > 0; i--) {
-            Species *s = sorted_species[i - 1];
-            if(s->age >= 20) {
-                s->obliterate = true;
-                break;
-            }
-        }
-    }
+//     if(generation % 30 == 0) {
+//         for(size_t i = sorted_species.size(); i > 0; i--) {
+//             Species *s = sorted_species[i - 1];
+//             if(s->age >= 20) {
+//                 s->obliterate = true;
+//                 break;
+//             }
+//         }
+//     }
 
     std::cout<<"Number of Species: "<<num_species<<std::endl;
 
@@ -230,7 +230,7 @@ void SpeciesPopulation::next_generation() {
     //These need to use ORIGINAL fitness
     //sorted_species.qsort(order_species);
     std::sort(sorted_species.begin(), sorted_species.end(), order_species);
-
+//     SpeciesOrganism  champ(*(sorted_species[0]->first()));
     //Check for SpeciesPopulation-level stagnation
     bool new_highest_fitness = false;
     {
@@ -394,6 +394,17 @@ void SpeciesPopulation::next_generation() {
         timer.stop();
     }
 
+//     //Stick the Species pointers into a new Species list for sorting
+//     for(Species *s: species) {
+//         sorted_species.push_back(s);
+//     }
+//     //Sort the Species by max fitness (Use an extra list to do this)
+//     //These need to use ORIGINAL fitness
+//     //sorted_species.qsort(order_species);
+//     std::sort(sorted_species.begin(), sorted_species.end(), order_species);
+//     champ.generation++;
+//     (*std::find(species.begin(), species.end(), sorted_species[sorted_species.size()-1]))->organisms[0] = &champ;
+//     
     //Destroy and remove the old generation from the organisms and species
     for(Species *s: species) {
         s->remove_generation(generation - 1);
@@ -422,7 +433,6 @@ void SpeciesPopulation::next_generation() {
 
         species.resize(nspecies);
     }
-
     //Create the neural nets for the new organisms.
     orgs.init_phenotypes();
 

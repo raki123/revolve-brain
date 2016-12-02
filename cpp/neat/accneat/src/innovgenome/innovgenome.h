@@ -30,6 +30,14 @@ namespace NEAT {
         std::vector<InnovNodeGene> nodes;
         std::vector<InnovLinkGene> links;
 
+	struct GenomeConfig {
+	    std::vector<Trait> traits;
+	    std::vector<InnovNodeGene> nodes;
+	    std::vector<InnovLinkGene> links;
+	    unsigned int node_id;
+	    unsigned int trait_id;
+	    unsigned int innov;
+	};
         int get_last_node_id(); //Return id of final InnovNodeGene in InnovGenome
         real_t get_last_gene_innovnum(); //Return last innovation number in InnovGenome
 
@@ -39,6 +47,8 @@ namespace NEAT {
                     size_t ninputs,
                     size_t noutputs,
                     size_t nhidden);
+	InnovGenome(rng_t rng,
+                    GenomeConfig startConfig);
 
         virtual Genome &operator=(const Genome &other) override;
 

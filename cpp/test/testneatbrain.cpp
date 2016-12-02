@@ -10,10 +10,12 @@ int main(int argc, char *argv[]) {
 
 TestNEATBrain::TestNEATBrain()
 {
-    revolve::brain::BasicBrain brain(nullptr, 6,6);
+      NEAT::InnovGenome::GenomeConfig startConfig;
+    revolve::brain::BasicBrain brain(nullptr, 6,6,startConfig);
     double t = 0;
     std::vector< revolve::brain::ActuatorPtr > empty1;
      std::vector< revolve::brain::SensorPtr > empty2;
+
     while(true) {
 	t++;
 	brain.update(empty1,
