@@ -1,6 +1,4 @@
 #include "genetic_encoding.h"
-#include "connection_gene.h"
-#include "neuron_gene.h"
 
 #include <algorithm>
 

@@ -3,6 +3,8 @@
 
 #include "types.h"
 #include "neuron.h"
+#include "connection_gene.h"
+#include "neuron_gene.h"
 
 #include <vector>
 #include <utility>

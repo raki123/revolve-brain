@@ -9,7 +9,7 @@ namespace brain {
 
 
 ExtNNController1::ExtNNController1(std::string modelName,
-					     ExtNNConfig Config,
+					     boost::shared_ptr<ExtNNConfig> Config,
 					     EvaluatorPtr evaluator,
 					     const std::vector< ActuatorPtr > & actuators,
 					     const std::vector< SensorPtr > & sensors)
@@ -17,19 +17,19 @@ ExtNNController1::ExtNNController1(std::string modelName,
 	modelName_ = modelName;
 	
 	evaluator_ = evaluator;
-	inputs_ = Config.inputs_;
-	outputs_ = Config.outputs_;
-	allNeurons_ = Config.allNeurons_;
-	inputNeurons_ = Config.inputNeurons_;
-	outputNeurons_ = Config.outputNeurons_;
-	hiddenNeurons_ = Config.hiddenNeurons_;
-	outputPositionMap_ = Config.outputPositionMap_;
-	inputPositionMap_ = Config.inputPositionMap_;
-	idToNeuron_ = Config.idToNeuron_;
-	connections_ = Config.connections_;
-	numInputNeurons_ = Config.numInputNeurons_;
-	numOutputNeurons_ = Config.numOutputNeurons_;
-	numHiddenNeurons_ = Config.numHiddenNeurons_;
+	inputs_ = Config->inputs_;
+	outputs_ = Config->outputs_;
+	allNeurons_ = Config->allNeurons_;
+	inputNeurons_ = Config->inputNeurons_;
+	outputNeurons_ = Config->outputNeurons_;
+	hiddenNeurons_ = Config->hiddenNeurons_;
+	outputPositionMap_ = Config->outputPositionMap_;
+	inputPositionMap_ = Config->inputPositionMap_;
+	idToNeuron_ = Config->idToNeuron_;
+	connections_ = Config->connections_;
+	numInputNeurons_ = Config->numInputNeurons_;
+	numOutputNeurons_ = Config->numOutputNeurons_;
+	numHiddenNeurons_ = Config->numHiddenNeurons_;
 }
 
 
@@ -186,40 +186,40 @@ void ExtNNController1::update(const std::vector<ActuatorPtr>& actuators,
 	}
 }
 
-std::vector< double > ExtNNController1::getGenome()
+boost::shared_ptr<ExtNNConfig> ExtNNController1::getGenome()
 {
-	ExtNNConfig Config;
-	Config.inputs_ = inputs_;
-	Config.outputs_ = outputs_;
-	Config.allNeurons_ = allNeurons_;
-	Config.inputNeurons_ = inputNeurons_;
-	Config.outputNeurons_ = outputNeurons_;
-	Config.hiddenNeurons_ = hiddenNeurons_;
-	Config.outputPositionMap_ = outputPositionMap_;
-	Config.inputPositionMap_ = inputPositionMap_;
-	Config.idToNeuron_ = idToNeuron_;
-	Config.connections_ = connections_;
-	Config.numInputNeurons_ = numInputNeurons_;
-	Config.numOutputNeurons_ = numOutputNeurons_;
-	Config.numHiddenNeurons_ = numHiddenNeurons_;
+	boost::shared_ptr<ExtNNConfig> Config(new ExtNNConfig());
+	Config->inputs_ = inputs_;
+	Config->outputs_ = outputs_;
+	Config->allNeurons_ = allNeurons_;
+	Config->inputNeurons_ = inputNeurons_;
+	Config->outputNeurons_ = outputNeurons_;
+	Config->hiddenNeurons_ = hiddenNeurons_;
+	Config->outputPositionMap_ = outputPositionMap_;
+	Config->inputPositionMap_ = inputPositionMap_;
+	Config->idToNeuron_ = idToNeuron_;
+	Config->connections_ = connections_;
+	Config->numInputNeurons_ = numInputNeurons_;
+	Config->numOutputNeurons_ = numOutputNeurons_;
+	Config->numHiddenNeurons_ = numHiddenNeurons_;
 	return Config;
 }
 
-void ExtNNController1::setGenome(ExtNNConfig Config)
+void ExtNNController1::setGenome(boost::shared_ptr<ExtNNConfig> Config)
 {
-	inputs_ = Config.inputs_;
-	outputs_ = Config.outputs_;
-	allNeurons_ = Config.allNeurons_;
-	inputNeurons_ = Config.inputNeurons_;
-	outputNeurons_ = Config.outputNeurons_;
-	hiddenNeurons_ = Config.hiddenNeurons_;
-	outputPositionMap_ = Config.outputPositionMap_;
-	inputPositionMap_ = Config.inputPositionMap_;
-	idToNeuron_ = Config.idToNeuron_;
-	connections_ = Config.connections_;
-	numInputNeurons_ = Config.numInputNeurons_;
-	numOutputNeurons_ = Config.numOutputNeurons_;
-	numHiddenNeurons_ = Config.numHiddenNeurons_;
+	inputs_ = Config->inputs_;
+	outputs_ = Config->outputs_;
+	allNeurons_ = Config->allNeurons_;
+	inputNeurons_ = Config->inputNeurons_;
+	outputNeurons_ = Config->outputNeurons_;
+	hiddenNeurons_ = Config->hiddenNeurons_;
+	outputPositionMap_ = Config->outputPositionMap_;
+	inputPositionMap_ = Config->inputPositionMap_;
+	idToNeuron_ = Config->idToNeuron_;
+	connections_ = Config->connections_;
+	numInputNeurons_ = Config->numInputNeurons_;
+	numOutputNeurons_ = Config->numOutputNeurons_;
+	numHiddenNeurons_ = Config->numHiddenNeurons_;
 }
 
 void ExtNNController1::flush()

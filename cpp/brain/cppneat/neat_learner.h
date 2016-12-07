@@ -1,13 +1,14 @@
-#ifndef NEAT_LEARNER_H_
-#define NEAT_LEARNER_H_
+#ifndef CPPNEAT_LEARNER_H_
+#define CPPNEAT_LEARNER_H_
 
-#include "neuron.h"
 #include "types.h"
 #include "mutatur.h"
 #include "../split_cpg/learner.h"
+
 #include <map>
 #include <string>
 #include <vector>
+#include <random>
 
 //crossover between genotypes
 namespace CPPNEAT {
@@ -29,10 +30,11 @@ public:
 		int repeat_evaluations;
 		GeneticEncodingPtr start_from;
 	};
-	Learner(std::map<std::string, Neuron::NeuronTypeSpec> brain_spec, Mutator mutator, LearningConfiguration conf);
+	Learner(Mutator mutator, LearningConfiguration conf);
 	void initialise(std::vector<GeneticEncodingPtr> init_genotypes);
-	virtual void reportFitness(std::string id, GeneticEncodingPtr genotype, double fitness) override;
-	virtual GeneticEncodingPtr getNewGenome(std::string id) override;
+private:
+	virtual void reportFitness(std::string id, GeneticEncodingPtr genotype, double fitness);
+	virtual GeneticEncodingPtr getNewGenome(std::string id);
 
 	
 private:
@@ -46,7 +48,6 @@ private:
 
 	GeneticEncodingPtr active_brain;
 	double fitness;
-	std::map<std::string, Neuron::NeuronTypeSpec> brain_spec;
 	std::vector<GeneticEncodingPtr> evalutation_queue;
 	std::vector<GeneticEncodingPtr> brain_population;
 	std::map<GeneticEncodingPtr, double> brain_fitness;
@@ -71,8 +72,9 @@ private:
 	double speciation_threshold;
 	int repeat_evaluations;
 	GeneticEncodingPtr start_from;
+	std::mt19937 generator;
 
 }; 
 }
 
-#endif //NEAT_LEARNER_H_
+#endif //CPPNEAT_LEARNER_H_

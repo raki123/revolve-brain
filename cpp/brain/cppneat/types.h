@@ -1,5 +1,5 @@
-#ifndef NEAT_TYPES_H_
-#define NEAT_TYPES_H_
+#ifndef CPPNEAT_TYPES_H_
+#define CPPNEAT_TYPES_H_
 #include <boost/shared_ptr.hpp>
 
 namespace CPPNEAT {
@@ -16,4 +16,4 @@ namespace CPPNEAT {
 	typedef boost::shared_ptr<GeneticEncoding> GeneticEncodingPtr;
 } 
 
-#endif //NEAT_TYPES_H_
+#endif //CPPNEAT_TYPES_H_

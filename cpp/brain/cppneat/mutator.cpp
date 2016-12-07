@@ -1,6 +1,4 @@
 #include "mutatur.h"
-#include "neuron_gene.h"
-#include "connection_gene.h"
 
 #include <algorithm>
 
@@ -16,6 +14,7 @@ std::vector<Neuron::Ntype> Mutator::get_addable_types(std::map<Neuron::Ntype, Ne
 	}
 	return possible;
 }
+
 Mutator::Mutator(std::map<Neuron::Ntype, Neuron::NeuronTypeSpec> brain_spec,
 		 double new_connection_sigma,
 		 int innovation_number,
@@ -99,9 +98,10 @@ bool Mutator::add_connection_mutation(GeneticEncodingPtr genotype, double sigma)
 
 std::map<std::string, double> get_random_parameters(Neuron::NeuronTypeSpec param_specs) {
 	std::map<std::string, double> params;
+	std::mt19937 generator;
 	std::uniform_real_distribution<double> uniform(0,1);
 	for(Neuron::ParamSpec spec : param_specs.param_specs) {
-		params[spec.name] = spec.min_value + uniform(Mutator::generator)*(spec.max_value - spec.min_value);
+		params[spec.name] = spec.min_value + uniform(generator)*(spec.max_value - spec.min_value);
 		if(!spec.min_inclusive) {
 			params[spec.name] = std::max(params[spec.name], spec.min_value + spec.epsilon);
 		}

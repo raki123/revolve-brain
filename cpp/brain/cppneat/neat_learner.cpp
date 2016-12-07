@@ -6,9 +6,8 @@
 #include <random>
 
 namespace CPPNEAT {
-Learner::Learner(std::map< std::string, Neuron::NeuronTypeSpec > brain_spec, Mutator mutator, Learner::LearningConfiguration conf)
+Learner::Learner(Mutator mutator, Learner::LearningConfiguration conf)
 	: active_brain(nullptr)
-	, brain_spec(brain_spec)
 	, mutator(mutator)
 	, asexual(conf.asexual)
 	, pop_size(conf.pop_size)
@@ -185,8 +184,8 @@ void Learner::apply_structural_mutation(GeneticEncodingPtr genotype) {
 	std::uniform_real_distribution<double> uniform(0,1);
 	mutator.mutate_structure(genotype, structural_augmentation_probability);
 	
-	if(uniform(Mutator::generator) < structural_removal_probability) {
-		if(uniform(Mutator::generator) < 0.5) {
+	if(uniform(generator) < structural_removal_probability) {
+		if(uniform(generator) < 0.5) {
 			mutator.remove_connection_mutation(genotype);
 		} else {
 			mutator.remove_neuron_mutation(genotype);
@@ -196,7 +195,7 @@ void Learner::apply_structural_mutation(GeneticEncodingPtr genotype) {
 
 //ALERT::not sure if real tournament selection
 std::pair< GeneticEncodingPtr, GeneticEncodingPtr > Learner::select_for_tournament(std::vector< std::pair< GeneticEncodingPtr, double > > candidates) {
-	std::shuffle(candidates.begin(), candidates.end(), Mutator::generator);
+	std::shuffle(candidates.begin(), candidates.end(), generator);
 	candidates = std::vector<std::pair<GeneticEncodingPtr, double>>(candidates.begin(), candidates.begin() + (tournament_size - 1));
 	std::sort(candidates.begin(), candidates.end(), fitness_cmp);
 	return std::pair<GeneticEncodingPtr, GeneticEncodingPtr>(candidates[0].first, candidates[1].first);

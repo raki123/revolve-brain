@@ -1,5 +1,5 @@
-#ifndef REVOLVE_BRAIN_EXTNNCONTROLLER2_H_
-#define REVOLVE_BRAIN_EXTNNCONTROLLER2_H_
+#ifndef REVOLVE_BRAIN_NEAT_EXTNNCONTROLLER_H_
+#define REVOLVE_BRAIN_NEAT_EXTNNCONTROLLER_H_
 
 #include "controller.h"
 #include "../evaluator.h"
@@ -24,12 +24,29 @@
 namespace revolve {
 namespace brain {
   
+struct ExtNNConfig {
+	double * inputs_;    // buffer of input values from the sensors
+	double * outputs_;     // buffer of output values for the actuators
 
-class ExtNNController1 : public Controller<ExtNNConfig>
+	std::vector<NeuronPtr> allNeurons_; //vector containing all neurons
+	std::vector<NeuronPtr> inputNeurons_; //vector containing the input neurons
+	std::vector<NeuronPtr> outputNeurons_; //vector containing the output neurons
+	std::vector<NeuronPtr> hiddenNeurons_; //vector containing the hidden neurons
+
+	std::map<NeuronPtr, int> outputPositionMap_; 	// positions for indexing into the outputs_ buffer for each output neuron
+	std::map<NeuronPtr, int> inputPositionMap_;	// positions for indexing into the inputs_ buffer for each input neuron
+
+	std::map<std::string, NeuronPtr> idToNeuron_;	// Map neuron id strings to Neuron objects
+
+	std::vector<NeuralConnectionPtr> connections_; //vector of all the neural connections
+
+	int numInputNeurons_; //number of input neurons
+	int numOutputNeurons_; // number of output neurons
+	int numHiddenNeurons_; // number of hidden neurons
+};
+class ExtNNController1 : public Controller<boost::shared_ptr<ExtNNConfig>>
 {
 public:
-  
-	struct ExtNNConfig;
 	/**
 	 * Constructor for a neural network including neurons that are of a different type than the usual ones.
 	 * @param modelName: name of the model
@@ -40,7 +57,7 @@ public:
 	 * @return pointer to the neural network
 	 */
 	ExtNNController1(std::string modelName,
-			      ExtNNConfig Config,
+			      boost::shared_ptr<ExtNNConfig> Config,
 			      EvaluatorPtr evaluator,
 			      const std::vector< ActuatorPtr > &actuators ,
 			      const std::vector< SensorPtr > &sensors);
@@ -58,6 +75,18 @@ public:
 			    const std::vector< SensorPtr > &sensors,
 			    double t,
 			    double step);
+			    
+	/**
+	 * Gets the weight of all the connections
+	 * @return weights of all neural connections
+	 */
+	virtual boost::shared_ptr<ExtNNConfig> getGenome();
+	
+	/**
+	 * Changes the weights of the neural connections
+	 * @param weights: new weights to be assigned
+	 */
+	virtual void setGenome(boost::shared_ptr<ExtNNConfig> config);
 
 protected:
 
@@ -91,18 +120,6 @@ protected:
 			      const std::string &socket,
 			      double weight,
 			      const std::map<std::string, NeuronPtr> &idToNeuron);
-
-	/**
-	 * Gets the weight of all the connections
-	 * @return weights of all neural connections
-	 */
-	virtual ExtNNConfig getGenome() override;
-	
-	/**
-	 * Changes the weights of the neural connections
-	 * @param weights: new weights to be assigned
-	 */
-	virtual void setGenome(ExtNNConfig config);
 	
 	/**
 	 * Delete all hidden neurons and all connections
@@ -133,27 +150,7 @@ protected:
 	int numInputNeurons_; //number of input neurons
 	int numOutputNeurons_; // number of output neurons
 	int numHiddenNeurons_; // number of hidden neurons
-public:
-	struct ExtNNConfig {
-		double * inputs_;    // buffer of input values from the sensors
-		double * outputs_;     // buffer of output values for the actuators
 
-		std::vector<NeuronPtr> allNeurons_; //vector containing all neurons
-		std::vector<NeuronPtr> inputNeurons_; //vector containing the input neurons
-		std::vector<NeuronPtr> outputNeurons_; //vector containing the output neurons
-		std::vector<NeuronPtr> hiddenNeurons_; //vector containing the hidden neurons
-
-		std::map<NeuronPtr, int> outputPositionMap_; 	// positions for indexing into the outputs_ buffer for each output neuron
-		std::map<NeuronPtr, int> inputPositionMap_;	// positions for indexing into the inputs_ buffer for each input neuron
-
-		std::map<std::string, NeuronPtr> idToNeuron_;	// Map neuron id strings to Neuron objects
-
-		std::vector<NeuralConnectionPtr> connections_; //vector of all the neural connections
-
-		int numInputNeurons_; //number of input neurons
-		int numOutputNeurons_; // number of output neurons
-		int numHiddenNeurons_; // number of hidden neurons
-	};
 
 
 

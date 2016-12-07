@@ -1,5 +1,5 @@
-#ifndef NEAT_CROSSOVER_H_
-#define NEAT_CROSSOVER_H_
+#ifndef NEAT_GENETIC_ENCODING_CROSSOVER_H_
+#define NEAT_GENETIC_ENCODING_CROSSOVER_H_
 
 #include "genetic_encoding.h"
 

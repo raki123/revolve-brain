@@ -1,14 +1,14 @@
 #ifndef NEAT_MUTATOR_H_
 #define NEAT_MUTATOR_H_
 
-#include "neuron.h"
 #include "genetic_encoding.h"
+
 #include <map>
 #include <string>
 #include <vector>
 #include <random>
 
-//class containg all information that is evolved for neurons
+//class responsible for mutation
 namespace CPPNEAT {
 class Mutator {
 public:
@@ -20,7 +20,6 @@ public:
 		std::vector<Neuron::Ntype> addable_neurons);
 	
 	static std::vector<Neuron::Ntype> get_addable_types(std::map<Neuron::Ntype,Neuron::NeuronTypeSpec> brain_spec);
-	static std::mt19937 generator;
 	
 	void mutate_neuron_params(GeneticEncodingPtr genotype, double probability, double sigma);
 	void mutate_weights(GeneticEncodingPtr genotype, double probability, double sigma);
@@ -44,6 +43,7 @@ private:
 	int innovation_number;
 	int max_attempts;
 	std::vector<Neuron::Ntype> addable_neurons;
+	std::mt19937 generator;
 };
 }
 

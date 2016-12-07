@@ -19,7 +19,7 @@ public:
 		SIMPLE = 0,
 		SIGMOID = 1,
 		DIFFERENTIAL_CPG = 2,
-		INPUT_TYPE =3,
+		INPUT =3,
 		BIAS = 4,
 		UNDEFINED = 5
 	};
