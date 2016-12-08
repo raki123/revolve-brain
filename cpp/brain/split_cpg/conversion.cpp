@@ -3,23 +3,22 @@
 #include "../cppneat/connection_gene.h"
 
 #include <map>
+#include <iostream>
 
 namespace revolve {
 namespace brain {
 
 std::map<boost::shared_ptr<ExtNNConfig>, CPPNEAT::GeneticEncodingPtr> known;
-// boost::shared_ptr<ExtNNConfig> (*convertForController_)(CPPNEAT::GeneticEncodingPtr genotype) = &convertForController;
-// CPPNEAT::GeneticEncodingPtr (*convertForLearner_)(boost::shared_ptr<ExtNNConfig> config) = &convertForLearner;
 
 CPPNEAT::Learner::LearningConfiguration learning_configuration; 
-extern std::map<CPPNEAT::Neuron::Ntype, CPPNEAT::Neuron::NeuronTypeSpec> brain_spec;
+std::map<CPPNEAT::Neuron::Ntype, CPPNEAT::Neuron::NeuronTypeSpec> brain_spec;
 
 void set_learning_conf()
 {
 	learning_configuration.asexual = false;
-	learning_configuration.pop_size = 50;
-	learning_configuration.tournament_size = 10;
-	learning_configuration.num_children = 45;
+	learning_configuration.pop_size = 10;
+	learning_configuration.tournament_size = 5;
+	learning_configuration.num_children = 9;
 	learning_configuration.weight_mutation_probability = 0.8;
 	learning_configuration.weight_mutation_sigma = 1.0;
 	learning_configuration.param_mutation_probability = 0.8;
@@ -123,6 +122,7 @@ boost::shared_ptr<ExtNNConfig> convertForController(CPPNEAT::GeneticEncodingPtr 
 		NeuronPtr newNeuron;
 		std::string neuronId = neuron_gene->neuron->neuron_id;
 		std::map<std::string, double> neuron_params = neuron_gene->neuron->neuron_params;
+		
 		switch(neuron_gene->neuron->layer) {
 			case CPPNEAT::Neuron::INPUT_LAYER: {
 				newNeuron.reset(new InputNeuron(neuronId, neuron_params));
@@ -197,7 +197,6 @@ boost::shared_ptr<ExtNNConfig> convertForController(CPPNEAT::GeneticEncodingPtr 
 		config->idToNeuron_[neuronId] = newNeuron;
 		innov_number_to_neuron[neuron_gene->getInnovNumber()] = newNeuron;
 	}
-	
 	for(CPPNEAT::ConnectionGenePtr connection_gene : connection_genes) {
 		NeuronPtr dst = innov_number_to_neuron[connection_gene->mark_to];
 		NeuralConnectionPtr newConnection(new NeuralConnection(innov_number_to_neuron[connection_gene->mark_from],
@@ -207,13 +206,12 @@ boost::shared_ptr<ExtNNConfig> convertForController(CPPNEAT::GeneticEncodingPtr 
 		config->connections_.push_back(newConnection);
 	}
 	known[config] = genotype;
-
+	return config;
 	
 }
 CPPNEAT::GeneticEncodingPtr convertForLearner(boost::shared_ptr<ExtNNConfig> config) {
 	return known[config];
 }
-boost::shared_ptr<ExtNNConfig> (*convertForController_)(CPPNEAT::GeneticEncodingPtr genotype) = &convertForController;
-CPPNEAT::GeneticEncodingPtr (*convertForLearner_)(boost::shared_ptr<ExtNNConfig> config) = &convertForLearner;
+
 }	
 }

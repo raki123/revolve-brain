@@ -48,7 +48,7 @@ private:
 
 	GeneticEncodingPtr active_brain;
 	double fitness;
-	std::vector<GeneticEncodingPtr> evalutation_queue;
+	std::vector<GeneticEncodingPtr> evaluation_queue;
 	std::vector<GeneticEncodingPtr> brain_population;
 	std::map<GeneticEncodingPtr, double> brain_fitness;
 	std::map<GeneticEncodingPtr, double> brain_velocity;

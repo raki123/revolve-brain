@@ -17,8 +17,6 @@ ExtNNController1::ExtNNController1(std::string modelName,
 	modelName_ = modelName;
 	
 	evaluator_ = evaluator;
-	inputs_ = Config->inputs_;
-	outputs_ = Config->outputs_;
 	allNeurons_ = Config->allNeurons_;
 	inputNeurons_ = Config->inputNeurons_;
 	outputNeurons_ = Config->outputNeurons_;
@@ -30,6 +28,17 @@ ExtNNController1::ExtNNController1(std::string modelName,
 	numInputNeurons_ = Config->numInputNeurons_;
 	numOutputNeurons_ = Config->numOutputNeurons_;
 	numHiddenNeurons_ = Config->numHiddenNeurons_;
+	
+	unsigned int p = 0;
+	for (auto sensor : sensors) {
+		p += sensor->inputs();
+	}
+	inputs_ = new double[p];
+	p = 0;
+	for(auto actuator : actuators) {
+		p+= actuator->outputs();
+	}
+	outputs_ = new double[p];
 }
 
 
@@ -184,13 +193,16 @@ void ExtNNController1::update(const std::vector<ActuatorPtr>& actuators,
 		actuator->update(&outputs_[p], step);
 		p += actuator->outputs();
 	}
+// 	std::cout << p << std::endl;
+// 	for(int i = 0; i < p; i++) {
+// 		std::cout << outputs_[i] << " ";
+// 	}
+// 	std::cout << std::endl;
 }
 
 boost::shared_ptr<ExtNNConfig> ExtNNController1::getGenome()
 {
 	boost::shared_ptr<ExtNNConfig> Config(new ExtNNConfig());
-	Config->inputs_ = inputs_;
-	Config->outputs_ = outputs_;
 	Config->allNeurons_ = allNeurons_;
 	Config->inputNeurons_ = inputNeurons_;
 	Config->outputNeurons_ = outputNeurons_;
@@ -207,8 +219,6 @@ boost::shared_ptr<ExtNNConfig> ExtNNController1::getGenome()
 
 void ExtNNController1::setGenome(boost::shared_ptr<ExtNNConfig> Config)
 {
-	inputs_ = Config->inputs_;
-	outputs_ = Config->outputs_;
 	allNeurons_ = Config->allNeurons_;
 	inputNeurons_ = Config->inputNeurons_;
 	outputNeurons_ = Config->outputNeurons_;

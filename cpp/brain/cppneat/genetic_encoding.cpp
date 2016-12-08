@@ -95,37 +95,41 @@ std::vector< std::pair< GenePtr, GenePtr > > GeneticEncoding::get_pairs(std::vec
 	
 	int mark = min_mark;
 	
-	int i;
-	
 	while(mark < max_mark + 1) {
 		//jump1 and jump2 are here to skip long sequences of empty historical marks
 		GenePtr gene1 = nullptr;
 		int jump1 = mark + 1;
-		for(i = start_from1; i < num_genes1; i++) {
+		for(int i = start_from1; i < num_genes1; i++) {
 			if(genes_sorted1[i]->getInnovNumber() == mark) {
 				gene1 = genes_sorted1[i];
 				start_from1 = i;
+				break;
 			} else if(genes_sorted1[i]->getInnovNumber() > mark) { //if there is a gap jump over it
 				jump1 = genes_sorted1[i]->getInnovNumber();
 				start_from1 = i;
+				break;
 			} else if(i == num_genes1 - 1) { // if the end of the gene sequence is reached
 				jump1 = max_mark + 1;
 				start_from1 = i;
+				break;
 			}
 		}
 		
 		GenePtr gene2 = nullptr;
 		int jump2 = mark + 1;
-		for(i = start_from2; i < num_genes2; i++) {
+		for(int i = start_from2; i < num_genes2; i++) {
 			if(genes_sorted2[i]->getInnovNumber() == mark) {
 				gene2 = genes_sorted2[i];
 				start_from2 = i;
+				break;
 			} else if(genes_sorted2[i]->getInnovNumber() > mark) { //if there is a gap jump over it
 				jump2 = genes_sorted2[i]->getInnovNumber();
 				start_from2 = i;
+				break;
 			} else if(i == num_genes2 - 1) { // if the end of the gene sequence is reached
 				jump2 = max_mark + 1;
 				start_from2 = i;
+				break;
 			}
 		}
 		

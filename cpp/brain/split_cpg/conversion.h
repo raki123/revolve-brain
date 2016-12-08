@@ -8,12 +8,12 @@
 namespace revolve {
 namespace brain {
 
-extern boost::shared_ptr<ExtNNConfig> (*convertForController_)(CPPNEAT::GeneticEncodingPtr genotype);
-extern CPPNEAT::GeneticEncodingPtr (*convertForLearner_)(boost::shared_ptr<ExtNNConfig> config);
 extern CPPNEAT::Learner::LearningConfiguration learning_configuration;
 extern std::map<CPPNEAT::Neuron::Ntype, CPPNEAT::Neuron::NeuronTypeSpec> brain_spec;
 void set_brain_spec();
 void set_learning_conf();
+boost::shared_ptr<ExtNNConfig> convertForController(CPPNEAT::GeneticEncodingPtr genotype);
+CPPNEAT::GeneticEncodingPtr convertForLearner(boost::shared_ptr<ExtNNConfig> config);
 }
 }
 

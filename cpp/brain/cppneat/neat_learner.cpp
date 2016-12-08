@@ -22,7 +22,9 @@ Learner::Learner(Mutator mutator, Learner::LearningConfiguration conf)
 	, max_generations(conf.max_generations)
 	, speciation_threshold(conf.speciation_threshold)
 	, repeat_evaluations(conf.repeat_evaluations)
-	, start_from(conf.start_from) {
+	, start_from(conf.start_from)
+	, generation_number(0)
+	, total_brains_evaluated(0) {
 	if(pop_size < 2) {
 		pop_size = 2;
 	}
@@ -33,6 +35,7 @@ Learner::Learner(Mutator mutator, Learner::LearningConfiguration conf)
 		tournament_size = 2;
 	}
 	if(start_from != nullptr) {
+		std::cout << "generating inital population from starting network" << std::endl;
 		initialise(std::vector<GeneticEncodingPtr>());
 	}
 	
@@ -45,9 +48,10 @@ void Learner::initialise(std::vector< GeneticEncodingPtr > init_genotypes) {
 		brain_population = init_genotypes;
 	}
 	for(GeneticEncodingPtr brain : brain_population) {
-		evalutation_queue.push_back(brain);
+		evaluation_queue.push_back(brain);
 	}
-	
+	active_brain = evaluation_queue.back();
+	evaluation_queue.pop_back();	
 }
 //     @trollius.coroutine
 //     def initialize(self, world, init_genotypes=None):
@@ -80,7 +84,7 @@ std::vector< GeneticEncodingPtr > Learner::get_init_brains() {
 }
 
 void Learner::reportFitness(std::string id, GeneticEncodingPtr genotype, double fitness) {
-	std::cout << "Evalutation over\n" << "Evaluated " << total_brains_evaluated+1 << " brains \n" << "Last fitness: " << fitness << std::endl;
+	std::cout << "Evalutation over\n" << "Evaluated " << ++total_brains_evaluated << " brains \n" << "Last fitness: " << fitness << std::endl;
 	
 	fitness_buffer.push_back(fitness);
 	if(fitness_buffer.size() == repeat_evaluations) {
@@ -92,18 +96,18 @@ void Learner::reportFitness(std::string id, GeneticEncodingPtr genotype, double 
 		brain_fitness[active_brain] = average_fitness;
 		brain_velocity[active_brain] = average_fitness;
 		
-		if(evalutation_queue.size() == 0) {
+		if(evaluation_queue.size() == 0) {
 			share_fitness();
 			
 			produce_new_generation();
-			std::reverse(evalutation_queue.begin(), evalutation_queue.end());
+			std::reverse(evaluation_queue.begin(), evaluation_queue.end());
 			generation_number++;
 		}
-		active_brain = evalutation_queue.back();
-		evalutation_queue.pop_back();
+		active_brain = evaluation_queue.back();
+		evaluation_queue.pop_back();
 		fitness_buffer.clear();
-		total_brains_evaluated++;
 		if(generation_number >= max_generations) {
+			std::cout << "Maximum number of generations reached" << std::endl;
 			std::exit(0);
 		}
 	}
@@ -117,7 +121,7 @@ void Learner::share_fitness() {
 	for(auto it : brain_fitness) {
 		GeneticEncodingPtr cur_brain = it.first;
 		double cur_fitness = it.second;
-		int species_size = 0;
+		int species_size = 1;
 		for(auto it2 : brain_fitness) {
 			GeneticEncodingPtr other_brain = it.first;
 			if(other_brain != cur_brain) {
@@ -153,11 +157,11 @@ void Learner::produce_new_generation() {
 	}
 	for(std::pair<GeneticEncodingPtr, GeneticEncodingPtr> parents : parent_pairs) {
 		GeneticEncodingPtr child_genotype = produce_child(parents.first, parents.second);
-		evalutation_queue.push_back(child_genotype);
+		evaluation_queue.push_back(child_genotype);
 	}
 	i = 0;
 	while(i++ < (pop_size - num_children)) {
-		evalutation_queue.push_back(velocity_pairs[i].first);
+		evaluation_queue.push_back(velocity_pairs[i].first);
 	}
 	brain_fitness.clear();
 	brain_velocity.clear();
@@ -196,7 +200,7 @@ void Learner::apply_structural_mutation(GeneticEncodingPtr genotype) {
 //ALERT::not sure if real tournament selection
 std::pair< GeneticEncodingPtr, GeneticEncodingPtr > Learner::select_for_tournament(std::vector< std::pair< GeneticEncodingPtr, double > > candidates) {
 	std::shuffle(candidates.begin(), candidates.end(), generator);
-	candidates = std::vector<std::pair<GeneticEncodingPtr, double>>(candidates.begin(), candidates.begin() + (tournament_size - 1));
+	candidates = std::vector<std::pair<GeneticEncodingPtr, double>>(candidates.begin(), candidates.begin() + tournament_size);
 	std::sort(candidates.begin(), candidates.end(), fitness_cmp);
 	return std::pair<GeneticEncodingPtr, GeneticEncodingPtr>(candidates[0].first, candidates[1].first);
 }

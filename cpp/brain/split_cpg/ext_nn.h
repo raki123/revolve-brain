@@ -25,8 +25,6 @@ namespace revolve {
 namespace brain {
   
 struct ExtNNConfig {
-	double * inputs_;    // buffer of input values from the sensors
-	double * outputs_;     // buffer of output values for the actuators
 
 	std::vector<NeuronPtr> allNeurons_; //vector containing all neurons
 	std::vector<NeuronPtr> inputNeurons_; //vector containing the input neurons
