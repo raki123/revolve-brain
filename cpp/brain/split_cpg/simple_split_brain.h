@@ -14,7 +14,7 @@ G idem(G g) { return g;}
 template <typename G>
 class SimpleSplitBrain : public ConvSplitBrain<G,G> {
 public:
-    SimpleSplitBrain() : ConvSplitBrain<G,G>(&idem, &idem) { };
+    SimpleSplitBrain(std::string modelName) : ConvSplitBrain<G,G>(&idem, &idem, modelName) { };
     virtual ~SimpleSplitBrain() {};
     
     /**

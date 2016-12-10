@@ -25,7 +25,7 @@ void set_learning_conf()
 	learning_configuration.param_mutation_sigma = 0.25;
 	learning_configuration.structural_augmentation_probability = 0;
 	learning_configuration.structural_removal_probability = 0;
-	learning_configuration.max_generations = 1000;
+	learning_configuration.max_generations = 100;
 	learning_configuration.speciation_threshold = 0;
 	learning_configuration.repeat_evaluations = 1;
 }
@@ -47,39 +47,54 @@ void set_brain_spec()
 	CPPNEAT::Neuron::NeuronTypeSpec input;
 	input.possible_layers.push_back(CPPNEAT::Neuron::INPUT_LAYER);
 	
+	brain_spec[CPPNEAT::Neuron::INPUT] = input;
+	
+	
 	CPPNEAT::Neuron::NeuronTypeSpec sigmoid;
 	CPPNEAT::Neuron::ParamSpec bias_spec;
-	set_param_spec(bias_spec, "bias", eps, -1, 1, max_inclusive, min_inclusive);
+	set_param_spec(bias_spec, "rv:bias", eps, -1, 1, max_inclusive, min_inclusive);
 	CPPNEAT::Neuron::ParamSpec gain_spec;
-	set_param_spec(gain_spec, "gain", eps, 0, 1, max_inclusive, min_inclusive);
+	set_param_spec(gain_spec, "rv:gain", eps, 0, 1, max_inclusive, min_inclusive);
 	sigmoid.param_specs.push_back(bias_spec);
 	sigmoid.param_specs.push_back(gain_spec);
 	sigmoid.possible_layers.push_back(CPPNEAT::Neuron::HIDDEN_LAYER);
 	sigmoid.possible_layers.push_back(CPPNEAT::Neuron::OUTPUT_LAYER);
+	
+	brain_spec[CPPNEAT::Neuron::SIGMOID] = sigmoid;
 
+	
 	CPPNEAT::Neuron::NeuronTypeSpec simple;
 	simple.param_specs.push_back(bias_spec);
 	simple.param_specs.push_back(gain_spec);
 	simple.possible_layers.push_back(CPPNEAT::Neuron::HIDDEN_LAYER);
 	simple.possible_layers.push_back(CPPNEAT::Neuron::OUTPUT_LAYER);
+		
+	brain_spec[CPPNEAT::Neuron::SIMPLE] = simple;
+
 
 	CPPNEAT::Neuron::NeuronTypeSpec bias;
 	bias.param_specs.push_back(bias_spec);
 	bias.possible_layers.push_back(CPPNEAT::Neuron::HIDDEN_LAYER);
 	bias.possible_layers.push_back(CPPNEAT::Neuron::OUTPUT_LAYER);
+	
+		
+	brain_spec[CPPNEAT::Neuron::BIAS] = bias;
+
 
 	CPPNEAT::Neuron::NeuronTypeSpec oscillator;
 	CPPNEAT::Neuron::ParamSpec period_spec;
-	set_param_spec(period_spec, "period", eps, 0, 10, max_inclusive, min_inclusive);
+	set_param_spec(period_spec, "rv:period", eps, 0, 10, max_inclusive, min_inclusive);
 	CPPNEAT::Neuron::ParamSpec phase_offset_spec;
-	set_param_spec(phase_offset_spec, "phase_offset", eps, 0, 3.14, max_inclusive, min_inclusive);
+	set_param_spec(phase_offset_spec, "rv:phase_offset", eps, 0, 3.14, max_inclusive, min_inclusive);
 	CPPNEAT::Neuron::ParamSpec amplitude_spec;
-	set_param_spec(amplitude_spec, "amplitude", eps, 0, 10000, max_inclusive, min_inclusive);
+	set_param_spec(amplitude_spec, "rv:amplitude", eps, 0, 10000, max_inclusive, min_inclusive);
 	oscillator.param_specs.push_back(period_spec);
 	oscillator.param_specs.push_back(phase_offset_spec);
 	oscillator.param_specs.push_back(amplitude_spec);
 	oscillator.possible_layers.push_back(CPPNEAT::Neuron::HIDDEN_LAYER);
 	oscillator.possible_layers.push_back(CPPNEAT::Neuron::OUTPUT_LAYER);
+	//ALERT:: not added to brain_spec
+
 
 
 //         # these neurons are for the nonlinear oscillator CPG model found in Ijspeert (2005):
@@ -103,6 +118,10 @@ void set_brain_spec()
 	diff.param_specs.push_back(bias_spec);
 	diff.possible_layers.push_back(CPPNEAT::Neuron::HIDDEN_LAYER);
 	diff.possible_layers.push_back(CPPNEAT::Neuron::OUTPUT_LAYER);
+	
+		
+	brain_spec[CPPNEAT::Neuron::DIFFERENTIAL_CPG] = diff;
+
 }
 
 

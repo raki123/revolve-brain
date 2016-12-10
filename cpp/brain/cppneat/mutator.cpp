@@ -1,6 +1,7 @@
 #include "mutatur.h"
 
 #include <algorithm>
+#include <iostream>
 
 namespace CPPNEAT {
 
@@ -25,6 +26,9 @@ Mutator::Mutator(std::map<Neuron::Ntype, Neuron::NeuronTypeSpec> brain_spec,
 	, innovation_number(innovation_number)
 	, max_attempts(max_attempts)
 	, addable_neurons(addable_neurons) { //TODO:: make sure everything works with the addable neurons
+	if(addable_neurons.size() == 0) {
+		this->addable_neurons = get_addable_types(brain_spec);
+	}
 	
 }
 
@@ -112,6 +116,8 @@ std::map<std::string, double> get_random_parameters(Neuron::NeuronTypeSpec param
 	return params;
 }
 void Mutator::add_neuron_mutation(GeneticEncodingPtr genotype) {
+	assert(genotype->connection_genes.size() > 0);
+	assert(addable_neurons.size() > 0);
 	std::uniform_int_distribution<int> choice1(0,genotype->connection_genes.size() -1);
 	int split_id = choice1(generator);
 	ConnectionGenePtr split = genotype->connection_genes[split_id];
@@ -129,7 +135,7 @@ void Mutator::add_neuron_mutation(GeneticEncodingPtr genotype) {
 	
 	std::map<std::string, double> new_neuron_params = get_random_parameters(brain_spec[new_neuron_type]);
 	
-	NeuronPtr neuron_middle(new Neuron("augment" + std::to_string(innovation_number), 
+	NeuronPtr neuron_middle(new Neuron("augment" + std::to_string(innovation_number+1), 
 					   Neuron::HIDDEN_LAYER,
 					   new_neuron_type,
 					   new_neuron_params));
@@ -171,8 +177,7 @@ void Mutator::remove_neuron_mutation(GeneticEncodingPtr genotype) {
 }
 
 int Mutator::add_neuron(NeuronPtr neuron, GeneticEncodingPtr genotype) {
-	NeuronGenePtr new_neuron_gene(new NeuronGene(neuron, innovation_number, true));
-	innovation_number++;
+	NeuronGenePtr new_neuron_gene(new NeuronGene(neuron, ++innovation_number, true));
 	genotype->add_neuron_gene(new_neuron_gene);
 	return new_neuron_gene->getInnovNumber();
 }
@@ -181,10 +186,9 @@ int Mutator::add_connection(int mark_from, int mark_to, double weight, GeneticEn
 	ConnectionGenePtr new_conn_gene(new ConnectionGene(mark_from,
 							   mark_to,
 							   weight,
-							   innovation_number,
+							   ++innovation_number,
 							   true,
 						           socket));
-	innovation_number++;
 	genotype->add_connection_gene(new_conn_gene);
 	return new_conn_gene->getInnovNumber();
 }

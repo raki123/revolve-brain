@@ -270,8 +270,8 @@ void GeneticEncoding::remonve_neuron_gene(int index) {
 }
 
 void GeneticEncoding::remove_connection_gene(int index) {
-	GenePtr old = boost::dynamic_pointer_cast<Gene>(neuron_genes[index]);
-	neuron_genes.erase(neuron_genes.begin()+index);
+	GenePtr old = boost::dynamic_pointer_cast<Gene>(connection_genes[index]);
+	connection_genes.erase(connection_genes.begin()+index);
 	auto it = std::find(all_genes_sorted.begin(), all_genes_sorted.end(), old);
 	all_genes_sorted.erase(it);
 }

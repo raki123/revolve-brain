@@ -30,7 +30,7 @@ public:
 		int repeat_evaluations;
 		GeneticEncodingPtr start_from;
 	};
-	Learner(Mutator mutator, LearningConfiguration conf);
+	Learner(MutatorPtr mutator, LearningConfiguration conf);
 	void initialise(std::vector<GeneticEncodingPtr> init_genotypes);
 private:
 	virtual void reportFitness(std::string id, GeneticEncodingPtr genotype, double fitness);
@@ -56,7 +56,7 @@ private:
 	int generation_number;
 	int total_brains_evaluated;
 	
-	Mutator mutator;
+	MutatorPtr mutator;
 	
 	bool asexual;
 	int pop_size;

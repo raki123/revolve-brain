@@ -6,7 +6,7 @@
 #include <random>
 
 namespace CPPNEAT {
-Learner::Learner(Mutator mutator, Learner::LearningConfiguration conf)
+Learner::Learner(MutatorPtr mutator, Learner::LearningConfiguration conf)
 	: active_brain(nullptr)
 	, mutator(mutator)
 	, asexual(conf.asexual)
@@ -75,9 +75,9 @@ std::vector< GeneticEncodingPtr > Learner::get_init_brains() {
 		GeneticEncodingPtr mutated_genotype = start_from->copy();
 		apply_structural_mutation(mutated_genotype);
 		
-		mutator.mutate_weights(mutated_genotype, weight_mutation_probability, weight_mutation_sigma);
+		mutator->mutate_weights(mutated_genotype, weight_mutation_probability, weight_mutation_sigma);
 		
-		mutator.mutate_neuron_params(mutated_genotype, param_mutation_probability, param_mutation_sigma);
+		mutator->mutate_neuron_params(mutated_genotype, param_mutation_probability, param_mutation_sigma);
 		init_pop.push_back(mutated_genotype);
 	}
 	return init_pop;
@@ -175,9 +175,9 @@ GeneticEncodingPtr Learner::produce_child(GeneticEncodingPtr parent1, GeneticEnc
 		child_genotype = Crossover::crossover(parent1, parent2);
 	}
 	
-	mutator.mutate_weights(child_genotype, weight_mutation_probability, weight_mutation_sigma);
+	mutator->mutate_weights(child_genotype, weight_mutation_probability, weight_mutation_sigma);
 	
-	mutator.mutate_neuron_params(child_genotype, param_mutation_probability, param_mutation_sigma);
+	mutator->mutate_neuron_params(child_genotype, param_mutation_probability, param_mutation_sigma);
 	
 	apply_structural_mutation(child_genotype);
 	
@@ -186,13 +186,13 @@ GeneticEncodingPtr Learner::produce_child(GeneticEncodingPtr parent1, GeneticEnc
 
 void Learner::apply_structural_mutation(GeneticEncodingPtr genotype) {
 	std::uniform_real_distribution<double> uniform(0,1);
-	mutator.mutate_structure(genotype, structural_augmentation_probability);
+	mutator->mutate_structure(genotype, structural_augmentation_probability);
 	
 	if(uniform(generator) < structural_removal_probability) {
 		if(uniform(generator) < 0.5) {
-			mutator.remove_connection_mutation(genotype);
+			mutator->remove_connection_mutation(genotype);
 		} else {
-			mutator.remove_neuron_mutation(genotype);
+			mutator->remove_neuron_mutation(genotype);
 		}
 	}
 }
