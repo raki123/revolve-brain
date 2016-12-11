@@ -21,7 +21,8 @@ public:
 		DIFFERENTIAL_CPG = 2,
 		INPUT =3,
 		BIAS = 4,
-		UNDEFINED = 5
+		OSCILLATOR = 5,
+		UNDEFINED = 6
 	};
 	struct ParamSpec {
 		std::string name;

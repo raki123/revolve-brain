@@ -16,16 +16,16 @@ std::map<CPPNEAT::Neuron::Ntype, CPPNEAT::Neuron::NeuronTypeSpec> brain_spec;
 void set_learning_conf()
 {
 	learning_configuration.asexual = false;
-	learning_configuration.pop_size = 10;
-	learning_configuration.tournament_size = 5;
-	learning_configuration.num_children = 9;
+	learning_configuration.pop_size = 50;
+	learning_configuration.tournament_size = 40;
+	learning_configuration.num_children = 45;
 	learning_configuration.weight_mutation_probability = 0.8;
 	learning_configuration.weight_mutation_sigma = 1.0;
 	learning_configuration.param_mutation_probability = 0.8;
 	learning_configuration.param_mutation_sigma = 0.25;
-	learning_configuration.structural_augmentation_probability = 0;
+	learning_configuration.structural_augmentation_probability = 0.8;
 	learning_configuration.structural_removal_probability = 0;
-	learning_configuration.max_generations = 100;
+	learning_configuration.max_generations = 40;
 	learning_configuration.speciation_threshold = 0;
 	learning_configuration.repeat_evaluations = 1;
 }
@@ -93,7 +93,8 @@ void set_brain_spec()
 	oscillator.param_specs.push_back(amplitude_spec);
 	oscillator.possible_layers.push_back(CPPNEAT::Neuron::HIDDEN_LAYER);
 	oscillator.possible_layers.push_back(CPPNEAT::Neuron::OUTPUT_LAYER);
-	//ALERT:: not added to brain_spec
+	
+	brain_spec[CPPNEAT::Neuron::OSCILLATOR] = oscillator;
 
 
 
@@ -168,8 +169,12 @@ boost::shared_ptr<ExtNNConfig> convertForController(CPPNEAT::GeneticEncodingPtr 
 						newNeuron.reset(new BiasNeuron(neuronId, neuron_params));
 						break;
 					}
+					case CPPNEAT::Neuron::OSCILLATOR: {
+						newNeuron.reset(new OscillatorNeuron(neuronId, neuron_params));
+						break;
+					}
 					default: {
-						throw std::runtime_error("Robot brain error");
+						throw std::runtime_error("Unkown neuron type to be converted");
 						break;
 					}
 						
@@ -196,8 +201,12 @@ boost::shared_ptr<ExtNNConfig> convertForController(CPPNEAT::GeneticEncodingPtr 
 						newNeuron.reset(new BiasNeuron(neuronId, neuron_params));
 						break;
 					}
+					case CPPNEAT::Neuron::OSCILLATOR: {
+						newNeuron.reset(new OscillatorNeuron(neuronId, neuron_params));
+						break;
+					}
 					default: {
-						throw std::runtime_error("Robot brain error");
+						throw std::runtime_error("Unknown neuron type to be converted");
 						break;
 					}
 						

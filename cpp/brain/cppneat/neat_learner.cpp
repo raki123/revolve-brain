@@ -158,6 +158,7 @@ void Learner::produce_new_generation() {
 	for(std::pair<GeneticEncodingPtr, GeneticEncodingPtr> parents : parent_pairs) {
 		GeneticEncodingPtr child_genotype = produce_child(parents.first, parents.second);
 		evaluation_queue.push_back(child_genotype);
+		std::cout << child_genotype->get_sorted_genes().size() << std::endl;
 	}
 	i = 0;
 	while(i++ < (pop_size - num_children)) {
