@@ -85,44 +85,10 @@ public:
 	 * @param weights: new weights to be assigned
 	 */
 	virtual void setGenome(boost::shared_ptr<ExtNNConfig> config);
+	
+	void writeNetwork(std::ofstream &write_to);
 
 protected:
-
-	// Mutex for updating the network
-	//boost::mutex networkMutex_;
-
-
-	/**
-	* This function creates neurons and adds them to appropriate lists
-	* @param neuronId: id of the neuron
-	* @param neuronType: type of the neuron
-	* @param neuronLayer: layer the neuron should be added to, can be 'hidden', 'input' or 'output'
-	* @param params: parameters of the new neuron
-	* @return pointer to the new neuron that was added
-	*/
-	NeuronPtr addNeuron(const std::string &neuronId,
-			    const std::string &neuronType, 
-			    const std::string &neuronLayer, 
-			    const std::map<std::string, double> &params);
-	
-	/**
-	* Method to add a new connection to the network
-	* @param src: the beginning of the connetion
-	* @param dst: the end of the connection
-	* @param weight: weighting factor of the connection
-	* @param idToNeuron: mapping between the neurons and their ids
-	* @return pointer to the neural connection
-	*/
-	void connectionHelper(const std::string &src,
-			      const std::string &dst,
-			      const std::string &socket,
-			      double weight,
-			      const std::map<std::string, NeuronPtr> &idToNeuron);
-	
-	/**
-	 * Delete all hidden neurons and all connections
-	 */
-	void flush();
 
 
 

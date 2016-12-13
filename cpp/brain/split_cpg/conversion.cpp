@@ -26,7 +26,7 @@ void set_learning_conf()
 	learning_configuration.structural_augmentation_probability = 0.8;
 	learning_configuration.structural_removal_probability = 0;
 	learning_configuration.max_generations = 40;
-	learning_configuration.speciation_threshold = 0;
+	learning_configuration.speciation_threshold = 0.03;
 	learning_configuration.repeat_evaluations = 1;
 }
 

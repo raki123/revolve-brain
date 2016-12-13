@@ -3,8 +3,10 @@
 
 #include "split_brain.h"
 #include "../evaluator.h"
+#include "ext_nn.h"
 #include <iostream>
 #include <fstream>
+#include <boost/graph/adjacency_list.hpp>
 
 namespace revolve {
 namespace brain {
@@ -14,7 +16,10 @@ template <typename G, typename H>
 class ConvSplitBrain : public SplitBrain<G,H> {
 public:
     ConvSplitBrain(G (*convertForController)(H), H (*convertForLearner)(G), std::string model_name) 
-        : first_run(true)
+        : eval_running(false)
+	, reset(true)
+	, reset_duration(3)
+	, first_run(true)
 	, run_count(0)
         , convertForController_(convertForController)
 	, convertForLearner_(convertForLearner) {
@@ -43,7 +48,7 @@ public:
 	    evaluator_->start();
 	    first_run = false;
 	}
-	if ((t - start_eval_time_) > evaluation_rate_) { //&& generation_counter_ < max_evaluations_) {
+	if ((t - start_eval_time_) > (evaluation_rate_ + reset_duration)) { //&& generation_counter_ < max_evaluations_) {
 	    double fitness = evaluator_->fitness();
 	    writeCurrent(fitness);
 	    this->learner->reportFitness("test", convertForLearner_(this->controller->getGenome()), fitness);
@@ -54,7 +59,22 @@ public:
 	    evaluator_->start();
 	    generation_counter_++;
 	}
-	this->controller->update(actuators, sensors, t, step);
+	if(reset && reset_duration > (t -start_eval_time_)) {
+	    double outs[8] = {0.5,0,0.5,0,0.5,0,0.5,0};
+	    double * out = &outs[0];
+	    unsigned int p = 0;
+	    for (auto actuator: actuators) {
+		actuator->update(out + p, step);
+		p += actuator->outputs();
+	    }
+	} 
+	else {
+	    if(!eval_running) {
+	          evaluator_->start();
+		  eval_running = true;
+	    }
+	    this->controller->update(actuators, sensors, t, step);
+	}
     }
     
 void writeCurrent(double fitness) 
@@ -72,9 +92,14 @@ void writeCurrent(double fitness)
     outputFile << "  velocities:" << std::endl;
     outputFile << "  - " << fitness << std::endl;
     outputFile.close();
+    std::ofstream networkOutput(model_name + "-" + std::to_string(run_count) + "-" + std::to_string(generation_counter_) + ".dot");
+    boost::dynamic_pointer_cast<ExtNNController1>(this->controller)->writeNetwork(networkOutput);
 }
-    
+
 protected:
+    bool eval_running;
+    bool reset;
+    bool reset_duration;
     std::string model_name;
     bool first_run;
     int run_count;

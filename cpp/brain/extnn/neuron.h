@@ -100,7 +100,9 @@ public:
 	/**
 	 * @return id of the neuron
 	 */
-	const std::string &Id() const;
+	virtual const std::string &Id() const;
+	
+	virtual std::vector<std::pair<std::string, NeuralConnectionPtr>> getIncomingConnections();
 
 protected:
 
