@@ -62,11 +62,22 @@ file(GLOB_RECURSE BRAIN_SRCS
 	brain/ccpg/x_oscillator.cpp)
 
 # Compiling ####################################################################
+add_subdirectory("brain/learner/")
+add_subdirectory("brain/controller/")
 add_library(revolve-brain-static STATIC ${BRAIN_SRCS})
 add_library(revolve-brain SHARED)
 
 # Linking ######################################################################
-target_link_libraries(revolve-brain-static accneat ${Boost_LIBRARIES} ${PYTHON_LIBRARIES} ${GSL_LIBRARIES} yaml-cpp)
+target_link_libraries(revolve-brain-static
+    accneat
+    revolve-brain-controller
+    revolve-brain-learner
+    ${Boost_LIBRARIES}
+    ${PYTHON_LIBRARIES}
+    ${GSL_LIBRARIES}
+    yaml-cpp
+)
+
 target_link_libraries(revolve-brain revolve-brain-static)
 
 
