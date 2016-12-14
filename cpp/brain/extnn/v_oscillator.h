@@ -26,6 +26,10 @@ public:
 	*/
 	virtual double CalculateOutput(double t);
 
+	virtual std::map<std::string, double> getNeuronParameters();
+	
+	virtual std::string getType();
+
 
 protected:
 	double alpha_; //TODO:: find out what these parameters mean

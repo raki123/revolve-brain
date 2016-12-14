@@ -25,7 +25,7 @@ public:
 	int num_connection_genes();
 	bool connection_exists(int mark_from, int mark_to);
 	
-	static double get_dissimilarity(GeneticEncodingPtr genotype1, GeneticEncodingPtr genotype2, double excess_coef = 1, double disjoint_coef = 1, double weight_diff_coef = 1);
+	static double get_dissimilarity(GeneticEncodingPtr genotype1, GeneticEncodingPtr genotype2, double excess_coef, double disjoint_coef, double weight_diff_coef);
 	static void get_excess_disjoint(GeneticEncodingPtr genotype1, GeneticEncodingPtr genotype2, int &excess_num, int &disjoint_num);
 	static std::vector<std::pair<GenePtr, GenePtr>> get_pairs(std::vector<GenePtr> genes_sorted1, std::vector<GenePtr> genes_sorted2);
 	static std::vector<std::pair<int,int>> get_space_map(std::vector<GeneticEncodingPtr> genotypes, std::map<Neuron::Ntype, Neuron::NeuronTypeSpec> brain_spec);

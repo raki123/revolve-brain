@@ -32,6 +32,18 @@ double SigmoidNeuron::CalculateOutput(double /*t*/)
 	return 1.0 / ( 1.0 + exp( - this->gain_ * (inputValue - this->bias_) ) );
 }
 
+std::map< std::string, double > SigmoidNeuron::getNeuronParameters()
+{
+	std::map<std::string, double> ret;
+	ret["rv:bias"] = bias_;
+	ret["rv:gain"] = gain_;
+	return ret;
+}
+
+std::string SigmoidNeuron::getType()
+{
+	return "Sigmoid";
+}
 
 }
 }

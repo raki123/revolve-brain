@@ -33,6 +33,18 @@ double LinearNeuron::CalculateOutput(double t)
 
 	return result;
 }
+std::map< std::string, double > LinearNeuron::getNeuronParameters()
+{
+	std::map<std::string, double> ret;
+	ret["rv:bias"] = bias_;
+	ret["rv:gain"] = gain_;
+	return ret;
+}
+
+std::string LinearNeuron::getType()
+{
+	return "Simple";
+}
 
 
 }

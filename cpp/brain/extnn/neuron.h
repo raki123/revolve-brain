@@ -103,7 +103,10 @@ public:
 	virtual const std::string &Id() const;
 	
 	virtual std::vector<std::pair<std::string, NeuralConnectionPtr>> getIncomingConnections();
-
+	
+	virtual std::map<std::string, double> getNeuronParameters() = 0;
+	
+	virtual std::string getType() = 0;
 protected:
 
 	std::vector<std::pair<std::string, NeuralConnectionPtr> > incomingConnections_; //vector of the incoming connections and the name of their socket

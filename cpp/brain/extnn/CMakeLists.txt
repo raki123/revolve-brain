@@ -5,7 +5,7 @@ add_library(extnn STATIC
 	    differential_cpg.cpp
 	    bias_neuron.cpp
 	    input_neuron.cpp
-	    leaky_integreator.cpp
+	    leaky_integrator.cpp
 	    linear_neuron.cpp
 	    neural_connection.cpp
 	    oscillator_neuron.cpp

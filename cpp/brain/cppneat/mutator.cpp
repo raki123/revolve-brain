@@ -135,7 +135,7 @@ void Mutator::add_neuron_mutation(GeneticEncodingPtr genotype) {
 	
 	std::map<std::string, double> new_neuron_params = get_random_parameters(brain_spec[new_neuron_type]);
 	
-	NeuronPtr neuron_middle(new Neuron("augment" + std::to_string(innovation_number+1), 
+	NeuronPtr neuron_middle(new Neuron("augment " + std::to_string(innovation_number+1), 
 					   Neuron::HIDDEN_LAYER,
 					   new_neuron_type,
 					   new_neuron_params));
@@ -183,8 +183,8 @@ int Mutator::add_neuron(NeuronPtr neuron, GeneticEncodingPtr genotype) {
 }
 
 int Mutator::add_connection(int mark_from, int mark_to, double weight, GeneticEncodingPtr genotype, std::string socket) {
-	ConnectionGenePtr new_conn_gene(new ConnectionGene(mark_from,
-							   mark_to,
+	ConnectionGenePtr new_conn_gene(new ConnectionGene(mark_to,
+							   mark_from,
 							   weight,
 							   ++innovation_number,
 							   true,

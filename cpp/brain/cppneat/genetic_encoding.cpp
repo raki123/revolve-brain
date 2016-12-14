@@ -1,6 +1,7 @@
 #include "genetic_encoding.h"
 
 #include <algorithm>
+#include <iostream>
 
 namespace CPPNEAT {
 
@@ -37,7 +38,7 @@ bool GeneticEncoding::connection_exists(int mark_from, int mark_to) {
 }
 
 double GeneticEncoding::get_dissimilarity(GeneticEncodingPtr genotype1, GeneticEncodingPtr genotype2, double excess_coef, double disjoint_coef, double weight_diff_coef){
-	int excess_num, disjoint_num = 0;
+	int excess_num = 0, disjoint_num = 0;
 	GeneticEncoding::get_excess_disjoint(genotype1, genotype2, excess_num, disjoint_num);
 	int num_genes = std::max(genotype1->num_genes(), genotype2->num_genes());
 	double dissimilarity = (disjoint_coef*disjoint_num+excess_coef*excess_num)/num_genes;
@@ -239,7 +240,6 @@ std::pair< int, int > GeneticEncoding::min_max_innov_numer() {
 }
 
 GenePtr GeneticEncoding::find_gene_by_in(int innov_number) {
-	get_sorted_genes();
 	for(GenePtr gene : all_genes_sorted) {
 		if(gene->getInnovNumber() == innov_number) {
 			return gene;

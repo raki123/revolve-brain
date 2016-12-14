@@ -123,9 +123,9 @@ void Learner::share_fitness() {
 		double cur_fitness = it.second;
 		int species_size = 1;
 		for(auto it2 : brain_fitness) {
-			GeneticEncodingPtr other_brain = it.first;
+			GeneticEncodingPtr other_brain = it2.first;
 			if(other_brain != cur_brain) {
-				if(GeneticEncoding::get_dissimilarity(other_brain, cur_brain) < speciation_threshold) {
+				if(GeneticEncoding::get_dissimilarity(other_brain, cur_brain,1,1,1) < speciation_threshold) {
 					species_size++;
 				}
 			}
@@ -158,7 +158,6 @@ void Learner::produce_new_generation() {
 	for(std::pair<GeneticEncodingPtr, GeneticEncodingPtr> parents : parent_pairs) {
 		GeneticEncodingPtr child_genotype = produce_child(parents.first, parents.second);
 		evaluation_queue.push_back(child_genotype);
-		std::cout << child_genotype->get_sorted_genes().size() << std::endl;
 	}
 	i = 0;
 	while(i++ < (pop_size - num_children)) {

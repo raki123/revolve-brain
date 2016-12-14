@@ -30,6 +30,10 @@ public:
 	* @return the output of the neuron at time t
 	*/
 	virtual double CalculateOutput(double t);
+	
+	virtual std::map<std::string, double> getNeuronParameters();
+	
+	virtual std::string getType();
 
 protected:
 	double input_; //input of the neuron

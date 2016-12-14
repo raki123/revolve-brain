@@ -20,7 +20,7 @@ void set_learning_conf()
 	learning_configuration.tournament_size = 40;
 	learning_configuration.num_children = 45;
 	learning_configuration.weight_mutation_probability = 0.8;
-	learning_configuration.weight_mutation_sigma = 1.0;
+	learning_configuration.weight_mutation_sigma = 5.0; //1.0 produced good results on ccpg without structural augmentation
 	learning_configuration.param_mutation_probability = 0.8;
 	learning_configuration.param_mutation_sigma = 0.25;
 	learning_configuration.structural_augmentation_probability = 0.8;
@@ -74,8 +74,7 @@ void set_brain_spec()
 
 	CPPNEAT::Neuron::NeuronTypeSpec bias;
 	bias.param_specs.push_back(bias_spec);
-	bias.possible_layers.push_back(CPPNEAT::Neuron::HIDDEN_LAYER);
-	bias.possible_layers.push_back(CPPNEAT::Neuron::OUTPUT_LAYER);
+	bias.possible_layers.push_back(CPPNEAT::Neuron::INPUT_LAYER);
 	
 		
 	brain_spec[CPPNEAT::Neuron::BIAS] = bias;
@@ -91,8 +90,7 @@ void set_brain_spec()
 	oscillator.param_specs.push_back(period_spec);
 	oscillator.param_specs.push_back(phase_offset_spec);
 	oscillator.param_specs.push_back(amplitude_spec);
-	oscillator.possible_layers.push_back(CPPNEAT::Neuron::HIDDEN_LAYER);
-	oscillator.possible_layers.push_back(CPPNEAT::Neuron::OUTPUT_LAYER);
+	oscillator.possible_layers.push_back(CPPNEAT::Neuron::INPUT_LAYER);
 	
 	brain_spec[CPPNEAT::Neuron::OSCILLATOR] = oscillator;
 

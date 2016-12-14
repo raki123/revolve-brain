@@ -17,7 +17,7 @@ class ConvSplitBrain : public SplitBrain<G,H> {
 public:
     ConvSplitBrain(G (*convertForController)(H), H (*convertForLearner)(G), std::string model_name) 
         : eval_running(false)
-	, reset(true)
+	, reset(false)
 	, reset_duration(3)
 	, first_run(true)
 	, run_count(0)
@@ -48,7 +48,7 @@ public:
 	    evaluator_->start();
 	    first_run = false;
 	}
-	if ((t - start_eval_time_) > (evaluation_rate_ + reset_duration)) { //&& generation_counter_ < max_evaluations_) {
+	if ((t - start_eval_time_) > (evaluation_rate_ + (reset?reset_duration:0))) { //&& generation_counter_ < max_evaluations_) {
 	    double fitness = evaluator_->fitness();
 	    writeCurrent(fitness);
 	    this->learner->reportFitness("test", convertForLearner_(this->controller->getGenome()), fitness);

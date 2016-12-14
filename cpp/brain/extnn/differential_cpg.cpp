@@ -58,6 +58,17 @@ double DifferentialCPG::CalculateOutput(double t)
 
 	return result;
 }
+std::map< std::string, double > DifferentialCPG::getNeuronParameters()
+{
+	std::map<std::string, double> ret;
+	ret["rv:bias"] = bias_;
+	return ret;
+}
+
+std::string DifferentialCPG::getType()
+{
+	return "DifferentialCPG";
+}
 
 
 }

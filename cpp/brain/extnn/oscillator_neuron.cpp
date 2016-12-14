@@ -28,6 +28,20 @@ double OscillatorNeuron::CalculateOutput(double t)
 		sin( 2.0*M_PI/(this->period_) * (t - this->period_ * this->phaseOffset_) ));
 }
 
+std::map< std::string, double > OscillatorNeuron::getNeuronParameters()
+{
+	std::map<std::string, double> ret;
+	ret["rv:period"] = period_;
+	ret["rv:phase_offset"] = phaseOffset_;
+	ret["rv:amplitude"] = gain_;
+	return ret;
+}
+
+std::string OscillatorNeuron::getType()
+{
+	return "Oscillator";
+}
+
 
 }
 }

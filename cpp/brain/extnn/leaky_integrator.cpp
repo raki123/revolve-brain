@@ -50,6 +50,19 @@ double LeakyIntegrator::CalculateOutput(double t)
 	return result;
 }
 
+std::map< std::string, double > LeakyIntegrator::getNeuronParameters()
+{
+	std::map<std::string, double> ret;
+	ret["rv:bias"] = bias_;
+	ret["rv:tau"] = tau_;
+	return ret;
+}
+
+std::string LeakyIntegrator::getType()
+{
+	return "LeakyIntegrator";
+}
+
 
 }
 }

@@ -20,6 +20,16 @@ void InputNeuron::SetInput(double value)
 {
 	input_ = value;
 }
+std::map< std::string, double > InputNeuron::getNeuronParameters()
+{
+	std::map<std::string, double> ret;
+	return ret;
+}
+
+std::string InputNeuron::getType()
+{
+	return "Input";
+}
 
 }
 }

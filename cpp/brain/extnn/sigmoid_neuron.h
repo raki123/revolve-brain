@@ -26,6 +26,9 @@ public:
 	*/
 	virtual double CalculateOutput(double t);
 
+	virtual std::map<std::string, double> getNeuronParameters();
+	
+	virtual std::string getType();
 
 protected:
 	double gain_; //gain of the neuron

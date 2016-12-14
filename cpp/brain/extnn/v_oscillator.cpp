@@ -81,6 +81,19 @@ double VOscillator::CalculateOutput(double t)
 
 	return result;
 }
+std::map< std::string, double > VOscillator::getNeuronParameters()
+{
+	std::map<std::string, double> ret;
+	ret["rv:alpha"] = alpha_;
+	ret["rv:tau"] = tau_;
+	ret["rv:energy"] = energy_;
+	return ret;
+}
+
+std::string VOscillator::getType()
+{
+	return "VOscillator";
+}
 
 
 }

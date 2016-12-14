@@ -4,6 +4,7 @@
 #include <iostream>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/graphviz.hpp>
+#include <sstream>
 
 
 namespace revolve {
@@ -153,7 +154,18 @@ void ExtNNController1::writeNetwork(std::ofstream &write_to)
 			boost::add_edge(indexInput,i,graph);
 		}
 	}
-	boost::write_graphviz(write_to, graph);
+	std::string names[allNeurons_.size()];
+	for(int i = 0; i < allNeurons_.size(); i++) {
+		std::stringstream nodeName;
+		nodeName << allNeurons_[i]->Id() + " of type: " + allNeurons_[i]->getType() << std::endl;
+		for(std::pair<std::string, double> param : allNeurons_[i]->getNeuronParameters()) 
+		{
+			nodeName << param.first << ": " << param.second << std::endl;
+		}
+		names[i] = nodeName.str();
+	}
+	//, "test");
+	boost::write_graphviz(write_to, graph, boost::make_label_writer(names));
 }
 
 }

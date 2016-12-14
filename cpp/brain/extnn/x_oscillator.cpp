@@ -59,6 +59,18 @@ double XOscillator::CalculateOutput(double t)
 	return result;
 }
 
+std::map< std::string, double > XOscillator::getNeuronParameters()
+{
+	std::map<std::string, double> ret;
+	ret["rv:tau"] = tau_;
+	return ret;
+}
+
+std::string XOscillator::getType()
+{
+	return "XOscillator";
+}
+
 
 }
 }
