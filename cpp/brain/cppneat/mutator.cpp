@@ -31,6 +31,12 @@ Mutator::Mutator(std::map<Neuron::Ntype, Neuron::NeuronTypeSpec> brain_spec,
 	}
 	
 }
+void Mutator::make_starting_genotype_known(GeneticEncodingPtr genotype) {
+	for(ConnectionGenePtr connection_gene : genotype->connection_genes) {
+		std::pair<int,int> connection_innovation(connection_gene->mark_from, connection_gene->mark_to);
+		connection_innovations[connection_innovation] = connection_gene->getInnovNumber();
+	}
+}
 
 void Mutator::mutate_neuron_params(GeneticEncodingPtr genotype, double probability, double sigma) {
 	std::uniform_real_distribution<double> uniform(0,1);
@@ -139,7 +145,7 @@ void Mutator::add_neuron_mutation(GeneticEncodingPtr genotype) {
 					   Neuron::HIDDEN_LAYER,
 					   new_neuron_type,
 					   new_neuron_params));
-	int mark_middle = add_neuron(neuron_middle, genotype);
+	int mark_middle = add_neuron(neuron_middle, genotype, split_id);
 	add_connection(mark_from, mark_middle, old_weight, genotype, "");
 	add_connection(mark_middle, mark_to, 1.0, genotype, "");
 }
@@ -175,22 +181,75 @@ void Mutator::remove_neuron_mutation(GeneticEncodingPtr genotype) {
 	}
 	genotype->remonve_neuron_gene(gene_id);
 }
-
-int Mutator::add_neuron(NeuronPtr neuron, GeneticEncodingPtr genotype) {
+int Mutator::add_neuron(NeuronPtr neuron, GeneticEncodingPtr genotype, int connection_split_in) {
+	std::pair<int, Neuron::Ntype> neuron_pair(connection_split_in, neuron->neuron_type);	
+	if(neuron_innovations.find(neuron_pair) != neuron_innovations.end()) {
+		GenePtr found;
+		unsigned int i = 0;
+		while(i < neuron_innovations[neuron_pair].size()
+		      && (found = genotype->find_gene_by_in(neuron_innovations[neuron_pair][i])) != nullptr) {
+			i++;
+		}
+		//some previous innovation is not are already present in the genome-> add a it
+		if(i < neuron_innovations[neuron_pair].size())
+		{
+			NeuronGenePtr new_neuron_gene(new NeuronGene(neuron, neuron_innovations[neuron_pair][i], true));
+			genotype->add_neuron_gene(new_neuron_gene);
+			return new_neuron_gene->getInnovNumber();
+		} 
+	}
+	//new innovation -> add new neuron with new innovation number
 	NeuronGenePtr new_neuron_gene(new NeuronGene(neuron, ++innovation_number, true));
+	//in base case a new vector is constructed here
+	neuron_innovations[neuron_pair].push_back(innovation_number);
 	genotype->add_neuron_gene(new_neuron_gene);
 	return new_neuron_gene->getInnovNumber();
 }
 
 int Mutator::add_connection(int mark_from, int mark_to, double weight, GeneticEncodingPtr genotype, std::string socket) {
+	std::pair<int,int> innovation_pair(mark_from, mark_to);
+	if(connection_innovations.find(innovation_pair) != connection_innovations.end()) {
+		GenePtr found = genotype->find_gene_by_in(connection_innovations[innovation_pair]);
+		if(found != nullptr) {
+			boost::dynamic_pointer_cast<ConnectionGene>(found)->setEnabled(true);
+			return connection_innovations[innovation_pair];
+		} else {
+			ConnectionGenePtr new_conn_gene(new ConnectionGene(mark_to,
+									   mark_from,
+									   weight,
+									   connection_innovations[innovation_pair],
+									   true,
+									   socket));
+			genotype->add_connection_gene(new_conn_gene);
+			return new_conn_gene->getInnovNumber();
+		}
+	} 
 	ConnectionGenePtr new_conn_gene(new ConnectionGene(mark_to,
 							   mark_from,
 							   weight,
 							   ++innovation_number,
 							   true,
 						           socket));
+	connection_innovations[innovation_pair] = innovation_number;
 	genotype->add_connection_gene(new_conn_gene);
 	return new_conn_gene->getInnovNumber();
 }
+//old
+// int Mutator::add_neuron(NeuronPtr neuron, GeneticEncodingPtr genotype) {
+// 	NeuronGenePtr new_neuron_gene(new NeuronGene(neuron, ++innovation_number, true));
+// 	genotype->add_neuron_gene(new_neuron_gene);
+// 	return new_neuron_gene->getInnovNumber();
+// }
+// 
+// int Mutator::add_connection(int mark_from, int mark_to, double weight, GeneticEncodingPtr genotype, std::string socket) {
+// 	ConnectionGenePtr new_conn_gene(new ConnectionGene(mark_to,
+// 							   mark_from,
+// 							   weight,
+// 							   ++innovation_number,
+// 							   true,
+// 						           socket));
+// 	genotype->add_connection_gene(new_conn_gene);
+// 	return new_conn_gene->getInnovNumber();
+// }
 	
 }

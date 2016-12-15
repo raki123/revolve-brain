@@ -37,6 +37,7 @@ Learner::Learner(MutatorPtr mutator, Learner::LearningConfiguration conf)
 	if(start_from != nullptr) {
 		std::cout << "generating inital population from starting network" << std::endl;
 		initialise(std::vector<GeneticEncodingPtr>());
+		this->mutator->make_starting_genotype_known(start_from);
 	}
 	
 }
