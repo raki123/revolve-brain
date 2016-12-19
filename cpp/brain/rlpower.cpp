@@ -3,23 +3,12 @@
 //
 
 #include "rlpower.h"
-#include "sensor.h"
-#include "actuator.h"
-
-#include <algorithm>
-#include <stdexcept>
-#include <cstdlib>
-#include <map>
-#include <string>
-#include <sstream>
-#include <cmath>
 
 #include <random>
-#include <iostream>
 #include <fstream>
 
-#include <gsl/gsl_errno.h>
 #include <gsl/gsl_spline.h>
+#include <yaml-cpp/yaml.h>
 
 using namespace revolve::brain;
 
@@ -30,8 +19,8 @@ RLPower::RLPower(std::string modelName,
                  unsigned int n_sensors) :
         evaluator_(evaluator),
         generation_counter_(0),
-        nActuators_(n_actuators),
-        nSensors_(n_sensors),
+        n_actuators_(n_actuators),
+        n_sensors_(n_sensors),
         cycle_start_time_(-1),
         start_eval_time_(-1),
         robot_name_(modelName) {
@@ -53,14 +42,18 @@ RLPower::RLPower(std::string modelName,
     max_ranked_policies_ = brain.max_ranked_policies;
     noise_sigma_ = brain.noise_sigma;
     sigma_tau_correction_ = brain.sigma_tau_correction;
-    source_y_size = brain.source_y_size;
+    source_y_size_ = brain.source_y_size;
     update_step_ = brain.update_step;
     policy_load_path_ = brain.policy_load_path;
 
-    step_rate_ = interpolation_spline_size_ / source_y_size;
+    step_rate_ = interpolation_spline_size_ / source_y_size_;
 
-    // Generate first random policy
-    this->generateInitPolicy();
+    if (policy_load_path_ == "") {
+        // Generate first random policy
+        this->generateInitPolicy();
+    } else{
+        this->loadPolicy(policy_load_path_);
+    }
 
     // Start the evaluator
     evaluator_->start();
@@ -84,11 +77,11 @@ void RLPower::generateInitPolicy() {
 
     // Init first random controller
     if (!current_policy_)
-        current_policy_ = std::make_shared<Policy>(nActuators_);
+        current_policy_ = std::make_shared<Policy>(n_actuators_);
 
-    for (unsigned int i = 0; i < nActuators_; i++) {
-        Spline spline(source_y_size);
-        for (unsigned int j = 0; j < source_y_size; j++) {
+    for (unsigned int i = 0; i < n_actuators_; i++) {
+        Spline spline(source_y_size_);
+        for (unsigned int j = 0; j < source_y_size_; j++) {
             spline[j] = dist(mt);
         }
         current_policy_->at(i) = spline;
@@ -96,9 +89,52 @@ void RLPower::generateInitPolicy() {
 
     // Init of empty cache
     if (!interpolation_cache_)
-        interpolation_cache_ = std::make_shared<Policy>(nActuators_);
+        interpolation_cache_ = std::make_shared<Policy>(n_actuators_);
 
-    for (unsigned int i = 0; i < nActuators_; i++) {
+    for (unsigned int i = 0; i < n_actuators_; i++) {
+        interpolation_cache_->at(i).resize(interpolation_spline_size_, 0);
+    }
+
+    this->generateCache();
+}
+
+void RLPower::loadPolicy(std::string const policy_path) {
+    YAML::Node policy_file = YAML::LoadFile(policy_path);
+    if (policy_file.IsNull()) {
+        std::cout << "Failed to load the policy file." << std::endl;
+        return;
+    }
+
+    // Init first random controller
+    if (!current_policy_)
+        current_policy_ = std::make_shared<Policy>(n_actuators_);
+
+    std::cout << "evaluation: " << policy_file[0]["evaluation"] << std::endl;
+    std::cout << "steps: " << policy_file[0]["steps"] << std::endl;
+    std::cout << "velocity: " << policy_file[0]["population"][0]["velocity"] << std::endl;
+
+    unsigned int k = 0;
+    source_y_size_ = policy_file[0]["steps"].as<uint>();
+    YAML::Node policy = policy_file[0]["population"][0]["policy"];
+
+    if (source_y_size_ * n_actuators_ != policy.size()) {
+        std::cout << "Number of (n_spline_points) is not equal to (n_actuators * n_steps)!" << std::endl;
+        return;
+    }
+
+    for (unsigned int i = 0; i < n_actuators_; i++) {
+        Spline spline(source_y_size_);
+        for (unsigned int j = 0; j < source_y_size_; j++) {
+            spline[j] = policy[k++].as<double>();
+        }
+        current_policy_->at(i) = spline;
+    }
+
+    // Init of empty cache
+    if (!interpolation_cache_)
+        interpolation_cache_ = std::make_shared<Policy>(n_actuators_);
+
+    for (unsigned int i = 0; i < n_actuators_; i++) {
         interpolation_cache_->at(i).resize(interpolation_spline_size_, 0);
     }
 
@@ -114,12 +150,12 @@ void RLPower::updatePolicy() {
     double curr_fitness = this->getFitness();
 
     // Insert ranked policy in list
-    PolicyPtr policy_copy = std::make_shared<Policy>(nActuators_);
-    for (unsigned int i = 0; i < nActuators_; i++) {
+    PolicyPtr policy_copy = std::make_shared<Policy>(n_actuators_);
+    for (unsigned int i = 0; i < n_actuators_; i++) {
         Spline &spline = current_policy_->at(i);
         policy_copy->at(i) = Spline(spline.begin(), spline.end());
 
-        spline.resize(source_y_size);
+        spline.resize(source_y_size_);
     }
     ranked_policies_.insert({curr_fitness, policy_copy});
 
@@ -176,8 +212,8 @@ void RLPower::updatePolicy() {
     /// For algorithms B and D, is used two parent crossover with binary tournament selection
     if (ranked_policies_.size() < max_ranked_policies_) {
         // Generate random policy if number of stored policies is less then 'max_ranked_policies_'
-        for (unsigned int i = 0; i < nActuators_; i++) {
-            for (unsigned int j = 0; j < source_y_size; j++) {
+        for (unsigned int i = 0; i < n_actuators_; i++) {
+            for (unsigned int j = 0; j < source_y_size_; j++) {
                 (*current_policy_)[i][j] = dist(mt);
             }
         }
@@ -202,9 +238,9 @@ void RLPower::updatePolicy() {
             total_fitness = fitness1 + fitness2;
 
             // For each spline
-            for (unsigned int i = 0; i < nActuators_; i++) {
+            for (unsigned int i = 0; i < n_actuators_; i++) {
                 // And for each control point
-                for (unsigned int j = 0; j < source_y_size; j++) {
+                for (unsigned int j = 0; j < source_y_size_; j++) {
                     // Apply modifier
                     double spline_point = 0;
                     spline_point += ((policy1->at(i)[j] - (*current_policy_)[i][j])) * (fitness1 / total_fitness);
@@ -229,9 +265,9 @@ void RLPower::updatePolicy() {
 
             // For each spline
             // TODO: Verify that this should is correct formula
-            for (unsigned int i = 0; i < nActuators_; i++) {
+            for (unsigned int i = 0; i < n_actuators_; i++) {
                 // And for each control point
-                for (unsigned int j = 0; j < source_y_size; j++) {
+                for (unsigned int j = 0; j < source_y_size_; j++) {
 
                     // Apply modifier
                     double spline_point = 0;
@@ -259,10 +295,10 @@ void RLPower::updatePolicy() {
 
 void RLPower::interpolateCubic(Policy *const source_y,
                                Policy *destination_y) {
-    const unsigned int source_y_size = (*source_y)[0].size();
+    const unsigned int source_y_size_ = (*source_y)[0].size();
     const unsigned int destination_y_size = (*destination_y)[0].size();
 
-    const unsigned int N = source_y_size + 1;
+    const unsigned int N = source_y_size_ + 1;
     double *x = new double[N];
     double *y = new double[N];
     double *x_new = new double[destination_y_size];
@@ -272,7 +308,7 @@ void RLPower::interpolateCubic(Policy *const source_y,
     gsl_spline *spline = gsl_spline_alloc(t, N);
 
     // init x
-    double step_size = CYCLE_LENGTH / source_y_size;
+    double step_size = CYCLE_LENGTH / source_y_size_;
     for (unsigned int i = 0; i < N; i++) {
         x[i] = step_size * i;
     }
@@ -283,13 +319,13 @@ void RLPower::interpolateCubic(Policy *const source_y,
         x_new[i] = step_size * i;
     }
 
-    for (unsigned int j = 0; j < nActuators_; j++) {
+    for (unsigned int j = 0; j < n_actuators_; j++) {
         Spline &source_y_line = source_y->at(j);
         Spline &destination_y_line = destination_y->at(j);
 
         // init y
         // TODO use memcpy
-        for (unsigned int i = 0; i < source_y_size; i++) {
+        for (unsigned int i = 0; i < source_y_size_; i++) {
             y[i] = source_y_line[i];
         }
 
@@ -312,19 +348,19 @@ void RLPower::interpolateCubic(Policy *const source_y,
 }
 
 void RLPower::increaseSplinePoints() {
-    source_y_size++;
+    source_y_size_++;
 
     // LOG code
-    step_rate_ = interpolation_spline_size_ / source_y_size;
-    std::cout << "New samplingSize_=" << source_y_size << ", and stepRate_=" << step_rate_ << std::endl;
+    step_rate_ = interpolation_spline_size_ / source_y_size_;
+    std::cout << "New samplingSize_=" << source_y_size_ << ", and stepRate_=" << step_rate_ << std::endl;
 
     // Copy current policy for resizing
     Policy policy_copy(current_policy_->size());
-    for (unsigned int i = 0; i < nActuators_; i++) {
+    for (unsigned int i = 0; i < n_actuators_; i++) {
         Spline &spline = current_policy_->at(i);
         policy_copy[i] = Spline(spline.begin(), spline.end());
 
-        spline.resize(source_y_size);
+        spline.resize(source_y_size_);
     }
 
     this->interpolateCubic(&policy_copy, current_policy_.get());
@@ -333,10 +369,10 @@ void RLPower::increaseSplinePoints() {
     for (auto &it : ranked_policies_) {
         PolicyPtr policy = it.second;
 
-        for (unsigned int j = 0; j < nActuators_; j++) {
+        for (unsigned int j = 0; j < n_actuators_; j++) {
             Spline &spline = policy->at(j);
             policy_copy[j] = Spline(spline.begin(), spline.end());
-            spline.resize(source_y_size);
+            spline.resize(source_y_size_);
         }
         this->interpolateCubic(&policy_copy, policy.get());
     }
@@ -388,7 +424,7 @@ void RLPower::generateOutput(const double time,
     int x_b = (x_a + 1) % interpolation_spline_size_;
 
     // linear interpolation for every actuator
-    for (unsigned int i = 0; i < nActuators_; i++) {
+    for (unsigned int i = 0; i < n_actuators_; i++) {
         double y_a = interpolation_cache_->at(i)[x_a];
         double y_b = interpolation_cache_->at(i)[x_b];
 
@@ -418,7 +454,7 @@ void RLPower::writeElite() {
     std::ofstream outputFile;
     outputFile.open(robot_name_ + ".policy", std::ios::app | std::ios::out | std::ios::ate);
     outputFile << "- evaluation: " << generation_counter_ << std::endl;
-    outputFile << "  steps: " << source_y_size << std::endl;
+    outputFile << "  steps: " << source_y_size_ << std::endl;
     outputFile << "  population:" << std::endl;
     for (auto const &it : ranked_policies_) {
         double fitness = it.first;
