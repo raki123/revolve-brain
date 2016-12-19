@@ -37,10 +37,6 @@ struct ExtNNConfig {
 	std::map<std::string, NeuronPtr> idToNeuron_;	// Map neuron id strings to Neuron objects
 
 	std::vector<NeuralConnectionPtr> connections_; //vector of all the neural connections
-
-	int numInputNeurons_; //number of input neurons
-	int numOutputNeurons_; // number of output neurons
-	int numHiddenNeurons_; // number of hidden neurons
 };
 class ExtNNController1 : public Controller<boost::shared_ptr<ExtNNConfig>>
 {
@@ -110,10 +106,6 @@ protected:
 	std::map<std::string, NeuronPtr> idToNeuron_;	// Map neuron id strings to Neuron objects
 
 	std::vector<NeuralConnectionPtr> connections_; //vector of all the neural connections
-
-	int numInputNeurons_; //number of input neurons
-	int numOutputNeurons_; // number of output neurons
-	int numHiddenNeurons_; // number of hidden neurons
 
 
 

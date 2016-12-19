@@ -28,9 +28,6 @@ ExtNNController1::ExtNNController1(std::string modelName,
 	inputPositionMap_ = Config->inputPositionMap_;
 	idToNeuron_ = Config->idToNeuron_;
 	connections_ = Config->connections_;
-	numInputNeurons_ = Config->numInputNeurons_;
-	numOutputNeurons_ = Config->numOutputNeurons_;
-	numHiddenNeurons_ = Config->numHiddenNeurons_;
 	
 	unsigned int p = 0;
 	for (auto sensor : sensors) {
@@ -121,9 +118,6 @@ boost::shared_ptr<ExtNNConfig> ExtNNController1::getGenome()
 	Config->inputPositionMap_ = inputPositionMap_;
 	Config->idToNeuron_ = idToNeuron_;
 	Config->connections_ = connections_;
-	Config->numInputNeurons_ = numInputNeurons_;
-	Config->numOutputNeurons_ = numOutputNeurons_;
-	Config->numHiddenNeurons_ = numHiddenNeurons_;
 	return Config;
 }
 
@@ -137,9 +131,6 @@ void ExtNNController1::setGenome(boost::shared_ptr<ExtNNConfig> Config)
 	inputPositionMap_ = Config->inputPositionMap_;
 	idToNeuron_ = Config->idToNeuron_;
 	connections_ = Config->connections_;
-	numInputNeurons_ = Config->numInputNeurons_;
-	numOutputNeurons_ = Config->numOutputNeurons_;
-	numHiddenNeurons_ = Config->numHiddenNeurons_;
 }
 void ExtNNController1::writeNetwork(std::ofstream &write_to) 
 {
