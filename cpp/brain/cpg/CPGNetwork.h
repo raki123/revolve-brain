@@ -16,7 +16,13 @@ namespace cpg {
 
 class CPGNetwork {
 public:
-    CPGNetwork(unsigned int n_sensors);
+    struct Weights {
+        cpg::real_t we;
+        cpg::real_t wf;
+    };
+
+public:
+    CPGNetwork(unsigned int n_sensors, unsigned int n_connections);
 
     virtual ~CPGNetwork();
 
@@ -57,6 +63,10 @@ public:
 
     const std::vector<Limit> &get_genome_limits();
 
+    void addConnection(CPGNetwork* new_connection) {
+        connections.push_back(new_connection);
+    }
+
 
 protected:
     void updateRythmGeneration(double step);
@@ -76,6 +86,9 @@ protected:
     real_t pfe_out;
     real_t pff_out;
     real_t mn_out;
+
+    const unsigned int n_connections;
+    std::vector<CPGNetwork*> connections;
 
     std::shared_ptr<std::vector<real_t>> genome;
     std::vector<Limit> genome_limits;

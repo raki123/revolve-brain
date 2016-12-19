@@ -10,8 +10,10 @@ using namespace revolve::brain::cpg;
 
 
 
-RythmGenerationNeuron::RythmGenerationNeuron(real_t weight, real_t c, real_t amplitude, real_t offset)
+RythmGenerationNeuron::RythmGenerationNeuron(real_t weight, std::vector<real_t> weight_neigbours,
+                                             real_t c, real_t amplitude, real_t offset)
         : phi(1)
+        , weight_neigbours(weight_neigbours)
 {
     setWeight(weight);
     setC(c);
@@ -26,12 +28,12 @@ RythmGenerationNeuron::~RythmGenerationNeuron()
 
 std::vector<real_t> RythmGenerationNeuron::update(std::vector<real_t> inputs, real_t delta_time) {
     // reading neuron inputs
-    if (inputs.size() != 1) {
+    if (inputs.size() != 1 + weight_neigbours.size()) {
         std::stringstream ss;
-        ss << "input size should be 1, instead is " << inputs.size();
+        ss << "input size should be 1 + " << weight_neigbours.size() << ", instead is " << inputs.size();
         throw invalid_input_exception(ss.str());
     }
-    real_t otherPhi = inputs[0];
+//     real_t otherPhi = inputs[0];
 
     // creating output value from previous phi
     real_t _output = output();
@@ -39,20 +41,26 @@ std::vector<real_t> RythmGenerationNeuron::update(std::vector<real_t> inputs, re
     // updating phi to the new value
     // NOTE we update phi after getting the output value because this way both
     // phi and other phi are of the same cycle.
-    phi = nextPhi(otherPhi, delta_time);
+    phi = nextPhi(inputs, delta_time);
 
     return {_output, phi};
 }
 
-real_t RythmGenerationNeuron::nextPhi(const real_t otherPhi, real_t delta_time) const {
+real_t RythmGenerationNeuron::nextPhi(const std::vector<real_t> &inputs, real_t delta_time) const {
     static const real_t PI = std::acos(-1); // define PI
 
     const real_t thisPhi = this->phi;
+    const real_t otherPhi = inputs[0];
 
     // (2 * pi * c') + w * sin(otherPhi-thisPhi)
     real_t deltaPhi =
         2 * PI * this->c +
         this->weight * std::sin(otherPhi-thisPhi);
+
+    for (int i=1; i<inputs.size(); i++) {
+        const real_t otherPhi = inputs[i];
+        deltaPhi += weight_neigbours[i-1] * std::sin(otherPhi - thisPhi);
+    }
 
     // consider delta_time
     deltaPhi *= delta_time;
@@ -84,11 +92,22 @@ real_t RythmGenerationNeuron::getWeight() const {
     return weight;
 }
 
+real_t RythmGenerationNeuron::getWeightNeighbour(unsigned int index) const {
+    return weight_neigbours[index];
+}
+
 // the weight that determines the shape [0, 4.5]
 void RythmGenerationNeuron::setWeight(real_t weight) {
     if (weight < WEIGHT_MIN || weight > WEIGHT_MAX)
         throw invalid_parameter("weight", weight, WEIGHT_MIN, WEIGHT_MAX);
     RythmGenerationNeuron::weight = weight;
+}
+
+// the weight that determines the shape [0, 4.5]
+void RythmGenerationNeuron::setWeightNeighbour(real_t weight, unsigned int index) {
+    if (weight < WEIGHT_MIN || weight > WEIGHT_MAX)
+        throw invalid_parameter("weight", weight, WEIGHT_MIN, WEIGHT_MAX);
+    RythmGenerationNeuron::weight_neigbours[index] = weight;
 }
 
 real_t RythmGenerationNeuron::getC() const {
@@ -131,6 +150,11 @@ real_t revolve::brain::cpg::RythmGenerationNeuron::calculateWeightFromPercentage
     return percentage_from_range(weight, WEIGHT_MIN, WEIGHT_MAX);
 }
 
+real_t revolve::brain::cpg::RythmGenerationNeuron::calculateWeightNeighbourFromPercentage(real_t weight, unsigned int index) const
+{
+    return percentage_from_range(weight_neigbours[index], WEIGHT_MIN, WEIGHT_MAX);
+}
+
 real_t revolve::brain::cpg::RythmGenerationNeuron::calculateCFromPercentage(real_t c) const
 {
     return percentage_from_range(c, C_MIN, C_MAX);
@@ -151,6 +175,11 @@ real_t revolve::brain::cpg::RythmGenerationNeuron::calculateOffsetFromPercentage
 real_t revolve::brain::cpg::RythmGenerationNeuron::calculateWeightPercentage(real_t weight) const
 {
     return percentage_of_range(weight, WEIGHT_MIN, WEIGHT_MAX);
+}
+
+real_t revolve::brain::cpg::RythmGenerationNeuron::calculateWeightNeighbourPercentage(real_t weight, unsigned int index) const
+{
+    return percentage_of_range(weight_neigbours[index], WEIGHT_MIN, WEIGHT_MAX);
 }
 
 real_t revolve::brain::cpg::RythmGenerationNeuron::calculateCPercentage(real_t c) const
@@ -175,6 +204,11 @@ real_t RythmGenerationNeuron::setWeightPercentage(real_t weight) {
     return this->weight;
 }
 
+real_t RythmGenerationNeuron::setWeightNeighbourPercentage(real_t weight, unsigned int index) {
+    this->weight_neigbours[index] = calculateWeightFromPercentage(weight);
+    return this->weight_neigbours[index];
+}
+
 real_t RythmGenerationNeuron::setCPercentage(real_t c) {
     this->c = calculateCFromPercentage(c);
     return this->c;
@@ -189,4 +223,3 @@ real_t RythmGenerationNeuron::setOffsetPercentage(real_t offset) {
     this->offset = calculateOffsetFromPercentage(offset);
     return this->offset;
 }
-

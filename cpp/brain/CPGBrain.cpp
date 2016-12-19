@@ -17,17 +17,27 @@ CPGBrain::CPGBrain(std::string robot_name,
     , n_inputs(n_sensors)
     , n_actuators(n_actuators)
     , cpgs(n_actuators, nullptr)
+    , connections(n_actuators, std::vector<cpg::CPGNetwork::Weights>(n_actuators))
     , evaluator(evaluator)
     , start_eval_time_(-1)
     , generation_counter_(0)
-        // TODO read this values from config file
+    // TODO read this values from config file
     , evaluation_rate_(30)
     , max_evaluations_(1000)
-    , noise_sigma_(0.1)
     , max_ranked_policies_(10)
+    , noise_sigma_(0.1)
 {
+    unsigned int n_connections = n_actuators-1;
+
     for(int i=0; i<n_actuators; i++) {
-        cpgs[i] = new cpg::CPGNetwork(n_sensors);
+        cpgs[i] = new cpg::CPGNetwork(n_sensors, n_connections);
+    }
+
+    for(int i=0; i<n_actuators; i++) {
+        for(int j=0; j<n_actuators; j++) {
+            if (i == j) continue;
+            cpgs[i]->addConnection(cpgs[j]);
+        }
     }
 
 
@@ -39,14 +49,22 @@ CPGBrain::CPGBrain(std::string robot_name,
     if (!current_policy_)
         current_policy_ = std::make_shared<Policy>(n_actuators);
 
+    // init with random connections
+//     for (auto &con_line: connections) {
+//         for (cpg::CPGNetwork::Weights &con_elem: con_line) {
+//             con_elem.we = dist(mt);
+//             con_elem.wf = dist(mt);
+//         }
+//     }
+
     for (unsigned int i = 0; i < n_actuators; i++) {
-        GenomePtr spline = std::make_shared<Genome>(12, 0);
-        for (unsigned int j = 0; j < 12; j++) {
+        unsigned int genome_size = 12 + 2*n_connections;
+        GenomePtr spline = std::make_shared<Genome>(genome_size, 0);
+        for (unsigned int j = 0; j < genome_size; j++) {
             spline->at(j) = dist(mt);
         }
         current_policy_->at(i) = spline;
     }
-
     genomeToPhenotype();
 }
 
@@ -281,6 +299,39 @@ void CPGBrain::genomeToPhenotype()
     for (int i=0; i<n_actuators; i++) {
         GenomePtr genome = current_policy_->at(i);
         cpgs[i]->set_genome(*genome);
+    }
+}
+
+
+void CPGBrain::setConnections(std::vector<std::vector<cpg::CPGNetwork::Weights> > connections)
+{
+    assert(connections.size() == this->connections.size());
+    for (int i=0; i< connections.size(); i++) {
+        assert(connections[i].size() == this->connections[i].size());
+    }
+
+    this->connections = connections;
+    this->connectionsToGenotype();
+}
+
+void CPGBrain::connectionsToGenotype()
+{
+    for (int i=0; i< connections.size(); i++) {
+        GenomePtr genome = current_policy_->at(i);
+        const auto &conn_line = connections[i];
+
+        for (int j=0; j<conn_line.size(); i++) {
+            const cpg::CPGNetwork::Weights &connection = conn_line[j];
+
+            // check revolve::brain::cpg::CPGNetwork::update_genome for hardcoded values
+            if (j == i) { // self weight
+                (*genome)[0] = connection.we;
+                (*genome)[4] = connection.wf;
+            } else { // connection weight
+                (*genome)[12 + 2*j] = connection.we;
+                (*genome)[12 + 2*j + 1] = connection.wf;
+            }
+        }
     }
 }
 

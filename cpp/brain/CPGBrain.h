@@ -20,6 +20,14 @@ namespace brain {
 
 class CPGBrain : public revolve::brain::Brain {
 public:
+    /**
+     * @brief CPGBrain constructor
+     *
+     * @param robot_name the robot name (for logs)
+     * @param evaluator pointer to the evaluator to evoluate the brain
+     * @param n_actuators number of actuators
+     * @param n_sensors number of sensors
+     */
     CPGBrain(std::string robot_name,
              EvaluatorPtr evaluator,
              unsigned int n_actuators,
@@ -30,6 +38,8 @@ public:
     virtual void update(const std::vector<ActuatorPtr> &actuators,
                         const std::vector<SensorPtr> &sensors,
                         double t, double step) override;
+
+    void setConnections(std::vector<std::vector<cpg::CPGNetwork::Weights>> connections);
 
 protected:
     template<typename ActuatorContainer, typename SensorContainer>
@@ -79,23 +89,47 @@ protected:
         delete[] outputs;
     }
 
+    void connectionsToGenotype();
+
 protected:
+    // robot name
     const std::string robot_name;
 
-    // controller data
+
+    // -- controller data --
+
+    // number of sensory inputs expected
     unsigned int n_inputs;
+    // number of actuators
     unsigned int n_actuators;
+    //list of cpgs
     std::vector<cpg::CPGNetwork*> cpgs;
+    /** Connection matrix between the different servos
+     * First is start of the connections, second is end.
+     * Example: connections[0][1].we is the connection starting from servo 0
+     * and reacing servo 1 for the RythmGenerationNeurons E
+     */
+    std::vector<std::vector<cpg::CPGNetwork::Weights>> connections;
 
-    // learner data
+
+    // -- learner data --
+
+    // Evaluator for the brain
     const EvaluatorPtr evaluator;
+    // last start of the evaluations. Needed to check duration of current evaluation.
     double start_eval_time_;
-    unsigned int generation_counter_; // Number of current generation
-
-    // learner parameters
-    const double evaluation_rate_;
-    const unsigned int max_evaluations_; // Maximal number of evaluations
+    // id of the current generation
+    unsigned int generation_counter_;
+    // needs to implement the grace period in starting the controller
     bool evaluator_started = false;
+
+
+    // -- learner parameters --
+
+    // How many seconds should every evaluation last
+    const double evaluation_rate_;
+    // Maximal number of evaluations
+    const unsigned int max_evaluations_;
 
 // RLPOWER SECTION ------------------------------------------------------------
 protected:
@@ -123,15 +157,22 @@ protected:
     void genomeToPhenotype();
 
 private:
-    PolicyPtr current_policy_ = nullptr; // Pointer to the current policy
-    std::map<double, PolicyPtr, std::greater<cpg::real_t>> ranked_policies_; // Container
+    // Pointer to the current policy
+    PolicyPtr current_policy_ = nullptr;
+    // Container
+    std::map<double, PolicyPtr, std::greater<cpg::real_t>> ranked_policies_;
 
-    static const double SIGMA_DECAY_SQUARED;// = 0.98; // sigma decay
+    // sigma decay
+    static const double SIGMA_DECAY_SQUARED;// = 0.98;
 
-    char algorithm_type_ = 'B'; // Type of the used algorithm
-    unsigned int max_ranked_policies_; // 10 - Maximal number of stored ranked policies
-    double noise_sigma_; // 0.008 - Noise in generatePolicy() function
-    double sigma_tau_correction_ = 0.2; // Tau deviation for self-adaptive sigma
+    // Type of the used algorithm
+    char algorithm_type_ = 'B';
+    // Maximal number of stored ranked policies
+    unsigned int max_ranked_policies_; // = 10
+    // Noise in generatePolicy() function
+    double noise_sigma_; // = 0.008
+    // Tau deviation for self-adaptive sigma
+    double sigma_tau_correction_ = 0.2;
 
 };
 

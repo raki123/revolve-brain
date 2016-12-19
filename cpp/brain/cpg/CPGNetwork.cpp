@@ -7,7 +7,7 @@
 
 using namespace revolve::brain::cpg;
 
-CPGNetwork::CPGNetwork(unsigned int n_sensors)
+CPGNetwork::CPGNetwork(unsigned int n_sensors, unsigned int n_connections)
     : rge(nullptr)
     , rgf(nullptr)
     , pfe(nullptr)
@@ -18,10 +18,18 @@ CPGNetwork::CPGNetwork(unsigned int n_sensors)
     , pfe_out(0)
     , pff_out(0)
     , mn_out(0)
+    , n_connections(n_connections)
 {
+    std::vector<real_t> weight_neigbours_e(n_connections, 0);
+    std::vector<real_t> weight_neigbours_f(n_connections, 0);
+//     for (int i=0; i<weight_neigbours.size(); i++) {
+//         weight_neigbours_e[i] = weight_neigbours[i].we;
+//         weight_neigbours_f[i] = weight_neigbours[i].wf;
+//     }
+
     // RG
-    rge = new cpg::RythmGenerationNeuron(2,.5,1,0);
-    rgf = new cpg::RythmGenerationNeuron(2,-.5,1,0);
+    rge = new cpg::RythmGenerationNeuron(2,weight_neigbours_e, .5,1,0);
+    rgf = new cpg::RythmGenerationNeuron(2,weight_neigbours_f,-.5,1,0);
 
     // PF
     std::vector<cpg::real_t> pfe_weights(1+n_sensors, 0.0001);
@@ -56,6 +64,11 @@ CPGNetwork::CPGNetwork(unsigned int n_sensors)
         //NONE
     };
 
+    for (int i=0; i<n_connections; i++) {
+        genome_limits.push_back({rge->WEIGHT_MIN, rge->WEIGHT_MAX});
+        genome_limits.push_back({rgf->WEIGHT_MIN, rgf->WEIGHT_MAX});
+    }
+
 //     std::vector<real_t>_genome = {
 //         // Rythm Generation
 //         1, // rge weight
@@ -80,7 +93,7 @@ CPGNetwork::CPGNetwork(unsigned int n_sensors)
 //     };
 
     // percentage version
-    std::vector<real_t>_genome = std::vector<real_t>(12, 0.5);
+    std::vector<real_t>_genome = std::vector<real_t>(12 + 2*n_connections, 0.5);
 
     genome = std::make_shared<std::vector<real_t>>(_genome);
 }
@@ -108,8 +121,16 @@ void CPGNetwork::updateRythmGeneration(double step)
     real_t phi_e = rge->getPhi();
     real_t phi_f = rgf->getPhi();
 
-    rge_out = rge->update({phi_f}, step)[0];
-    rgf_out = rgf->update({phi_e}, step)[0];
+    std::vector<real_t> inputs_e = { phi_f };
+    std::vector<real_t> inputs_f = { phi_e };
+
+    for (int i=0; i<n_connections; i++) {
+        inputs_e.push_back(connections[i]->rge->getPhi());
+        inputs_f.push_back(connections[i]->rgf->getPhi());
+    }
+
+    rge_out = rge->update(inputs_e, step)[0];
+    rgf_out = rgf->update(inputs_f, step)[0];
 }
 
 void CPGNetwork::updatePatternFormation(const std::vector<real_t> &sensor_readings, double step)
@@ -161,7 +182,7 @@ void revolve::brain::cpg::CPGNetwork::set_genome(std::vector<real_t> other)
 
 void revolve::brain::cpg::CPGNetwork::update_genome()
 {
-    assert(genome->size() == 12);
+    assert(genome->size() == (12 + 2*n_connections));
     unsigned int i=0;
 
     std::cout << "new parameters: {";
@@ -187,39 +208,44 @@ void revolve::brain::cpg::CPGNetwork::update_genome()
 //    // MotoNeuron
 //    //NONE
 
-
     // Rythm generator
     std::cout << "\"weight_e\": " <<
-    rge->setWeightPercentage((*genome)[i++]);
+    rge->setWeightPercentage((*genome)[i++]);    //0
 //     std::cout << "\",c_e\": " <<
-    i++;//rge->setCPercentage((*genome)[i++]);
+    i++;//rge->setCPercentage((*genome)[i++]);   //1
     std::cout << "\",amplitude_e\": " <<
-    rge->setAmplitudePercentage((*genome)[i++]);
+    rge->setAmplitudePercentage((*genome)[i++]); //2
     std::cout << "\",offset_e\": " <<
-    rge->setOffsetPercentage((*genome)[i++]);
+    rge->setOffsetPercentage((*genome)[i++]);    //3
 
     std::cout << "\",weight_f\": " <<
-    rgf->setWeightPercentage((*genome)[i++]);
+    rgf->setWeightPercentage((*genome)[i++]);    //4
 //     std::cout << "\",c_f\": " <<
-    i++;//rgf->setCPercentage((*genome)[i++]);
+    i++;//rgf->setCPercentage((*genome)[i++]);   //5
     std::cout << "\",amplitude_f\": " <<
-    rgf->setAmplitudePercentage((*genome)[i++]);
+    rgf->setAmplitudePercentage((*genome)[i++]); //6
     std::cout << "\",offset_f\": " <<
-    rgf->setOffsetPercentage((*genome)[i++]);
+    rgf->setOffsetPercentage((*genome)[i++]);    //7
 
     // Pattern Formation
 //     std::cout << "\",alpha_e\": " <<
-    i++;//pfe->setAlphaPercentage((*genome)[i++]);
+    i++;//pfe->setAlphaPercentage((*genome)[i++]); //8
 //     std::cout << "\",theta_e\": " <<
-    i++;//pfe->setThetaPercentage((*genome)[i++]);
+    i++;//pfe->setThetaPercentage((*genome)[i++]); //9
 
 //     std::cout << "\",alpha_f\": " <<
-    i++;//pff->setAlphaPercentage((*genome)[i++]);
+    i++;//pff->setAlphaPercentage((*genome)[i++]); //10
 //     std::cout << "\",theta_f\": " <<
-    i++;//pff->setThetaPercentage((*genome)[i++]);
+    i++;//pff->setThetaPercentage((*genome)[i++]); //11
 
     // MotoNeuron
     //NONE
+
+    // Connection Weights
+    for (int j=0; j<n_connections; j++) { //12 + 2*j
+        rge->setWeightNeighbourPercentage((*genome)[i++], j);
+        rgf->setWeightNeighbourPercentage((*genome)[i++], j);
+    }
 
     std::cout << '}' << std::endl;
 }
