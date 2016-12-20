@@ -1,6 +1,5 @@
 
 add_library(extnn STATIC
-	    extended_neural_network.cpp
 	    neuron.cpp
 	    differential_cpg.cpp
 	    bias_neuron.cpp

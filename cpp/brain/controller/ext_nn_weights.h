@@ -3,22 +3,22 @@
 
 #include "controller.h"
 #include "../evaluator.h"
-#include "../extnn/neuron.h"
-#include "../extnn/neural_connection.h"
+#include "extnn/neuron.h"
+#include "extnn/neural_connection.h"
 #include <map>
 #include <vector>
 #include <string>
 
 
-#include "../extnn/linear_neuron.h"
-#include "../extnn/sigmoid_neuron.h"
-#include "../extnn/oscillator_neuron.h"
-#include "../extnn/v_oscillator.h"
-#include "../extnn/x_oscillator.h"
-#include "../extnn/leaky_integrator.h"
-#include "../extnn/bias_neuron.h"
-#include "../extnn/differential_cpg.h"
-#include "../extnn/input_neuron.h"
+#include "extnn/linear_neuron.h"
+#include "extnn/sigmoid_neuron.h"
+#include "extnn/oscillator_neuron.h"
+#include "extnn/v_oscillator.h"
+#include "extnn/x_oscillator.h"
+#include "extnn/leaky_integrator.h"
+#include "extnn/bias_neuron.h"
+#include "extnn/differential_cpg.h"
+#include "extnn/input_neuron.h"
 
 
 namespace revolve {
@@ -61,37 +61,6 @@ public:
 
 protected:
 
-	// Mutex for updating the network
-	//boost::mutex networkMutex_;
-
-
-	/**
-	* This function creates neurons and adds them to appropriate lists
-	* @param neuronId: id of the neuron
-	* @param neuronType: type of the neuron
-	* @param neuronLayer: layer the neuron should be added to, can be 'hidden', 'input' or 'output'
-	* @param params: parameters of the new neuron
-	* @return pointer to the new neuron that was added
-	*/
-	NeuronPtr addNeuron(const std::string &neuronId,
-			    const std::string &neuronType, 
-			    const std::string &neuronLayer, 
-			    const std::map<std::string, double> &params);
-	
-	/**
-	* Method to add a new connection to the network
-	* @param src: the beginning of the connetion
-	* @param dst: the end of the connection
-	* @param weight: weighting factor of the connection
-	* @param idToNeuron: mapping between the neurons and their ids
-	* @return pointer to the neural connection
-	*/
-	void connectionHelper(const std::string &src,
-			      const std::string &dst,
-			      const std::string &socket,
-			      double weight,
-			      const std::map<std::string, NeuronPtr> &idToNeuron);
-
 	/**
 	 * Gets the weight of all the connections
 	 * @return weights of all neural connections
@@ -103,13 +72,6 @@ protected:
 	 * @param weights: new weights to be assigned
 	 */
 	virtual void setGenome(std::vector<double> weights);
-	
-	/**
-	 * Delete all hidden neurons and all connections
-	 */
-	void flush();
-
-
 
 	std::string modelName_; //name of the robot
 	

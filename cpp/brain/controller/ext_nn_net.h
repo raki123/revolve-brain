@@ -3,22 +3,22 @@
 
 #include "controller.h"
 #include "../evaluator.h"
-#include "../extnn/neuron.h"
-#include "../extnn/neural_connection.h"
+#include "extnn/neuron.h"
+#include "extnn/neural_connection.h"
 #include <map>
 #include <vector>
 #include <string>
 
 
-#include "../extnn/linear_neuron.h"
-#include "../extnn/sigmoid_neuron.h"
-#include "../extnn/oscillator_neuron.h"
-#include "../extnn/v_oscillator.h"
-#include "../extnn/x_oscillator.h"
-#include "../extnn/leaky_integrator.h"
-#include "../extnn/bias_neuron.h"
-#include "../extnn/differential_cpg.h"
-#include "../extnn/input_neuron.h"
+#include "extnn/linear_neuron.h"
+#include "extnn/sigmoid_neuron.h"
+#include "extnn/oscillator_neuron.h"
+#include "extnn/v_oscillator.h"
+#include "extnn/x_oscillator.h"
+#include "extnn/leaky_integrator.h"
+#include "extnn/bias_neuron.h"
+#include "extnn/differential_cpg.h"
+#include "extnn/input_neuron.h"
 
 
 namespace revolve {

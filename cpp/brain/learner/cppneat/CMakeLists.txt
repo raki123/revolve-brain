@@ -4,6 +4,5 @@ add_library(cppneat STATIC
 	    crossover.cpp
 	    genetic_encoding.cpp
 	    mutator.cpp
-	    neat_learner.cpp
 	    neuron.cpp
 )

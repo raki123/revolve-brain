@@ -1,5 +1,5 @@
 #include "neat_learner.h"
-#include "crossover.h"
+#include "cppneat/crossover.h"
 
 #include <algorithm>
 #include <iostream>

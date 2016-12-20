@@ -1,9 +1,9 @@
 #ifndef CPPNEAT_LEARNER_H_
 #define CPPNEAT_LEARNER_H_
 
-#include "types.h"
-#include "mutatur.h"
-#include "../split_cpg/learner.h"
+#include "cppneat/types.h"
+#include "cppneat/mutatur.h"
+#include "learner.h"
 
 #include <map>
 #include <string>

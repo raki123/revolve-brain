@@ -1,4 +1,4 @@
-#include "ext_nn.h"
+#include "ext_nn_net.h"
 
 #include <fstream>
 #include <iostream>

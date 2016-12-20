@@ -29,11 +29,9 @@ add_subdirectory("neat/accneat")
 include_directories("neat/accneat/src")
 
 # add cppneat
-add_subdirectory("brain/cppneat")
-# add split_cpg
-add_subdirectory("brain/split_cpg")
+add_subdirectory("brain/learner/cppneat")
 #add extended neural network
-add_subdirectory("brain/extnn")
+add_subdirectory("brain//controller/extnn")
 
 ### RLPOWER DEPENDENCIES ###
 # GSL
