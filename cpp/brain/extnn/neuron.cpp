@@ -53,7 +53,7 @@ const std::string & Neuron::Id() const
 	return this->id_;
 }
 
-std::vector< std::pair< std::__cxx11::string, NeuralConnectionPtr > > Neuron::getIncomingConnections()
+std::vector< std::pair< std::string, NeuralConnectionPtr > > Neuron::getIncomingConnections()
 {
 	return this->incomingConnections_;
 }

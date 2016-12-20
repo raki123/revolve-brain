@@ -13,6 +13,10 @@ std::map<boost::shared_ptr<ExtNNConfig>, CPPNEAT::GeneticEncodingPtr> known;
 CPPNEAT::Learner::LearningConfiguration learning_configuration; 
 std::map<CPPNEAT::Neuron::Ntype, CPPNEAT::Neuron::NeuronTypeSpec> brain_spec;
 
+std::map<int, unsigned int> input_map;
+std::map<int, unsigned int> output_map;
+
+
 void set_learning_conf()
 {
 	learning_configuration.asexual = false;
@@ -133,9 +137,6 @@ boost::shared_ptr<ExtNNConfig> convertForController(CPPNEAT::GeneticEncodingPtr 
 	std::map<int,NeuronPtr> innov_number_to_neuron;
 	
 	boost::shared_ptr<ExtNNConfig> config(new ExtNNConfig());
-	config->numHiddenNeurons_ = 0;
-	config->numInputNeurons_ = 0;
-	config->numOutputNeurons_ = 0;
 	for(CPPNEAT::NeuronGenePtr neuron_gene : neuron_genes) {
 		NeuronPtr newNeuron;
 		std::string neuronId = neuron_gene->neuron->neuron_id;
@@ -145,8 +146,7 @@ boost::shared_ptr<ExtNNConfig> convertForController(CPPNEAT::GeneticEncodingPtr 
 			case CPPNEAT::Neuron::INPUT_LAYER: {
 				newNeuron.reset(new InputNeuron(neuronId, neuron_params));
 				config->inputNeurons_.push_back(newNeuron);
-				config->inputPositionMap_[newNeuron] = config->numInputNeurons_;
-				config->numInputNeurons_++;
+				config->inputPositionMap_[newNeuron] = input_map[neuron_gene->getInnovNumber()];
 				break;
 			}
 			case CPPNEAT::Neuron::HIDDEN_LAYER: {
@@ -178,7 +178,6 @@ boost::shared_ptr<ExtNNConfig> convertForController(CPPNEAT::GeneticEncodingPtr 
 						
 				}
 				config->hiddenNeurons_.push_back(newNeuron);
-				config->numHiddenNeurons_++;
 				break;
 			}
 			case CPPNEAT::Neuron::OUTPUT_LAYER: {
@@ -210,8 +209,7 @@ boost::shared_ptr<ExtNNConfig> convertForController(CPPNEAT::GeneticEncodingPtr 
 						
 				}
 				config->outputNeurons_.push_back(newNeuron);
-				config->outputPositionMap_[newNeuron] = config->numOutputNeurons_;
-				config->numOutputNeurons_++;
+				config->outputPositionMap_[newNeuron] = output_map[neuron_gene->getInnovNumber()];
 				break;
 			}
 			default: {

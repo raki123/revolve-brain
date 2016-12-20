@@ -8,8 +8,13 @@
 namespace revolve {
 namespace brain {
 
+//used for communication between cppneat learner and ext nn controller
 extern CPPNEAT::Learner::LearningConfiguration learning_configuration;
 extern std::map<CPPNEAT::Neuron::Ntype, CPPNEAT::Neuron::NeuronTypeSpec> brain_spec;
+
+extern std::map<int, unsigned int> input_map;
+extern std::map<int, unsigned int> output_map;
+
 void set_brain_spec();
 void set_learning_conf();
 boost::shared_ptr<ExtNNConfig> convertForController(CPPNEAT::GeneticEncodingPtr genotype);
