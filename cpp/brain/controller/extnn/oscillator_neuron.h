@@ -28,6 +28,8 @@ public:
 	
 	virtual std::map<std::string, double> getNeuronParameters();
 	
+	virtual void setNeuronParameters(std::map<std::string, double> params);
+	
 	virtual std::string getType();
 
 protected:

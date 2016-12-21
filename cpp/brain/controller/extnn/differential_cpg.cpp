@@ -65,6 +65,16 @@ std::map< std::string, double > DifferentialCPG::getNeuronParameters()
 	return ret;
 }
 
+void DifferentialCPG::setNeuronParameters(std::map< std::string, double > params)
+{
+	if (!params.count("rv:bias")) {
+		std::cerr << "A `" << "Differential CPG" << "` neuron requires `rv:bias` element." << std::endl;
+		throw std::runtime_error("Robot brain error");
+	}
+	this->bias_ = params.find("rv:bias")->second;
+}
+
+
 std::string DifferentialCPG::getType()
 {
 	return "DifferentialCPG";

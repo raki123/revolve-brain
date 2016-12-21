@@ -37,6 +37,20 @@ std::map< std::string, double > OscillatorNeuron::getNeuronParameters()
 	return ret;
 }
 
+void OscillatorNeuron::setNeuronParameters(std::map< std::string, double > params)
+{
+	if (!params.count("rv:period") || !params.count("rv:phase_offset") || !params.count("rv:amplitude")) {
+		std::cerr << "An `" << "Oscillator" << 
+		"` neuron requires `rv:period`, `rv:phase_offset` and `rv:amplitude` elements." << std::endl;
+		throw std::runtime_error("Robot brain error");
+	}
+	
+	this->period_ = params.find("rv:period")->second;
+	this->phaseOffset_ = params.find("rv:phase_offset")->second;
+	this->gain_ = params.find("rv:amplitude")->second;
+}
+
+
 std::string OscillatorNeuron::getType()
 {
 	return "Oscillator";

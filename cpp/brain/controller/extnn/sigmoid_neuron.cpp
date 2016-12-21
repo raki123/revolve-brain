@@ -40,6 +40,17 @@ std::map< std::string, double > SigmoidNeuron::getNeuronParameters()
 	return ret;
 }
 
+void SigmoidNeuron::setNeuronParameters(std::map< std::string, double > params)
+{
+	if (!params.count("rv:bias") || !params.count("rv:gain")) {
+		std::cerr << "A `" << "Sigmoid" << "` neuron requires `rv:bias` and `rv:gain` elements." << std::endl;
+		throw std::runtime_error("Robot brain error");
+	}
+	this->bias_ = params.find("rv:bias")->second;
+	this->gain_ = params.find("rv:gain")->second;
+}
+
+
 std::string SigmoidNeuron::getType()
 {
 	return "Sigmoid";

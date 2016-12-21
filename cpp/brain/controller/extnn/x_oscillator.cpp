@@ -66,6 +66,20 @@ std::map< std::string, double > XOscillator::getNeuronParameters()
 	return ret;
 }
 
+void XOscillator::setNeuronParameters(std::map< std::string, double > params)
+{
+	if (!params.count("rv:tau")) {
+		std::cerr << "A `" << "X-Oscillator" << 
+		"` neuron requires an `rv:tau` element." << std::endl;
+		throw std::runtime_error("Robot brain error");
+	}
+	
+	this->tau_ = params.find("rv:tau")->second;
+
+	this->stateDeriv_ = 0;
+}
+
+
 std::string XOscillator::getType()
 {
 	return "XOscillator";

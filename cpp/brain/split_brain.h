@@ -5,9 +5,9 @@
 #ifndef REVOLVE_BRAIN_SPLIT_BRAIN_H_
 #define REVOLVE_BRAIN_SPLIT_BRAIN_H_
 
-#include "controller.h"
-#include "learner.h"
-#include "../brain.h"
+#include "controller/controller.h"
+#include "learner/learner.h"
+#include "brain.h"
 
 namespace revolve {
 namespace brain {

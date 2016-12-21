@@ -38,6 +38,8 @@ struct ExtNNConfig {
 
 	std::vector<NeuralConnectionPtr> connections_; //vector of all the neural connections
 };
+
+//extended neural network controller usable with standard neat or hyper neat (use different conversion methods)
 class ExtNNController1 : public Controller<boost::shared_ptr<ExtNNConfig>>
 {
 public:
@@ -52,7 +54,6 @@ public:
 	 */
 	ExtNNController1(std::string modelName,
 			      boost::shared_ptr<ExtNNConfig> Config,
-			      EvaluatorPtr evaluator,
 			      const std::vector< ActuatorPtr > &actuators ,
 			      const std::vector< SensorPtr > &sensors);
 
@@ -90,7 +91,6 @@ protected:
 
 	std::string modelName_; //name of the robot
 	
-	EvaluatorPtr evaluator_ = NULL; //pointer to the evaluator that is used
 
 	double * inputs_;    // buffer of input values from the sensors
 	double * outputs_;     // buffer of output values for the actuators

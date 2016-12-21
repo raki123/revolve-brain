@@ -25,6 +25,11 @@ NeuronPtr NeuralConnection::GetInputNeuron() const
 {
 	return src_;
 }
+NeuronPtr NeuralConnection::GetOutputNeuron() const
+{
+	return dst_;
+}
+
 
 }
 }

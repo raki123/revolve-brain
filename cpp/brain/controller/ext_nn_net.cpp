@@ -13,13 +13,11 @@ namespace brain {
 
 ExtNNController1::ExtNNController1(std::string modelName,
 					     boost::shared_ptr<ExtNNConfig> Config,
-					     EvaluatorPtr evaluator,
 					     const std::vector< ActuatorPtr > & actuators,
 					     const std::vector< SensorPtr > & sensors)
 {
 	modelName_ = modelName;
 	
-	evaluator_ = evaluator;
 	allNeurons_ = Config->allNeurons_;
 	inputNeurons_ = Config->inputNeurons_;
 	outputNeurons_ = Config->outputNeurons_;
@@ -145,7 +143,7 @@ void ExtNNController1::writeNetwork(std::ofstream &write_to)
 			boost::add_edge(indexInput,i,graph);
 		}
 	}
-	std::string names[allNeurons_.size()];
+	std::string *names = new std::string[allNeurons_.size()];
 	for(int i = 0; i < allNeurons_.size(); i++) {
 		std::stringstream nodeName;
 		nodeName << allNeurons_[i]->Id() + " of type: " + allNeurons_[i]->getType() << std::endl;
@@ -157,6 +155,7 @@ void ExtNNController1::writeNetwork(std::ofstream &write_to)
 	}
 	//, "test");
 	boost::write_graphviz(write_to, graph, boost::make_label_writer(names));
+	delete [] names;
 }
 
 }

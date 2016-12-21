@@ -6,6 +6,6 @@ add_library(revolve-brain-learner
 
 add_subdirectory("cppneat")
 
-target_link_libraries(revolve-brain-learner.h
+target_link_libraries(revolve-brain-learner
 	cppneat
 )

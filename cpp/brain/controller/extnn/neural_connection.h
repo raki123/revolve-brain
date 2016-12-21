@@ -34,6 +34,8 @@ public:
 	 * @return the neuron in the beginning of the connection
 	 */
 	NeuronPtr GetInputNeuron() const;
+	
+	NeuronPtr GetOutputNeuron() const;
 
 protected:
 	double weight_; //weight of the connection

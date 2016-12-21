@@ -28,10 +28,6 @@ add_subdirectory("neat/accneat")
 #TODO make include path for accneat nicer
 include_directories("neat/accneat/src")
 
-# add cppneat
-add_subdirectory("brain/learner/cppneat")
-#add extended neural network
-add_subdirectory("brain//controller/extnn")
 
 ### RLPOWER DEPENDENCIES ###
 # GSL
@@ -52,7 +48,8 @@ file(GLOB_RECURSE BRAIN_SRCS
         brain/supg/supgneuron.cpp
         brain/supg/supggenomemanager.cpp
         neat/asyncneat.cpp
-        neat/neatevaluation.cpp)
+        neat/neatevaluation.cpp
+        brain/conversion.cpp)
 
 # Compiling ####################################################################
 add_subdirectory("brain/learner/")

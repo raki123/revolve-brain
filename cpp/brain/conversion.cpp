@@ -1,9 +1,10 @@
 #include "conversion.h"
-#include "../cppneat/neuron_gene.h"
-#include "../cppneat/connection_gene.h"
+#include "learner/cppneat/neuron_gene.h"
+#include "learner/cppneat/connection_gene.h"
 
 #include <map>
 #include <iostream>
+#include <vector>
 
 namespace revolve {
 namespace brain {
@@ -235,6 +236,116 @@ boost::shared_ptr<ExtNNConfig> convertForController(CPPNEAT::GeneticEncodingPtr 
 }
 CPPNEAT::GeneticEncodingPtr convertForLearner(boost::shared_ptr<ExtNNConfig> config) {
 	return known[config];
+}
+std::vector<double> forController(std::vector<std::vector<double>> toConvert)
+{
+	return toConvert[0];
+}
+
+std::vector<std::vector<double>> forLearner(std::vector<double> toConvert) 
+{
+	return std::vector<std::vector<double>>(1,toConvert);
+}
+
+boost::shared_ptr<ExtNNConfig> convertForExtNNFromHyper(CPPNEAT::GeneticEncodingPtr genotype)
+{
+	boost::shared_ptr<ExtNNConfig> hyper_config = convertForController(hyper_config);
+	for(NeuralConnectionPtr connection : cpg_network->connections_) 
+	{		
+		NeuronPtr src = connection->GetInputNeuron();
+		NeuronPtr dst = connection->GetOutputNeuron();
+		std::tuple<int,int,int> coord_src = neuron_coordinates[src];
+		std::tuple<int,int,int> coord_dst = neuron_coordinates[dst];
+		for(NeuronPtr neuron : hyper_config->inputNeurons_) 
+		{
+			//could be faster by neuron->Id()[6] but less easy to read
+			if(neuron->Id() == "Input-0") { 
+				neuron->SetInput(std::get<0>(coord_src));
+			} else if(neuron->Id() == "Input-1") { 
+				neuron->SetInput(std::get<1>(coord_src));
+			} else if(neuron->Id() == "Input-2") { 
+				neuron->SetInput(std::get<2>(coord_src));
+			} else if(neuron->Id() == "Input-3") { 
+				neuron->SetInput(std::get<0>(coord_dst));
+			} else if(neuron->Id() == "Input-4") { 
+				neuron->SetInput(std::get<1>(coord_dst));
+			} else if(neuron->Id() == "Input-5") { 
+				neuron->SetInput(std::get<2>(coord_dst));
+			} 
+		}
+
+		// Calculate new states of all neurons
+		for (auto it = hyper_config->allNeurons_.begin(); it != hyper_config->allNeurons_.end(); ++it) 
+		{
+			(*it)->Update(0);
+		}
+
+
+		// Flip states of all neurons
+		for (auto it = hyper_config->allNeurons_.begin(); it != hyper_config->allNeurons_.end(); ++it) 
+		{
+			(*it)->FlipState();
+		}
+
+		for (auto it = hyper_config->outputNeurons_.begin(); it != hyper_config->outputNeurons_.end(); ++it) 
+		{
+			auto outNeuron = *it;
+			if(outNeuron->Id() == "weight") 
+			{
+				connection->SetWeight(outNeuron->GetOutput());
+				break;
+			}
+		}
+	}
+	for(NeuronPtr neuron : cpg_network->allNeurons_) 
+	{		
+		std::tuple<int,int,int> coord_src = neuron_coordinates[neuron];
+		std::tuple<int,int,int> coord_dst = std::make_tuple(0,0,0);
+		for(NeuronPtr neuron : hyper_config->inputNeurons_) 
+		{
+			//could be faster by neuron->Id()[6] but less easy to read
+			if(neuron->Id() == "Input-0") { 
+				neuron->SetInput(std::get<0>(coord_src));
+			} else if(neuron->Id() == "Input-1") { 
+				neuron->SetInput(std::get<1>(coord_src));
+			} else if(neuron->Id() == "Input-2") { 
+				neuron->SetInput(std::get<2>(coord_src));
+			} else if(neuron->Id() == "Input-3") { 
+				neuron->SetInput(std::get<0>(coord_dst));
+			} else if(neuron->Id() == "Input-4") { 
+				neuron->SetInput(std::get<1>(coord_dst));
+			} else if(neuron->Id() == "Input-5") { 
+				neuron->SetInput(std::get<2>(coord_dst));
+			} 
+		}
+
+		// Calculate new states of all neurons
+		for (auto it = hyper_config->allNeurons_.begin(); it != hyper_config->allNeurons_.end(); ++it) 
+		{
+			(*it)->Update(0);
+		}
+
+
+		// Flip states of all neurons
+		for (auto it = hyper_config->allNeurons_.begin(); it != hyper_config->allNeurons_.end(); ++it) 
+		{
+			(*it)->FlipState();
+		}
+
+		std::map<std::string, double> params;
+		for (auto it = hyper_config->outputNeurons_.begin(); it != hyper_config->outputNeurons_.end(); ++it) 
+		{
+			auto outNeuron = *it;
+			params[outNeuron->Id()] = outNeuron->GetOutput();
+		}
+		neuron->setNeuronParameters(params);
+	}
+	return cpg_network;
+}
+
+CPPNEAT::GeneticEncodingPtr convertForHypeFromExtNN(boost::shared_ptr<ExtNNConfig> config)
+{
+	
 }
 
 }	

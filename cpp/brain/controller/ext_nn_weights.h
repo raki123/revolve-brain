@@ -5,6 +5,7 @@
 #include "../evaluator.h"
 #include "extnn/neuron.h"
 #include "extnn/neural_connection.h"
+#include "ext_nn_net.h"
 #include <map>
 #include <vector>
 #include <string>
@@ -29,19 +30,16 @@ class ExtNNController : public Controller<std::vector<double>>
 {
 public:
   
-	struct ExtNNConfig;
 	/**
 	 * Constructor for a neural network including neurons that are of a different type than the usual ones.
 	 * @param modelName: name of the model
 	 * @param Config: configuration file
-	 * @param evaluator: pointer to the evaluator that is used
 	 * @param actuators: vector list of robot's actuators
 	 * @param sensors: vector list of robot's sensors
 	 * @return pointer to the neural network
 	 */
 	ExtNNController(std::string modelName,
-			      ExtNNConfig Config,
-			      EvaluatorPtr evaluator,
+			      boost::shared_ptr<ExtNNConfig> Config,
 			      const std::vector< ActuatorPtr > &actuators ,
 			      const std::vector< SensorPtr > &sensors);
 
@@ -58,12 +56,9 @@ public:
 			    const std::vector< SensorPtr > &sensors,
 			    double t,
 			    double step);
-
-protected:
-
 	/**
-	 * Gets the weight of all the connections
-	 * @return weights of all neural connections
+	 * Gets the weight of all the connections and all parameters of all neurons
+	 * @return weights of all neural connections and parameters for all neurons
 	 */
 	virtual std::vector<double> getGenome();
 	
@@ -72,11 +67,13 @@ protected:
 	 * @param weights: new weights to be assigned
 	 */
 	virtual void setGenome(std::vector<double> weights);
+	
+	void writeNetwork(std::ofstream &write_to);
+	
+protected:
 
 	std::string modelName_; //name of the robot
 	
-	EvaluatorPtr evaluator_ = NULL; //pointer to the evaluator that is used
-
 	double * inputs_;    // buffer of input values from the sensors
 	double * outputs_;     // buffer of output values for the actuators
 
@@ -92,30 +89,7 @@ protected:
 
 	std::vector<NeuralConnectionPtr> connections_; //vector of all the neural connections
 
-	int numInputNeurons_; //number of input neurons
-	int numOutputNeurons_; // number of output neurons
-	int numHiddenNeurons_; // number of hidden neurons
 public:
-	struct ExtNNConfig {
-		double * inputs_;    // buffer of input values from the sensors
-		double * outputs_;     // buffer of output values for the actuators
-
-		std::vector<NeuronPtr> allNeurons_; //vector containing all neurons
-		std::vector<NeuronPtr> inputNeurons_; //vector containing the input neurons
-		std::vector<NeuronPtr> outputNeurons_; //vector containing the output neurons
-		std::vector<NeuronPtr> hiddenNeurons_; //vector containing the hidden neurons
-
-		std::map<NeuronPtr, int> outputPositionMap_; 	// positions for indexing into the outputs_ buffer for each output neuron
-		std::map<NeuronPtr, int> inputPositionMap_;	// positions for indexing into the inputs_ buffer for each input neuron
-
-		std::map<std::string, NeuronPtr> idToNeuron_;	// Map neuron id strings to Neuron objects
-
-		std::vector<NeuralConnectionPtr> connections_; //vector of all the neural connections
-
-		int numInputNeurons_; //number of input neurons
-		int numOutputNeurons_; // number of output neurons
-		int numHiddenNeurons_; // number of hidden neurons
-	};
 
 
 

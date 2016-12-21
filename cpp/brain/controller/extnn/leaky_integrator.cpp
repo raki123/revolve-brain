@@ -58,6 +58,21 @@ std::map< std::string, double > LeakyIntegrator::getNeuronParameters()
 	return ret;
 }
 
+void LeakyIntegrator::setNeuronParameters(std::map< std::string, double > params)
+{
+	if (!params.count("rv:bias") || !params.count("rv:tau")) {
+		std::cerr << "A `" << "Leaky Integrator" << 
+		"` neuron requires `rv:bias` and `rv:tau` elements." << std::endl;
+		throw std::runtime_error("Robot brain error");
+	}
+	
+	this->bias_ = params.find("rv:bias")->second;
+	this->tau_ = params.find("rv:tau")->second;
+
+	this->stateDeriv_ = 0;
+	this->state_ = 0;
+}
+
 std::string LeakyIntegrator::getType()
 {
 	return "LeakyIntegrator";

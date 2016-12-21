@@ -29,6 +29,15 @@ std::map< std::string, double > BiasNeuron::getNeuronParameters()
 	return ret;
 }
 
+void BiasNeuron::setNeuronParameters(std::map< std::string, double > params)
+{
+	if (!params.count("rv:bias")) {
+		std::cerr << "A `" << "Bias" << "` neuron requires `rv:bias` element." << std::endl;
+		throw std::runtime_error("Robot brain error");
+	}
+	this->bias_ = params.find("rv:bias")->second;
+}
+
 std::string BiasNeuron::getType()
 {
 	return "Bias";

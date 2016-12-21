@@ -1,12 +1,10 @@
 #ifndef REVOLVE_BRAIN_CONVERTING_SPLIT_BRAIN_H_
 #define REVOLVE_BRAIN_CONVERTING_SPLIT_BRAIN_H_
 
-#include "split_brain.h"
-#include "../evaluator.h"
-#include "ext_nn.h"
+#include "split_brain.h"	
+#include "evaluator.h"
 #include <iostream>
 #include <fstream>
-#include <boost/graph/adjacency_list.hpp>
 
 namespace revolve {
 namespace brain {
@@ -56,10 +54,11 @@ public:
 	    G controllerGenome = convertForController_(genome);
 	    this->controller->setGenome(controllerGenome);
 	    start_eval_time_ = t;
-	    evaluator_->start();
 	    generation_counter_++;
+	    eval_running = false;
 	}
 	if(reset && reset_duration > (t -start_eval_time_)) {
+		//only works for spider
 	    double outs[8] = {0.5,0,0.5,0,0.5,0,0.5,0};
 	    double * out = &outs[0];
 	    unsigned int p = 0;
@@ -93,7 +92,6 @@ void writeCurrent(double fitness)
     outputFile << "  - " << fitness << std::endl;
     outputFile.close();
     std::ofstream networkOutput(model_name + "-" + std::to_string(run_count) + "-" + std::to_string(generation_counter_) + ".dot");
-    boost::dynamic_pointer_cast<ExtNNController1>(this->controller)->writeNetwork(networkOutput);
 }
 
 protected:
@@ -109,7 +107,6 @@ protected:
     double start_eval_time_ = 0;
     double evaluation_rate_ = 30;
     int generation_counter_ = 0;
-    int max_evaluations_ = 1000;
 };
 
 }

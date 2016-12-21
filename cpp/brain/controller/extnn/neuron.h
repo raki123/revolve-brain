@@ -2,7 +2,6 @@
 #define REVOLVE_GAZEBO_BRAIN_NEURON_H_
 
 //#include "Types.h"
-#include "../brain.h"
 #include <cstdlib>
 #include <utility>
 #include <map>
@@ -15,7 +14,6 @@ namespace revolve {
 namespace brain {
 	class Motor;
 	class VirtualSensor;
-	class Brain;
 	class MotorFactory;
 	class SensorFactory;
 	class ExtendedNeuralNetwork;
@@ -23,7 +21,6 @@ namespace brain {
 	class Neuron;
 	class NeuralConnection;
 
-	typedef boost::shared_ptr< Brain > BrainPtr;
 	typedef boost::shared_ptr<ExtendedNeuralNetwork> NeuralNetworkPtr;
 	typedef boost::shared_ptr< MotorFactory > MotorFactoryPtr;
 	typedef boost::shared_ptr< SensorFactory > SensorFactoryPtr;
@@ -105,6 +102,8 @@ public:
 	virtual std::vector<std::pair<std::string, NeuralConnectionPtr>> getIncomingConnections();
 	
 	virtual std::map<std::string, double> getNeuronParameters() = 0;
+	
+	virtual void setNeuronParameters(std::map<std::string, double> params) = 0;
 	
 	virtual std::string getType() = 0;
 protected:
