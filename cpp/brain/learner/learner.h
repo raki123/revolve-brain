@@ -10,7 +10,7 @@
 namespace revolve {
 namespace brain {
 
-template <typename G>
+template <typename Genome>
 class Learner {
 public:
     virtual ~Learner() {};
@@ -22,7 +22,7 @@ public:
      * @param fitness: value of the fitness evaluation
      */   
     virtual void reportFitness(std::string id, 
-			       G genome,
+			       Genome genome,
 			       double fitness) = 0;
 			       
     /**
@@ -31,7 +31,7 @@ public:
      * @param id: identifier of the robot (in case there are multiple ones)
      * @return new genome
      */
-    virtual G getNewGenome(std::string id) = 0;
+    virtual Genome getNewGenome(std::string id) = 0;
 
 };
 

@@ -10,10 +10,10 @@ namespace revolve {
 namespace brain {
 
 
-template <typename G, typename H>
-class ConvSplitBrain : public SplitBrain<G,H> {
+template <typename Phenotype, typename Genome>
+class ConvSplitBrain : public SplitBrain<Phenotype,Genome> {
 public:
-    ConvSplitBrain(G (*convertForController)(H), H (*convertForLearner)(G), std::string model_name) 
+    ConvSplitBrain(Phenotype (*convertForController)(Genome), Genome (*convertForLearner)(Phenotype), std::string model_name) 
         : eval_running(false)
 	, reset(false)
 	, reset_duration(3)
@@ -39,9 +39,7 @@ public:
                         double step) 
     {
 	if(first_run) {
-	    H genome = this->learner->getNewGenome("test");
-	    G controllerGenome = convertForController_(genome);
-	    this->controller->setGenome(controllerGenome);
+	    this->controller->setGenome(convertForController_(this->learner->getNewGenome("test")));
 	    start_eval_time_ = t;
 	    evaluator_->start();
 	    first_run = false;
@@ -50,8 +48,7 @@ public:
 	    double fitness = evaluator_->fitness();
 	    writeCurrent(fitness);
 	    this->learner->reportFitness("test", convertForLearner_(this->controller->getGenome()), fitness);
-	    H genome = this->learner->getNewGenome("test");
-	    G controllerGenome = convertForController_(genome);
+	    Phenotype controllerGenome = convertForController_(this->learner->getNewGenome("test"));
 	    this->controller->setGenome(controllerGenome);
 	    start_eval_time_ = t;
 	    generation_counter_++;
@@ -101,8 +98,8 @@ protected:
     std::string model_name;
     bool first_run;
     int run_count;
-    G (*convertForController_)(H);
-    H (*convertForLearner_)(G);
+    Phenotype (*convertForController_)(Genome);
+    Genome (*convertForLearner_)(Phenotype);
     EvaluatorPtr evaluator_;
     double start_eval_time_ = 0;
     double evaluation_rate_ = 30;
