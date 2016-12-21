@@ -247,15 +247,19 @@ std::vector<std::vector<double>> forLearner(std::vector<double> toConvert)
 	return std::vector<std::vector<double>>(1,toConvert);
 }
 
+
+boost::shared_ptr<ExtNNConfig> cpg_network;
+std::map<std::string, std::tuple<int,int,int>> neuron_coordinates;
+CPPNEAT::GeneticEncodingPtr last;
 boost::shared_ptr<ExtNNConfig> convertForExtNNFromHyper(CPPNEAT::GeneticEncodingPtr genotype)
 {
-	boost::shared_ptr<ExtNNConfig> hyper_config = convertForController(hyper_config);
+	boost::shared_ptr<ExtNNConfig> hyper_config = convertForController(genotype);
 	for(NeuralConnectionPtr connection : cpg_network->connections_) 
 	{		
 		NeuronPtr src = connection->GetInputNeuron();
 		NeuronPtr dst = connection->GetOutputNeuron();
-		std::tuple<int,int,int> coord_src = neuron_coordinates[src];
-		std::tuple<int,int,int> coord_dst = neuron_coordinates[dst];
+		std::tuple<int,int,int> coord_src = neuron_coordinates[src->Id()];
+		std::tuple<int,int,int> coord_dst = neuron_coordinates[dst->Id()];
 		for(NeuronPtr neuron : hyper_config->inputNeurons_) 
 		{
 			//could be faster by neuron->Id()[6] but less easy to read
@@ -299,7 +303,7 @@ boost::shared_ptr<ExtNNConfig> convertForExtNNFromHyper(CPPNEAT::GeneticEncoding
 	}
 	for(NeuronPtr neuron : cpg_network->allNeurons_) 
 	{		
-		std::tuple<int,int,int> coord_src = neuron_coordinates[neuron];
+		std::tuple<int,int,int> coord_src = neuron_coordinates[neuron->Id()];
 		std::tuple<int,int,int> coord_dst = std::make_tuple(0,0,0);
 		for(NeuronPtr neuron : hyper_config->inputNeurons_) 
 		{
@@ -340,12 +344,13 @@ boost::shared_ptr<ExtNNConfig> convertForExtNNFromHyper(CPPNEAT::GeneticEncoding
 		}
 		neuron->setNeuronParameters(params);
 	}
+	last = genotype;
 	return cpg_network;
 }
 
-CPPNEAT::GeneticEncodingPtr convertForHypeFromExtNN(boost::shared_ptr<ExtNNConfig> config)
+CPPNEAT::GeneticEncodingPtr convertForHyperFromExtNN(boost::shared_ptr<ExtNNConfig> config)
 {
-	
+	return last;
 }
 
 }	

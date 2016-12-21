@@ -29,10 +29,11 @@ std::vector<std::vector<double>> forLearner(std::vector<double> toConvert);
 
 //used for communication between hyperneat learner and ext nn net controller
 extern boost::shared_ptr<ExtNNConfig> cpg_network;
-extern std::map<NeuronPtr, std::tuple<int,int,int>> neuron_coordinates;
+extern std::map<std::string, std::tuple<int,int,int>> neuron_coordinates;
+extern CPPNEAT::GeneticEncodingPtr last;
 
 boost::shared_ptr<ExtNNConfig> convertForExtNNFromHyper(CPPNEAT::GeneticEncodingPtr genotype);
-CPPNEAT::GeneticEncodingPtr convertForHypeFromExtNN(boost::shared_ptr<ExtNNConfig> config);
+CPPNEAT::GeneticEncodingPtr convertForHyperFromExtNN(boost::shared_ptr<ExtNNConfig> config);
 }
 }
 
