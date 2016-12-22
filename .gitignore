@@ -912,5 +912,11 @@ qtcreator-*
 # Emacs
 .#*
 
+<<<<<<< HEAD
+# Miscelaneous
+build
+dist
+=======
 # Catkin custom files
 CATKIN_IGNORE
+>>>>>>> 07ec5557b9f47a144fe15f058f3615fd6ecc9d23
