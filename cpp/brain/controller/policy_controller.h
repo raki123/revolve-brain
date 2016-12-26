@@ -19,12 +19,10 @@ public:
 
     explicit
     PolicyController(unsigned int n_actuators,
-                     unsigned int n_spline_points,
                      unsigned int interpolation_cache_size);
 
     explicit
-    PolicyController(unsigned int n_actuators,
-                     unsigned int n_spline_points);
+    PolicyController(unsigned int n_actuators);
 
     virtual
     ~PolicyController();
@@ -77,14 +75,12 @@ public:
 protected:
     // number of actuators the controller is expecting to send signal
     const unsigned int n_actuators_;
-    // number of spline points
-    const unsigned int n_spline_points_;
     // number of `interpolation_cache` data points
     const unsigned int interpolation_cache_size_;
     // pointer to the current policy
     PolicyPtr policy_;
     // pointer to the interpolated current_policy_ (default 100 points)
-    PolicyPtr interpolation_cache_ = nullptr;
+    PolicyPtr interpolation_cache_;
     // start time of one cycle from which we count
     double cycle_start_time_;
 private:

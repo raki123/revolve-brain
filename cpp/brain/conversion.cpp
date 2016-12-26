@@ -265,14 +265,14 @@ CPPNEAT::GeneticEncodingPtr convertForLearner(boost::shared_ptr<ExtNNConfig> con
 {
 	return known[config];
 }
-std::vector<double> forController(std::vector<std::vector<double>> toConvert)
+std::vector<double> forController(PolicyPtr toConvert)
 {
-	return toConvert[0];
+	return (*toConvert)[0];
 }
 
-std::vector<std::vector<double>> forLearner(std::vector<double> toConvert) 
+PolicyPtr forLearner(std::vector<double> toConvert) 
 {
-	return std::vector<std::vector<double>>(1,toConvert);
+	return nullptr; //input is not taken into account
 }
 
 

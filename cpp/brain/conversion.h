@@ -5,6 +5,7 @@
 #include "controller/ext_nn_net.h"
 #include "controller/layered_ext_nn_net.h"
 #include "learner/neat_learner.h"
+#include "learner/rlpower_learner.h"
 
 namespace revolve {
 namespace brain {
@@ -25,8 +26,8 @@ CPPNEAT::GeneticEncodingPtr convertForLearner(boost::shared_ptr<ExtNNConfig> con
 
 
 //used for communication between rlpower learner and ext nn weights controller
-std::vector<double> forController(std::vector<std::vector<double>> toConvert);
-std::vector<std::vector<double>> forLearner(std::vector<double> toConvert);
+std::vector<double> forController(PolicyPtr toConvert);
+PolicyPtr forLearner(std::vector<double> toConvert);
 
 //used for communication between hyperneat learner and ext nn net controller
 extern boost::shared_ptr<ExtNNConfig> cpg_network;

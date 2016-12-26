@@ -100,7 +100,7 @@ void RLPowerLearner::loadPolicy(std::string const policy_path) {
 }
 
 void RLPowerLearner::reportFitness(std::string id,
-				   RLPowerLearner::Policy genome,
+				   PolicyPtr genome,
 				   double curr_fitness)
 {
     // Insert ranked policy in list
@@ -244,9 +244,9 @@ void RLPowerLearner::reportFitness(std::string id,
     }
 }
 
-RLPowerLearner::Policy RLPowerLearner::getNewGenome(std::string id)
+PolicyPtr RLPowerLearner::getNewGenome(std::string id)
 {
-    return *current_policy_;
+    return current_policy_;
 }
 
 
@@ -335,7 +335,7 @@ void RLPowerLearner::increaseSplinePoints() {
     }
 }
 
-std::map<double, RLPowerLearner::PolicyPtr>::iterator RLPowerLearner::binarySelection() {
+std::map<double, PolicyPtr>::iterator RLPowerLearner::binarySelection() {
     std::random_device rd;
     std::mt19937 umt(rd());
     std::uniform_int_distribution<unsigned int> udist(0, max_ranked_policies_ - 1);
