@@ -9,6 +9,7 @@ namespace CPPNEAT {
 Learner::Learner(MutatorPtr mutator, Learner::LearningConfiguration conf)
 	: active_brain(nullptr)
 	, mutator(mutator)
+	, layered_network(conf.layered_network)
 	, asexual(conf.asexual)
 	, pop_size(conf.pop_size)
 	, tournament_size(conf.tournament_size)
@@ -74,6 +75,9 @@ std::vector< GeneticEncodingPtr > Learner::get_init_brains() {
 	int i = 0;
 	while(i++ < pop_size) {
 		GeneticEncodingPtr mutated_genotype = start_from->copy();
+		if(!mutated_genotype->is_valid()) {
+			std::cerr << "copying caused invalid genotype" << std::endl;
+		}
 		apply_structural_mutation(mutated_genotype);
 		
 		mutator->mutate_weights(mutated_genotype, weight_mutation_probability, weight_mutation_sigma);

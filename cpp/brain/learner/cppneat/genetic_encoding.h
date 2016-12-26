@@ -15,8 +15,14 @@ class GeneticEncoding {
 public:
 	GeneticEncoding(std::vector<NeuronGenePtr> neuron_genes, std::vector<ConnectionGenePtr> connection_genes) 
 		: neuron_genes(neuron_genes)
-		, connection_genes(connection_genes) {}
-	GeneticEncoding() {}
+		, connection_genes(connection_genes)
+		, layered(false) {}
+	GeneticEncoding(std::vector<std::vector<NeuronGenePtr>> layers, std::vector<ConnectionGenePtr> connection_genes)
+		: layers(layers)
+		, connection_genes(connection_genes)
+		, layered(true) {}
+	GeneticEncoding(bool layered)
+		: layered(layered) {}
 	
 	GeneticEncodingPtr copy();
 	
@@ -34,20 +40,38 @@ public:
 	std::vector<GenePtr> get_sorted_genes();
 	std::pair<int,int> min_max_innov_numer();
 	GenePtr find_gene_by_in(int innov_number);
+	//non-layered
 	void add_neuron_gene(NeuronGenePtr neuron_gene);	
+	//layered
+	void add_neuron_gene(NeuronGenePtr neuron_gene, int layer, bool is_new_layer);
 	void add_connection_gene(ConnectionGenePtr connection_gene);
 	void remove_connection_gene(int index);
+	//non-layered
 	void remonve_neuron_gene(int index);
+	//layered
+	void remove_neuron_gene(int layer, int index);
 	bool neuron_exists(int innov_number);
+	
+	bool is_valid();
 
+	std::pair<unsigned int,unsigned int> convert_index_to_layer_index(unsigned int index);
+	std::pair<unsigned int,unsigned int> convert_in_to_layer_index(int innov_number);
    
 public:
+	//non-layered
 	std::vector<NeuronGenePtr> neuron_genes;
+	
+	//layered 
+	std::vector<std::vector<NeuronGenePtr>> layers;
+	
+	//both
 	std::vector<ConnectionGenePtr> connection_genes;
 	
 private:
 	std::vector<GenePtr> all_genes_sorted;
 	bool all_genes_valid;
+public:
+	bool layered;
 	
 }; 
 }

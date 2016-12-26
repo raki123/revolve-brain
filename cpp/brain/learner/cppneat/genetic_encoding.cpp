@@ -5,25 +5,63 @@
 
 namespace CPPNEAT {
 
-GeneticEncodingPtr GeneticEncoding::copy() {
-	GeneticEncodingPtr copy_gen(new GeneticEncoding());
-	for(NeuronGenePtr neuron_gene : neuron_genes) {
-		NeuronGenePtr copy_neuron(new NeuronGene(*neuron_gene));
-		copy_gen->add_neuron_gene(copy_neuron);
+GeneticEncodingPtr GeneticEncoding::copy() 
+{
+	if(!layered) {
+		GeneticEncodingPtr copy_gen(new GeneticEncoding(false));
+		for(NeuronGenePtr neuron_gene : neuron_genes) {
+			NeuronGenePtr copy_neuron(new NeuronGene(*neuron_gene));
+			copy_gen->add_neuron_gene(copy_neuron);
+		}
+		for(ConnectionGenePtr connection_gene : connection_genes) {
+			ConnectionGenePtr copy_conn(new ConnectionGene(*connection_gene));
+			copy_gen->add_connection_gene(copy_conn);
+		}
+		return copy_gen;
+	} else {
+		GeneticEncodingPtr copy_gen(new GeneticEncoding(true));
+		for(unsigned int i = 0; i < layers.size(); i++) {
+			bool first = true;
+			for(NeuronGenePtr neuron_gene : layers[i]) {
+				if(first) {
+					NeuronGenePtr copy_neuron(new NeuronGene(*neuron_gene));
+					copy_gen->add_neuron_gene(copy_neuron, i, true);
+					first = false;
+				} else {
+					NeuronGenePtr copy_neuron(new NeuronGene(*neuron_gene));
+					copy_gen->add_neuron_gene(copy_neuron, i, false);
+				}
+			}
+		}
+		for(ConnectionGenePtr connection_gene : connection_genes) {
+			ConnectionGenePtr copy_conn(new ConnectionGene(*connection_gene));
+			copy_gen->add_connection_gene(copy_conn);
+		}
+		return copy_gen;
 	}
-	for(ConnectionGenePtr connection_gene : connection_genes) {
-		ConnectionGenePtr copy_conn(new ConnectionGene(*connection_gene));
-		copy_gen->add_connection_gene(copy_conn);
-	}
-	return copy_gen;
-	
 }
 	
 int GeneticEncoding::num_genes() {
-	return neuron_genes.size() + connection_genes.size();
+	if(!layered) {
+		return neuron_genes.size() + connection_genes.size();
+	} else {
+		int sum = 0;
+		for(std::vector<NeuronGenePtr> layer : layers) {
+			sum += layer.size();
+		}
+		return sum + connection_genes.size();
+	}
 }
 int GeneticEncoding::num_neuron_genes() {
-	return neuron_genes.size();
+	if(!layered) {
+		return neuron_genes.size();
+	} else {
+		int sum = 0;
+		for(std::vector<NeuronGenePtr> layer : layers) {
+			sum += layer.size();
+		}
+		return sum;
+	}
 }
 int GeneticEncoding::num_connection_genes() {
 	return connection_genes.size();
@@ -199,6 +237,7 @@ std::vector< std::pair< int, int > > GeneticEncoding::get_space_map(std::vector<
 	return in_param_numbers;
 }
 
+//ALERT::only works non-layered but seems to be not needed
 void GeneticEncoding::adopt(GeneticEncodingPtr adoptee) {
 	get_sorted_genes();
 	std::vector<GenePtr> adoptee_sorted_genes = adoptee->get_sorted_genes();
@@ -222,11 +261,22 @@ bool gene_cmp(GenePtr gene1, GenePtr gene2) {
 std::vector<GenePtr> GeneticEncoding::get_sorted_genes() {
 	if(!all_genes_valid) {
 		all_genes_sorted.clear();
-		for(NeuronGenePtr neuron_gene : neuron_genes) {
-			all_genes_sorted.push_back(boost::dynamic_pointer_cast<Gene>(neuron_gene));
-		}
-		for(ConnectionGenePtr connection_gene : connection_genes) {
-			all_genes_sorted.push_back(boost::dynamic_pointer_cast<Gene>(connection_gene));
+		if(!layered) {
+			for(NeuronGenePtr neuron_gene : neuron_genes) {
+				all_genes_sorted.push_back(boost::dynamic_pointer_cast<Gene>(neuron_gene));
+			}
+			for(ConnectionGenePtr connection_gene : connection_genes) {
+				all_genes_sorted.push_back(boost::dynamic_pointer_cast<Gene>(connection_gene));
+			}
+		} else {
+			for(std::vector<NeuronGenePtr> layer : layers) {
+				for(NeuronGenePtr neuron_gene : layer) {
+					all_genes_sorted.push_back(boost::dynamic_pointer_cast<Gene>(neuron_gene));
+				}
+			}
+			for(ConnectionGenePtr connection_gene : connection_genes) {
+				all_genes_sorted.push_back(boost::dynamic_pointer_cast<Gene>(connection_gene));
+			}
 		}
 		std::sort(all_genes_sorted.begin(), all_genes_sorted.end(), gene_cmp);
 		all_genes_valid = true;
@@ -240,6 +290,7 @@ std::pair< int, int > GeneticEncoding::min_max_innov_numer() {
 }
 
 GenePtr GeneticEncoding::find_gene_by_in(int innov_number) {
+	get_sorted_genes();
 	for(GenePtr gene : all_genes_sorted) {
 		if(gene->getInnovNumber() == innov_number) {
 			return gene;
@@ -248,12 +299,26 @@ GenePtr GeneticEncoding::find_gene_by_in(int innov_number) {
 	return nullptr;
 }
 
+//non-layered
 void GeneticEncoding::add_neuron_gene(NeuronGenePtr neuron_gene) {
 	get_sorted_genes();
 	neuron_genes.push_back(neuron_gene);
 	auto ins = std::upper_bound(all_genes_sorted.begin(), all_genes_sorted.end(), boost::dynamic_pointer_cast<Gene>(neuron_gene), gene_cmp);
 	all_genes_sorted.insert(ins, boost::dynamic_pointer_cast<Gene>(neuron_gene));
 }
+//layered
+void GeneticEncoding::add_neuron_gene(NeuronGenePtr neuron_gene, int layer, bool is_new_layer)
+{
+	get_sorted_genes();
+	if(is_new_layer) {
+		layers.emplace(layers.begin() + layer, std::vector<NeuronGenePtr>(1, neuron_gene));
+	} else {
+		layers[layer].push_back(neuron_gene);
+	}
+	auto ins = std::upper_bound(all_genes_sorted.begin(), all_genes_sorted.end(), boost::dynamic_pointer_cast<Gene>(neuron_gene), gene_cmp);
+	all_genes_sorted.insert(ins, boost::dynamic_pointer_cast<Gene>(neuron_gene));
+}
+
 
 void GeneticEncoding::add_connection_gene(ConnectionGenePtr connection_gene) {
 	get_sorted_genes();
@@ -269,6 +334,19 @@ void GeneticEncoding::remonve_neuron_gene(int index) {
 	all_genes_sorted.erase(it);
 }
 
+void GeneticEncoding::remove_neuron_gene(int layer, int index)
+{
+	GenePtr old = boost::dynamic_pointer_cast<Gene>(layers[layer][index]);
+	if(layers[layer].size() == 1) {
+		layers.erase(layers.begin()+layer);
+	} else {
+		layers[layer].erase(layers[layer].begin() + index);
+	}
+	auto it = std::find(all_genes_sorted.begin(), all_genes_sorted.end(), old);
+	all_genes_sorted.erase(it);
+}
+
+
 void GeneticEncoding::remove_connection_gene(int index) {
 	GenePtr old = boost::dynamic_pointer_cast<Gene>(connection_genes[index]);
 	connection_genes.erase(connection_genes.begin()+index);
@@ -277,11 +355,91 @@ void GeneticEncoding::remove_connection_gene(int index) {
 }
 
 bool GeneticEncoding::neuron_exists(int innov_number) {
-	for(NeuronGenePtr gene : neuron_genes) {
-		if(gene->getInnovNumber() == innov_number) {
-			return true;
+	if(!layered) {
+		for(NeuronGenePtr gene : neuron_genes) {
+			if(gene->getInnovNumber() == innov_number) {
+				return true;
+			}
+		}
+		return false;
+	} else {
+		for(std::vector<NeuronGenePtr> layer : layers) {
+			for(NeuronGenePtr neuron_gene : layer) {
+				if(neuron_gene->getInnovNumber() == innov_number) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+}
+
+bool GeneticEncoding::is_valid()
+{
+	if(!layered) 
+	{
+		for(ConnectionGenePtr connection_gene : connection_genes) {
+			if(!neuron_exists(connection_gene->mark_from) || !neuron_exists(connection_gene->mark_to)) {
+				if(!neuron_exists(connection_gene->mark_from)) {
+					std::cerr << "neuron with mark " << connection_gene->mark_from << " doesnt exist" <<std::endl;
+				} 
+				if(!neuron_exists(connection_gene->mark_to)) {
+					std::cerr << "neuron with mark " << connection_gene->mark_to << " doesnt exist" <<std::endl;
+				}
+				return false;
+			}
+		}
+	} else {
+		for(ConnectionGenePtr connection_gene : connection_genes) {
+			if(!neuron_exists(connection_gene->mark_from) || !neuron_exists(connection_gene->mark_to)) {
+				if(!neuron_exists(connection_gene->mark_from)) {
+					std::cerr << "neuron with mark " << connection_gene->mark_from << " doesnt exist" <<std::endl;
+				} 
+				if(!neuron_exists(connection_gene->mark_to)) {
+					std::cerr << "neuron with mark " << connection_gene->mark_to << " doesnt exist" <<std::endl;
+				}
+				return false;
+			}
+			if(convert_in_to_layer_index(connection_gene->mark_from).first  >= convert_in_to_layer_index(connection_gene->mark_to).first) {
+				std::cerr << "layer of neuron with in " << connection_gene->mark_from << " is geq than layer of neuron with in " << connection_gene->mark_to << std::endl;
+				return false;
+			}
 		}
 	}
-	return false;
+	return true;
 }
+
+
+std::pair<unsigned int,unsigned int > GeneticEncoding::convert_index_to_layer_index(unsigned int index)
+{
+	unsigned int layer = 0;
+	unsigned int in_layer = 0;
+	unsigned int i = 0;
+	while(i < index) {
+		if(layers[layer].size() == in_layer + 1) {
+			layer++;
+			in_layer = 0;
+		} else {
+			in_layer++;
+		}
+		i++;
+	}
+	return std::pair<unsigned int, unsigned int>(layer,in_layer);
+}
+
+std::pair<unsigned int, unsigned int > GeneticEncoding::convert_in_to_layer_index(int innov_number)
+{
+	unsigned int layer = 0;
+	unsigned int in_layer = 0;
+	while(layers[layer][in_layer]->getInnovNumber() != innov_number) {
+		if(layers[layer].size() == in_layer + 1) {
+			layer++;
+			in_layer = 0;
+		} else {
+			in_layer++;
+		}
+	}
+	return std::pair<unsigned int, unsigned int>(layer,in_layer);
+}
+
 }

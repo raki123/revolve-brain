@@ -17,7 +17,8 @@ public:
 		double new_connection_sigma,
 		int innovation_number,
 		int max_attempts,
-		std::vector<Neuron::Ntype> addable_neurons);
+		std::vector<Neuron::Ntype> addable_neurons, 
+		bool layered);
 	
 	static std::vector<Neuron::Ntype> get_addable_types(std::map<Neuron::Ntype,Neuron::NeuronTypeSpec> brain_spec);
 	
@@ -31,7 +32,7 @@ public:
 	void add_neuron_mutation(GeneticEncodingPtr genotype);
 	void remove_connection_mutation(GeneticEncodingPtr genotype);
 	void remove_neuron_mutation(GeneticEncodingPtr genotype);
-	int add_neuron(NeuronPtr neuron, GeneticEncodingPtr genotype, int connection_split_in);
+	int add_neuron(NeuronPtr neuron, GeneticEncodingPtr genotype, ConnectionGenePtr split);
 	int add_connection(int mark_from, int mark_to, double weight, GeneticEncodingPtr genotype, std::string socket);
 	
 
@@ -56,6 +57,7 @@ private:
 	int innovation_number;
 	int max_attempts;
 	std::vector<Neuron::Ntype> addable_neurons;
+	bool layered;
 	std::mt19937 generator;
 };
 }

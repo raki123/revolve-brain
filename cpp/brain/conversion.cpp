@@ -4,6 +4,7 @@
 
 #include <map>
 #include <iostream>
+#include <fstream>
 #include <vector>
 
 namespace revolve {
@@ -44,7 +45,7 @@ void set_param_spec(CPPNEAT::Neuron::ParamSpec &spec, std::string name, double e
 	spec.max_value = max_value;
 }
 
-void set_brain_spec()
+void set_brain_spec(bool hyperneat)
 {
 	double eps = 1e-9;
 	bool max_inclusive = false;
@@ -84,20 +85,37 @@ void set_brain_spec()
 		
 	brain_spec[CPPNEAT::Neuron::BIAS] = bias;
 
+	if(!hyperneat) {
+		CPPNEAT::Neuron::NeuronTypeSpec oscillator;
+		CPPNEAT::Neuron::ParamSpec period_spec;
+		set_param_spec(period_spec, "rv:period", eps, 0, 10, max_inclusive, min_inclusive);
+		CPPNEAT::Neuron::ParamSpec phase_offset_spec;
+		set_param_spec(phase_offset_spec, "rv:phase_offset", eps, 0, 3.14, max_inclusive, min_inclusive);
+		CPPNEAT::Neuron::ParamSpec amplitude_spec;
+		set_param_spec(amplitude_spec, "rv:amplitude", eps, 0, 10000, max_inclusive, min_inclusive);
+		oscillator.param_specs.push_back(period_spec);
+		oscillator.param_specs.push_back(phase_offset_spec);
+		oscillator.param_specs.push_back(amplitude_spec);
+		oscillator.possible_layers.push_back(CPPNEAT::Neuron::INPUT_LAYER);
+		
+		brain_spec[CPPNEAT::Neuron::OSCILLATOR] = oscillator;
+	} else {
+		CPPNEAT::Neuron::NeuronTypeSpec input_oscillator;
+		CPPNEAT::Neuron::ParamSpec period_spec;
+		set_param_spec(period_spec, "rv:period", eps, 0, 10, max_inclusive, min_inclusive);
+		CPPNEAT::Neuron::ParamSpec phase_offset_spec;
+		set_param_spec(phase_offset_spec, "rv:phase_offset", eps, 0, 3.14, max_inclusive, min_inclusive);
+		CPPNEAT::Neuron::ParamSpec amplitude_spec;
+		set_param_spec(amplitude_spec, "rv:amplitude", eps, 0, 10000, max_inclusive, min_inclusive);
+		input_oscillator.param_specs.push_back(period_spec);
+		input_oscillator.param_specs.push_back(phase_offset_spec);
+		input_oscillator.param_specs.push_back(amplitude_spec);
+		input_oscillator.possible_layers.push_back(CPPNEAT::Neuron::HIDDEN_LAYER);
+		input_oscillator.possible_layers.push_back(CPPNEAT::Neuron::OUTPUT_LAYER);
 
-	CPPNEAT::Neuron::NeuronTypeSpec oscillator;
-	CPPNEAT::Neuron::ParamSpec period_spec;
-	set_param_spec(period_spec, "rv:period", eps, 0, 10, max_inclusive, min_inclusive);
-	CPPNEAT::Neuron::ParamSpec phase_offset_spec;
-	set_param_spec(phase_offset_spec, "rv:phase_offset", eps, 0, 3.14, max_inclusive, min_inclusive);
-	CPPNEAT::Neuron::ParamSpec amplitude_spec;
-	set_param_spec(amplitude_spec, "rv:amplitude", eps, 0, 10000, max_inclusive, min_inclusive);
-	oscillator.param_specs.push_back(period_spec);
-	oscillator.param_specs.push_back(phase_offset_spec);
-	oscillator.param_specs.push_back(amplitude_spec);
-	oscillator.possible_layers.push_back(CPPNEAT::Neuron::INPUT_LAYER);
-	
-	brain_spec[CPPNEAT::Neuron::OSCILLATOR] = oscillator;
+		
+		brain_spec[CPPNEAT::Neuron::INPUT_OSCILLATOR] = input_oscillator;
+	}
 
 
 
@@ -117,21 +135,22 @@ void set_brain_spec()
 //             ],
 //             layers = ["output", "hidden"]
 //         ),
-
-	CPPNEAT::Neuron::NeuronTypeSpec diff;
-	diff.param_specs.push_back(bias_spec);
-	diff.possible_layers.push_back(CPPNEAT::Neuron::HIDDEN_LAYER);
-	diff.possible_layers.push_back(CPPNEAT::Neuron::OUTPUT_LAYER);
-	
+	if(!hyperneat) {
+		CPPNEAT::Neuron::NeuronTypeSpec diff;
+		diff.param_specs.push_back(bias_spec);
+		diff.possible_layers.push_back(CPPNEAT::Neuron::HIDDEN_LAYER);
+		diff.possible_layers.push_back(CPPNEAT::Neuron::OUTPUT_LAYER);
 		
-	brain_spec[CPPNEAT::Neuron::DIFFERENTIAL_CPG] = diff;
-
+			
+		brain_spec[CPPNEAT::Neuron::DIFFERENTIAL_CPG] = diff;
+	}
 }
 
 
 
 
 boost::shared_ptr<ExtNNConfig> convertForController(CPPNEAT::GeneticEncodingPtr genotype) {
+	assert(genotype->layered == false);
 	std::vector<CPPNEAT::NeuronGenePtr> neuron_genes = genotype->neuron_genes;
 	std::vector<CPPNEAT::ConnectionGenePtr> connection_genes = genotype->connection_genes;
 	
@@ -172,6 +191,10 @@ boost::shared_ptr<ExtNNConfig> convertForController(CPPNEAT::GeneticEncodingPtr 
 						newNeuron.reset(new OscillatorNeuron(neuronId, neuron_params));
 						break;
 					}
+					case CPPNEAT::Neuron::INPUT_OSCILLATOR: {
+						newNeuron.reset(new InputDependentOscillatorNeuron(neuronId, neuron_params));
+						break;
+					}
 					default: {
 						throw std::runtime_error("Unkown neuron type to be converted");
 						break;
@@ -201,6 +224,10 @@ boost::shared_ptr<ExtNNConfig> convertForController(CPPNEAT::GeneticEncodingPtr 
 					}
 					case CPPNEAT::Neuron::OSCILLATOR: {
 						newNeuron.reset(new OscillatorNeuron(neuronId, neuron_params));
+						break;
+					}
+					case CPPNEAT::Neuron::INPUT_OSCILLATOR: {
+						newNeuron.reset(new InputDependentOscillatorNeuron(neuronId, neuron_params));
 						break;
 					}
 					default: {
@@ -234,7 +261,8 @@ boost::shared_ptr<ExtNNConfig> convertForController(CPPNEAT::GeneticEncodingPtr 
 	return config;
 	
 }
-CPPNEAT::GeneticEncodingPtr convertForLearner(boost::shared_ptr<ExtNNConfig> config) {
+CPPNEAT::GeneticEncodingPtr convertForLearner(boost::shared_ptr<ExtNNConfig> config) 
+{
 	return known[config];
 }
 std::vector<double> forController(std::vector<std::vector<double>> toConvert)
@@ -248,19 +276,144 @@ std::vector<std::vector<double>> forLearner(std::vector<double> toConvert)
 }
 
 
+
 boost::shared_ptr<ExtNNConfig> cpg_network;
 std::map<std::string, std::tuple<int,int,int>> neuron_coordinates;
 CPPNEAT::GeneticEncodingPtr last;
+
+std::string getHyper() 
+{
+	learning_configuration.layered_network = true;
+	return "https://www.youtube.com/watch?v=NxuJ3RosR80";
+}
+
+boost::shared_ptr< LayeredExtNNConfig > convertForLayeredExtNN(CPPNEAT::GeneticEncodingPtr genotype)
+{
+	assert(genotype->layered == true);
+	std::vector<std::vector<CPPNEAT::NeuronGenePtr>> layers = genotype->layers;
+	std::vector<CPPNEAT::ConnectionGenePtr> connection_genes = genotype->connection_genes;
+	
+	std::map<int,NeuronPtr> innov_number_to_neuron;
+	
+	boost::shared_ptr<LayeredExtNNConfig> config(new LayeredExtNNConfig());
+	config->layers_ = std::vector<std::vector<NeuronPtr>>(layers.size(), std::vector<NeuronPtr>());
+	for(unsigned int i = 0; i < layers.size(); i++) {
+		for(CPPNEAT::NeuronGenePtr neuron_gene : layers[i]) {
+			NeuronPtr newNeuron;
+			std::string neuronId = neuron_gene->neuron->neuron_id;
+			std::map<std::string, double> neuron_params = neuron_gene->neuron->neuron_params;
+			
+			switch(neuron_gene->neuron->layer) {
+				case CPPNEAT::Neuron::INPUT_LAYER: {
+					newNeuron.reset(new InputNeuron(neuronId, neuron_params));
+					config->layers_[i].push_back(newNeuron);
+					config->inputPositionMap_[newNeuron] = input_map[neuron_gene->getInnovNumber()];
+					break;
+				}
+				case CPPNEAT::Neuron::HIDDEN_LAYER: {
+					switch(neuron_gene->neuron->neuron_type) {
+						case CPPNEAT::Neuron::SIMPLE: {
+							newNeuron.reset(new LinearNeuron(neuronId, neuron_params));
+							break;
+						}
+						case CPPNEAT::Neuron::SIGMOID: {
+							newNeuron.reset(new SigmoidNeuron(neuronId, neuron_params));
+							break;
+						}
+						case CPPNEAT::Neuron::DIFFERENTIAL_CPG: {
+							newNeuron.reset(new DifferentialCPG(neuronId, neuron_params));
+							break;
+						}
+						case CPPNEAT::Neuron::BIAS: {
+							newNeuron.reset(new BiasNeuron(neuronId, neuron_params));
+							break;
+						}
+						case CPPNEAT::Neuron::OSCILLATOR: {
+							newNeuron.reset(new OscillatorNeuron(neuronId, neuron_params));
+							break;
+						}
+						case CPPNEAT::Neuron::INPUT_OSCILLATOR: {
+							newNeuron.reset(new InputDependentOscillatorNeuron(neuronId, neuron_params));
+							break;
+						}
+						default: {
+							throw std::runtime_error("Unkown neuron type to be converted");
+							break;
+						}
+							
+					}
+					config->layers_[i].push_back(newNeuron);
+					break;
+				}
+				case CPPNEAT::Neuron::OUTPUT_LAYER: {
+					switch(neuron_gene->neuron->neuron_type) {
+						case CPPNEAT::Neuron::SIMPLE: {
+							newNeuron.reset(new LinearNeuron(neuronId, neuron_params));
+							break;
+						}
+						case CPPNEAT::Neuron::SIGMOID: {
+							newNeuron.reset(new SigmoidNeuron(neuronId, neuron_params));
+							break;
+						}
+						case CPPNEAT::Neuron::DIFFERENTIAL_CPG: {
+							newNeuron.reset(new DifferentialCPG(neuronId, neuron_params));
+							break;
+						}
+						case CPPNEAT::Neuron::BIAS: {
+							newNeuron.reset(new BiasNeuron(neuronId, neuron_params));
+							break;
+						}
+						case CPPNEAT::Neuron::OSCILLATOR: {
+							newNeuron.reset(new OscillatorNeuron(neuronId, neuron_params));
+							break;
+						}
+						case CPPNEAT::Neuron::INPUT_OSCILLATOR: {
+							newNeuron.reset(new InputDependentOscillatorNeuron(neuronId, neuron_params));
+							break;
+						}
+						default: {
+							throw std::runtime_error("Unknown neuron type to be converted");
+							break;
+						}
+							
+					}
+					config->layers_[i].push_back(newNeuron);
+					config->outputPositionMap_[newNeuron] = output_map[neuron_gene->getInnovNumber()];
+					break;
+				}
+				default: {
+					throw std::runtime_error("Robot brain error");
+					break;
+				}
+			}
+			config->idToNeuron_[neuronId] = newNeuron;
+			innov_number_to_neuron[neuron_gene->getInnovNumber()] = newNeuron;
+		}
+	}
+	for(CPPNEAT::ConnectionGenePtr connection_gene : connection_genes) {
+		NeuronPtr dst = innov_number_to_neuron[connection_gene->mark_to];
+		NeuralConnectionPtr newConnection(new NeuralConnection(innov_number_to_neuron[connection_gene->mark_from],
+								       dst,
+								       connection_gene->weight));
+		dst->AddIncomingConnection(dst->GetSocketId(), newConnection);
+		config->connections_.push_back(newConnection);
+	}
+	return config;
+}
+
 boost::shared_ptr<ExtNNConfig> convertForExtNNFromHyper(CPPNEAT::GeneticEncodingPtr genotype)
 {
-	boost::shared_ptr<ExtNNConfig> hyper_config = convertForController(genotype);
+	boost::shared_ptr<LayeredExtNNConfig> hyper_config = convertForLayeredExtNN(genotype);
+	LayeredExtNNController print_net("debug", hyper_config, std::vector<ActuatorPtr>(), std::vector<SensorPtr>());
+	std::ofstream debug_out("debug.dot");
+	print_net.writeNetwork(debug_out);
 	for(NeuralConnectionPtr connection : cpg_network->connections_) 
 	{		
 		NeuronPtr src = connection->GetInputNeuron();
 		NeuronPtr dst = connection->GetOutputNeuron();
 		std::tuple<int,int,int> coord_src = neuron_coordinates[src->Id()];
 		std::tuple<int,int,int> coord_dst = neuron_coordinates[dst->Id()];
-		for(NeuronPtr neuron : hyper_config->inputNeurons_) 
+		for(NeuronPtr neuron : hyper_config->layers_[0]) 
 		{
 			//could be faster by neuron->Id()[6] but less easy to read
 			if(neuron->Id() == "Input-0") { 
@@ -278,20 +431,17 @@ boost::shared_ptr<ExtNNConfig> convertForExtNNFromHyper(CPPNEAT::GeneticEncoding
 			} 
 		}
 
-		// Calculate new states of all neurons
-		for (auto it = hyper_config->allNeurons_.begin(); it != hyper_config->allNeurons_.end(); ++it) 
-		{
-			(*it)->Update(0);
+		for(std::vector<NeuronPtr> layer : hyper_config->layers_) {
+			for(NeuronPtr neuron : layer) {
+				neuron->Update(0);
+			}
+			for(NeuronPtr neuron : layer) {
+				neuron->FlipState();
+			}
 		}
 
-
-		// Flip states of all neurons
-		for (auto it = hyper_config->allNeurons_.begin(); it != hyper_config->allNeurons_.end(); ++it) 
-		{
-			(*it)->FlipState();
-		}
-
-		for (auto it = hyper_config->outputNeurons_.begin(); it != hyper_config->outputNeurons_.end(); ++it) 
+		std::map<std::string, double> params;
+		for (auto it = hyper_config->layers_[hyper_config->layers_.size()-1].begin(); it != hyper_config->layers_[hyper_config->layers_.size()-1].end(); ++it) 
 		{
 			auto outNeuron = *it;
 			if(outNeuron->Id() == "weight") 
@@ -305,7 +455,7 @@ boost::shared_ptr<ExtNNConfig> convertForExtNNFromHyper(CPPNEAT::GeneticEncoding
 	{		
 		std::tuple<int,int,int> coord_src = neuron_coordinates[neuron->Id()];
 		std::tuple<int,int,int> coord_dst = std::make_tuple(0,0,0);
-		for(NeuronPtr neuron : hyper_config->inputNeurons_) 
+		for(NeuronPtr neuron : hyper_config->layers_[0]) 
 		{
 			//could be faster by neuron->Id()[6] but less easy to read
 			if(neuron->Id() == "Input-0") { 
@@ -323,21 +473,17 @@ boost::shared_ptr<ExtNNConfig> convertForExtNNFromHyper(CPPNEAT::GeneticEncoding
 			} 
 		}
 
-		// Calculate new states of all neurons
-		for (auto it = hyper_config->allNeurons_.begin(); it != hyper_config->allNeurons_.end(); ++it) 
-		{
-			(*it)->Update(0);
-		}
-
-
-		// Flip states of all neurons
-		for (auto it = hyper_config->allNeurons_.begin(); it != hyper_config->allNeurons_.end(); ++it) 
-		{
-			(*it)->FlipState();
+		for(std::vector<NeuronPtr> layer : hyper_config->layers_) {
+			for(NeuronPtr neuron : layer) {
+				neuron->Update(0);
+			}
+			for(NeuronPtr neuron : layer) {
+				neuron->FlipState();
+			}
 		}
 
 		std::map<std::string, double> params;
-		for (auto it = hyper_config->outputNeurons_.begin(); it != hyper_config->outputNeurons_.end(); ++it) 
+		for (auto it = hyper_config->layers_[hyper_config->layers_.size()-1].begin(); it != hyper_config->layers_[hyper_config->layers_.size()-1].end(); ++it) 
 		{
 			auto outNeuron = *it;
 			params[outNeuron->Id()] = outNeuron->GetOutput();

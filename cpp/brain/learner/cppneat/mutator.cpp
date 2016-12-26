@@ -1,4 +1,4 @@
-#include "mutatur.h"
+#include "mutator.h"
 
 #include <algorithm>
 #include <iostream>
@@ -20,12 +20,14 @@ Mutator::Mutator(std::map<Neuron::Ntype, Neuron::NeuronTypeSpec> brain_spec,
 		 double new_connection_sigma,
 		 int innovation_number,
 		 int max_attempts,
-		 std::vector<Neuron::Ntype> addable_neurons) 
+		 std::vector<Neuron::Ntype> addable_neurons,
+		 bool layered) 
 	: brain_spec(brain_spec)
 	, new_connection_sigma(new_connection_sigma)
 	, innovation_number(innovation_number)
 	, max_attempts(max_attempts)
-	, addable_neurons(addable_neurons) { //TODO:: make sure everything works with the addable neurons
+	, addable_neurons(addable_neurons)
+	, layered(layered) {
 	if(addable_neurons.size() == 0) {
 		this->addable_neurons = get_addable_types(brain_spec);
 	}
@@ -40,16 +42,34 @@ void Mutator::make_starting_genotype_known(GeneticEncodingPtr genotype) {
 
 void Mutator::mutate_neuron_params(GeneticEncodingPtr genotype, double probability, double sigma) {
 	std::uniform_real_distribution<double> uniform(0,1);
-	for(NeuronGenePtr neuron_gene : genotype->neuron_genes) {
-		if(uniform(generator) < probability) {
-			std::vector<Neuron::ParamSpec> neuron_params = brain_spec[neuron_gene->neuron->neuron_type].param_specs;
-			if(neuron_params.size() > 0) {
-				std::uniform_int_distribution<int> uniform_int(0, neuron_params.size()-1);
-				Neuron::ParamSpec param = neuron_params[uniform_int(generator)];
-				double cur_val = neuron_gene->neuron->neuron_params[param.name];
-				std::normal_distribution<double> normal(0,sigma*(param.max_value-param.min_value));
-				cur_val += normal(generator);
-				neuron_gene->neuron->set_neuron_param(cur_val, param);				
+	if(!genotype->layered) {
+		for(NeuronGenePtr neuron_gene : genotype->neuron_genes) {
+			if(uniform(generator) < probability) {
+				std::vector<Neuron::ParamSpec> neuron_params = brain_spec[neuron_gene->neuron->neuron_type].param_specs;
+				if(neuron_params.size() > 0) {
+					std::uniform_int_distribution<int> uniform_int(0, neuron_params.size()-1);
+					Neuron::ParamSpec param = neuron_params[uniform_int(generator)];
+					double cur_val = neuron_gene->neuron->neuron_params[param.name];
+					std::normal_distribution<double> normal(0,sigma*(param.max_value-param.min_value));
+					cur_val += normal(generator);
+					neuron_gene->neuron->set_neuron_param(cur_val, param);				
+				}
+			}
+		}
+	} else {
+		for(std::vector<NeuronGenePtr> layer : genotype->layers) {
+			for(NeuronGenePtr neuron_gene : layer) {
+				if(uniform(generator) < probability) {
+					std::vector<Neuron::ParamSpec> neuron_params = brain_spec[neuron_gene->neuron->neuron_type].param_specs;
+					if(neuron_params.size() > 0) {
+						std::uniform_int_distribution<int> uniform_int(0, neuron_params.size()-1);
+						Neuron::ParamSpec param = neuron_params[uniform_int(generator)];
+						double cur_val = neuron_gene->neuron->neuron_params[param.name];
+						std::normal_distribution<double> normal(0,sigma*(param.max_value-param.min_value));
+						cur_val += normal(generator);
+						neuron_gene->neuron->set_neuron_param(cur_val, param);				
+					}
+				}
 			}
 		}
 	}
@@ -65,7 +85,6 @@ void Mutator::mutate_weights(GeneticEncodingPtr genotype, double probability, do
 	}
 }
 
-//TODO::make sure the innovation mechanism works
 void Mutator::mutate_structure(GeneticEncodingPtr genotype, double probability) {
 	std::uniform_real_distribution<double> uniform(0,1);
 	if(uniform(generator) < probability) {
@@ -82,28 +101,65 @@ void Mutator::mutate_structure(GeneticEncodingPtr genotype, double probability) 
 }
 
 bool Mutator::add_connection_mutation(GeneticEncodingPtr genotype, double sigma) {
-	std::uniform_int_distribution<int> choice(0,genotype->neuron_genes.size() -1);
-	NeuronGenePtr neuron_from = genotype->neuron_genes[choice(generator)];
-	NeuronGenePtr neuron_to = genotype->neuron_genes[choice(generator)];
-	int mark_from = neuron_from->getInnovNumber();
-	int mark_to = neuron_to->getInnovNumber();
-	
-	int num_attempts = 1;
-	
-	while(genotype->connection_exists(mark_from, mark_to) || neuron_to->neuron->layer == Neuron::INPUT_LAYER) {
-		neuron_from = genotype->neuron_genes[choice(generator)];
-		neuron_to = genotype->neuron_genes[choice(generator)];
-		mark_from = neuron_from->getInnovNumber();
-		mark_to = neuron_to->getInnovNumber();
+	if(!genotype->layered) {
+		std::uniform_int_distribution<int> choice(0,genotype->neuron_genes.size() -1);
+		NeuronGenePtr neuron_from = genotype->neuron_genes[choice(generator)];
+		NeuronGenePtr neuron_to = genotype->neuron_genes[choice(generator)];
+		int mark_from = neuron_from->getInnovNumber();
+		int mark_to = neuron_to->getInnovNumber();
 		
-		num_attempts++;
-		if(num_attempts > max_attempts) {
-			return false;
+		int num_attempts = 1;
+		
+		while(genotype->connection_exists(mark_from, mark_to) || neuron_to->neuron->layer == Neuron::INPUT_LAYER) {
+			neuron_from = genotype->neuron_genes[choice(generator)];
+			neuron_to = genotype->neuron_genes[choice(generator)];
+			mark_from = neuron_from->getInnovNumber();
+			mark_to = neuron_to->getInnovNumber();
+			
+			num_attempts++;
+			if(num_attempts > max_attempts) {
+				return false;
+			}
 		}
+		std::normal_distribution<double> normal(0,sigma);
+		add_connection(mark_from, mark_to, normal(generator), genotype, "");
+		if(!genotype->is_valid()) {
+			std::cerr << "add connection mutation caused invalid genotye" << std::endl;
+			throw std::runtime_error("mutation error");
+		}
+		return true;
+	} else {
+		std::uniform_int_distribution<unsigned int> choice(0,genotype->num_neuron_genes() -1);
+		std::pair<unsigned int, unsigned int> index_from = genotype->convert_index_to_layer_index(choice(generator));
+		std::pair<unsigned int, unsigned int> index_to = genotype->convert_index_to_layer_index(choice(generator));
+		NeuronGenePtr neuron_from = genotype->layers[index_from.first][index_from.second];
+		NeuronGenePtr neuron_to = genotype->layers[index_to.first][index_to.second];
+		int mark_from = neuron_from->getInnovNumber();
+		int mark_to = neuron_to->getInnovNumber();
+		
+		int num_attempts = 1;
+		
+		while(genotype->connection_exists(mark_from, mark_to) || index_from.first >= index_to.first) {
+			index_from = genotype->convert_index_to_layer_index(choice(generator));
+			index_to = genotype->convert_index_to_layer_index(choice(generator));
+			neuron_from = genotype->layers[index_from.first][index_from.second];
+			neuron_to = genotype->layers[index_to.first][index_to.second];
+			mark_from = neuron_from->getInnovNumber();
+			mark_to = neuron_to->getInnovNumber();
+			
+			num_attempts++;
+			if(num_attempts > max_attempts) {
+				return false;
+			}
+		}
+		std::normal_distribution<double> normal(0,sigma);
+		add_connection(mark_from, mark_to, normal(generator), genotype, "");
+		if(!genotype->is_valid()) {
+			std::cerr << "add connection mutation caused invalid genotye" << std::endl;
+			throw std::runtime_error("mutation error");
+		}
+		return true;
 	}
-	std::normal_distribution<double> normal(0,sigma);
-	add_connection(mark_from, mark_to, normal(generator), genotype, "");
-	return true;
 }
 
 std::map<std::string, double> get_random_parameters(Neuron::NeuronTypeSpec param_specs) {
@@ -124,30 +180,69 @@ std::map<std::string, double> get_random_parameters(Neuron::NeuronTypeSpec param
 void Mutator::add_neuron_mutation(GeneticEncodingPtr genotype) {
 	assert(genotype->connection_genes.size() > 0);
 	assert(addable_neurons.size() > 0);
-	std::uniform_int_distribution<int> choice1(0,genotype->connection_genes.size() -1);
-	int split_id = choice1(generator);
-	ConnectionGenePtr split = genotype->connection_genes[split_id];
-	
-	double old_weight = split->weight;
-	int mark_from = split->mark_from;
-	int mark_to = split->mark_to;
-	
-	genotype->remove_connection_gene(split_id);
-	NeuronPtr neuron_from = boost::dynamic_pointer_cast<NeuronGene>(genotype->find_gene_by_in(mark_from))->neuron;
-	NeuronPtr neuron_to = boost::dynamic_pointer_cast<NeuronGene>(genotype->find_gene_by_in(mark_to))->neuron;
-	
-	std::uniform_int_distribution<int> choice2(0,addable_neurons.size()-1);
-	Neuron::Ntype new_neuron_type = addable_neurons[choice2(generator)];
-	
-	std::map<std::string, double> new_neuron_params = get_random_parameters(brain_spec[new_neuron_type]);
-	
-	NeuronPtr neuron_middle(new Neuron("augment " + std::to_string(innovation_number+1), 
-					   Neuron::HIDDEN_LAYER,
-					   new_neuron_type,
-					   new_neuron_params));
-	int mark_middle = add_neuron(neuron_middle, genotype, split_id);
-	add_connection(mark_from, mark_middle, old_weight, genotype, "");
-	add_connection(mark_middle, mark_to, 1.0, genotype, "");
+	if(!genotype->layered) {
+		std::uniform_int_distribution<int> choice1(0,genotype->connection_genes.size() -1);
+		int split_id = choice1(generator);
+		ConnectionGenePtr split = genotype->connection_genes[split_id];
+		
+		double old_weight = split->weight;
+		int mark_from = split->mark_from;
+		int mark_to = split->mark_to;
+		
+		genotype->remove_connection_gene(split_id);
+		NeuronPtr neuron_from = boost::dynamic_pointer_cast<NeuronGene>(genotype->find_gene_by_in(mark_from))->neuron;
+		NeuronPtr neuron_to = boost::dynamic_pointer_cast<NeuronGene>(genotype->find_gene_by_in(mark_to))->neuron;
+		
+		std::uniform_int_distribution<int> choice2(0,addable_neurons.size()-1);
+		Neuron::Ntype new_neuron_type = addable_neurons[choice2(generator)];
+		
+		std::map<std::string, double> new_neuron_params = get_random_parameters(brain_spec[new_neuron_type]);
+		
+		NeuronPtr neuron_middle(new Neuron("augment " + std::to_string(innovation_number+1), 
+						Neuron::HIDDEN_LAYER,
+						new_neuron_type,
+						new_neuron_params));
+		int mark_middle = add_neuron(neuron_middle, genotype, split);
+		add_connection(mark_from, mark_middle, old_weight, genotype, "");
+		add_connection(mark_middle, mark_to, 1.0, genotype, "");
+	} else {
+		std::uniform_int_distribution<int> choice1(0,genotype->connection_genes.size() -1);
+		int split_id = choice1(generator);
+		ConnectionGenePtr split = genotype->connection_genes[split_id];
+		
+		double old_weight = split->weight;
+		int mark_from = split->mark_from;
+		int mark_to = split->mark_to;
+		
+		genotype->remove_connection_gene(split_id);
+		NeuronPtr neuron_from = boost::dynamic_pointer_cast<NeuronGene>(genotype->find_gene_by_in(mark_from))->neuron;
+		NeuronPtr neuron_to = boost::dynamic_pointer_cast<NeuronGene>(genotype->find_gene_by_in(mark_to))->neuron;
+		
+		std::uniform_int_distribution<int> choice2(0,addable_neurons.size()-1);
+		Neuron::Ntype new_neuron_type = addable_neurons[choice2(generator)];
+		
+		std::map<std::string, double> new_neuron_params = get_random_parameters(brain_spec[new_neuron_type]);
+		
+		NeuronPtr neuron_middle(new Neuron("augment " + std::to_string(innovation_number+1), 
+						Neuron::HIDDEN_LAYER,
+						new_neuron_type,
+						new_neuron_params));
+		int mark_middle = add_neuron(neuron_middle, genotype, split);
+			if(!genotype->is_valid()) {
+		std::cerr << "add neuron mutation caused invalid genotye1" << std::endl;
+		throw std::runtime_error("mutation error");
+	}
+		add_connection(mark_from, mark_middle, old_weight, genotype, "");
+			if(!genotype->is_valid()) {
+		std::cerr << "add neuron mutation caused invalid genotye2" << std::endl;
+		throw std::runtime_error("mutation error");
+	}
+		add_connection(mark_middle, mark_to, 1.0, genotype, "");
+	}
+	if(!genotype->is_valid()) {
+		std::cerr << "add neuron mutation caused invalid genotye" << std::endl;
+		throw std::runtime_error("mutation error");
+	}
 }
 
 void Mutator::remove_connection_mutation(GeneticEncodingPtr genotype) {
@@ -181,20 +276,32 @@ void Mutator::remove_neuron_mutation(GeneticEncodingPtr genotype) {
 	}
 	genotype->remonve_neuron_gene(gene_id);
 }
-int Mutator::add_neuron(NeuronPtr neuron, GeneticEncodingPtr genotype, int connection_split_in) {
+int Mutator::add_neuron(NeuronPtr neuron, GeneticEncodingPtr genotype, ConnectionGenePtr split) {
+	int connection_split_in = split->getInnovNumber();
 	std::pair<int, Neuron::Ntype> neuron_pair(connection_split_in, neuron->neuron_type);	
 	if(neuron_innovations.find(neuron_pair) != neuron_innovations.end()) {
-		GenePtr found;
 		unsigned int i = 0;
 		while(i < neuron_innovations[neuron_pair].size()
-		      && (found = genotype->find_gene_by_in(neuron_innovations[neuron_pair][i])) != nullptr) {
+		      && genotype->find_gene_by_in(neuron_innovations[neuron_pair][i]) != nullptr) {
 			i++;
 		}
 		//some previous innovation is not are already present in the genome-> add a it
 		if(i < neuron_innovations[neuron_pair].size())
 		{
 			NeuronGenePtr new_neuron_gene(new NeuronGene(neuron, neuron_innovations[neuron_pair][i], true));
-			genotype->add_neuron_gene(new_neuron_gene);
+			if(!genotype->layered) {
+				genotype->add_neuron_gene(new_neuron_gene);
+			} else {
+				int mark_from = split->mark_from;
+				int mark_to = split->mark_to;
+				std::pair<unsigned int, unsigned int> index_from = genotype->convert_in_to_layer_index(mark_from);
+				std::pair<unsigned int, unsigned int> index_to = genotype->convert_in_to_layer_index(mark_to);
+				assert(index_from.first < index_to.first);
+				genotype->add_neuron_gene(new_neuron_gene, 
+							  index_from.first + 1,
+							  index_from.first + 1 == index_to.first); //we need a new layer iff the two layers are "right next to each other"
+				
+			}
 			return new_neuron_gene->getInnovNumber();
 		} 
 	}
@@ -202,7 +309,19 @@ int Mutator::add_neuron(NeuronPtr neuron, GeneticEncodingPtr genotype, int conne
 	NeuronGenePtr new_neuron_gene(new NeuronGene(neuron, ++innovation_number, true));
 	//in base case a new vector is constructed here
 	neuron_innovations[neuron_pair].push_back(innovation_number);
-	genotype->add_neuron_gene(new_neuron_gene);
+	if(!genotype->layered) {
+		genotype->add_neuron_gene(new_neuron_gene);
+	} else {
+		int mark_from = split->mark_from;
+		int mark_to = split->mark_to;
+		std::pair<unsigned int, unsigned int> index_from = genotype->convert_in_to_layer_index(mark_from);
+		std::pair<unsigned int, unsigned int> index_to = genotype->convert_in_to_layer_index(mark_to);
+		assert(index_from.first < index_to.first);
+		genotype->add_neuron_gene(new_neuron_gene, 
+						index_from.first + 1,
+						index_from.first + 1 == index_to.first); //we need a new layer iff the two layers are "right next to each other"
+		
+	}
 	return new_neuron_gene->getInnovNumber();
 }
 

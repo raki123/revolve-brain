@@ -19,6 +19,7 @@
 #include "extnn/bias_neuron.h"
 #include "extnn/differential_cpg.h"
 #include "extnn/input_neuron.h"
+#include "extnn/input_dependent_oscillator_neuron.h"
 
 
 namespace revolve {

@@ -2,7 +2,7 @@
 #define CPPNEAT_LEARNER_H_
 
 #include "cppneat/types.h"
-#include "cppneat/mutatur.h"
+#include "cppneat/mutator.h"
 #include "learner.h"
 
 #include <map>
@@ -15,6 +15,7 @@ namespace CPPNEAT {
 class Learner : public revolve::brain::Learner<GeneticEncodingPtr> {
 public:
 	struct LearningConfiguration {
+		bool layered_network;
 		bool asexual;
 		int pop_size;
 		int tournament_size;
@@ -58,6 +59,7 @@ private:
 	
 	MutatorPtr mutator;
 	
+	bool layered_network;
 	bool asexual;
 	int pop_size;
 	int tournament_size;

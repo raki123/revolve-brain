@@ -11,4 +11,5 @@ add_library(extnn STATIC
 	    sigmoid_neuron.cpp
 	    v_oscillator.cpp
 	    x_oscillator.cpp
+	    input_dependent_oscillator_neuron.cpp
 )

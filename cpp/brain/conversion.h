@@ -3,6 +3,7 @@
 
 #include "learner/cppneat/genetic_encoding.h"
 #include "controller/ext_nn_net.h"
+#include "controller/layered_ext_nn_net.h"
 #include "learner/neat_learner.h"
 
 namespace revolve {
@@ -16,7 +17,7 @@ extern std::map<CPPNEAT::Neuron::Ntype, CPPNEAT::Neuron::NeuronTypeSpec> brain_s
 extern std::map<int, unsigned int> input_map;
 extern std::map<int, unsigned int> output_map;
 
-void set_brain_spec();
+void set_brain_spec(bool hyperneat);
 void set_learning_conf();
 boost::shared_ptr<ExtNNConfig> convertForController(CPPNEAT::GeneticEncodingPtr genotype);
 CPPNEAT::GeneticEncodingPtr convertForLearner(boost::shared_ptr<ExtNNConfig> config);
@@ -32,6 +33,10 @@ extern boost::shared_ptr<ExtNNConfig> cpg_network;
 extern std::map<std::string, std::tuple<int,int,int>> neuron_coordinates;
 extern CPPNEAT::GeneticEncodingPtr last;
 
+std::string getHyper();
+//converts a layered genotype to a layered phenotype
+//only works if genotype->layered == true
+boost::shared_ptr<LayeredExtNNConfig> convertForLayeredExtNN(CPPNEAT::GeneticEncodingPtr genotype); 
 boost::shared_ptr<ExtNNConfig> convertForExtNNFromHyper(CPPNEAT::GeneticEncodingPtr genotype);
 CPPNEAT::GeneticEncodingPtr convertForHyperFromExtNN(boost::shared_ptr<ExtNNConfig> config);
 }

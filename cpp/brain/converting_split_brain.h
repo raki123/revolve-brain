@@ -88,7 +88,7 @@ void writeCurrent(double fitness)
     outputFile << "  velocities:" << std::endl;
     outputFile << "  - " << fitness << std::endl;
     outputFile.close();
-    std::ofstream networkOutput(model_name + "-" + std::to_string(run_count) + "-" + std::to_string(generation_counter_) + ".dot");
+    //std::ofstream networkOutput(model_name + "-" + std::to_string(run_count) + "-" + std::to_string(generation_counter_) + ".dot");
 }
 
 protected:
