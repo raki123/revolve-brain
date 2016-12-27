@@ -22,7 +22,7 @@ public:
 	* Method to set the input of the neuron
 	* @param value: new input value
 	*/
-	virtual void SetInput(double value);
+	virtual void SetInput(double value) override;
 	
 	/**
 	* Method to calculate the output of the neuron

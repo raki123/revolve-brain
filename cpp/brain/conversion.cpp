@@ -404,9 +404,6 @@ boost::shared_ptr< LayeredExtNNConfig > convertForLayeredExtNN(CPPNEAT::GeneticE
 boost::shared_ptr<ExtNNConfig> convertForExtNNFromHyper(CPPNEAT::GeneticEncodingPtr genotype)
 {
 	boost::shared_ptr<LayeredExtNNConfig> hyper_config = convertForLayeredExtNN(genotype);
-	LayeredExtNNController print_net("debug", hyper_config, std::vector<ActuatorPtr>(), std::vector<SensorPtr>());
-	std::ofstream debug_out("debug.dot");
-	print_net.writeNetwork(debug_out);
 	for(NeuralConnectionPtr connection : cpg_network->connections_) 
 	{		
 		NeuronPtr src = connection->GetInputNeuron();
@@ -439,8 +436,7 @@ boost::shared_ptr<ExtNNConfig> convertForExtNNFromHyper(CPPNEAT::GeneticEncoding
 				neuron->FlipState();
 			}
 		}
-
-		std::map<std::string, double> params;
+		
 		for (auto it = hyper_config->layers_[hyper_config->layers_.size()-1].begin(); it != hyper_config->layers_[hyper_config->layers_.size()-1].end(); ++it) 
 		{
 			auto outNeuron = *it;
@@ -498,6 +494,115 @@ CPPNEAT::GeneticEncodingPtr convertForHyperFromExtNN(boost::shared_ptr<ExtNNConf
 {
 	return last;
 }
+
+
+//hyperneat::splines
+
+std::vector<std::pair<int,int>> sorted_coordinates;
+
+CPPNEAT::GeneticEncodingPtr get_hyper_neat_net_splines()
+{
+	int innov_number = 1;
+	CPPNEAT::GeneticEncodingPtr ret(new CPPNEAT::GeneticEncoding(true));
+	//add inputs
+	std::map<std::string, double> empty;
+	for(int i = 0; i < 3; i++)
+	{
+		CPPNEAT::NeuronPtr neuron(new CPPNEAT::Neuron("Input-" + std::to_string(i), //better names (like input x1 etc) might help
+							      CPPNEAT::Neuron::INPUT_LAYER,
+							      CPPNEAT::Neuron::INPUT,
+							      empty));
+		CPPNEAT::NeuronGenePtr neuron_gene(new CPPNEAT::NeuronGene(neuron, innov_number++, true)); //means innovation number is i + 1
+		ret->add_neuron_gene(neuron_gene, 0, i == 0);
+	}
+	
+	//add outputs
+	empty["rv:bias"] = 0;
+	empty["rv:gain"] = 1;
+	CPPNEAT::NeuronPtr weight_neuron(new CPPNEAT::Neuron("weight",
+							CPPNEAT::Neuron::OUTPUT_LAYER,
+							CPPNEAT::Neuron::SIMPLE,
+							empty));
+	CPPNEAT::NeuronGenePtr weight_neuron_gene(new CPPNEAT::NeuronGene(weight_neuron, innov_number++, true));
+	ret->add_neuron_gene(weight_neuron_gene, 1, true);
+
+	
+	//connect every input with every output
+	for(int i = 0; i < 3; i++) 
+	{
+		CPPNEAT::ConnectionGenePtr connection_to_weight(new CPPNEAT::ConnectionGene(weight_neuron_gene->getInnovNumber(),
+										  i + 1,
+										  10,
+										  innov_number++,
+										  true,
+										  ""));
+		ret->add_connection_gene(connection_to_weight);
+	}
+	return ret;
+}
+
+PolicyPtr policy;
+unsigned int spline_size;
+unsigned int update_rate;
+unsigned int cur_step = 0;
+PolicyPtr convertForSplinesFromHyper(CPPNEAT::GeneticEncodingPtr genotype)
+{
+	//TODO::increase spline size
+	boost::shared_ptr<LayeredExtNNConfig> hyper_config = convertForLayeredExtNN(genotype);
+	if(policy == nullptr) {
+		policy = PolicyPtr(new Policy(sorted_coordinates.size(), Spline(spline_size, 0)));
+	}
+	if(++cur_step >= update_rate*learning_configuration.pop_size) {
+		spline_size++;
+		cur_step = 0;
+		policy = PolicyPtr(new Policy(sorted_coordinates.size(), Spline(spline_size, 0)));
+	}
+	for(unsigned int j = 0; j < sorted_coordinates.size(); j++) 
+	{
+		for(unsigned int i = 0; i < spline_size; i++) 
+		{		
+			std::tuple<double,double,double> coord(sorted_coordinates[j].first, sorted_coordinates[j].second, i/((double)spline_size));
+			for(NeuronPtr neuron : hyper_config->layers_[0]) 
+			{
+				//could be faster by neuron->Id()[6] but less easy to read
+				if(neuron->Id() == "Input-0") { 
+					neuron->SetInput(std::get<0>(coord));
+				} else if(neuron->Id() == "Input-1") { 
+					neuron->SetInput(std::get<1>(coord));
+				} else if(neuron->Id() == "Input-2") { 
+					neuron->SetInput(std::get<2>(coord));
+				}
+			}
+
+			for(std::vector<NeuronPtr> layer : hyper_config->layers_) {
+				for(NeuronPtr neuron : layer) {
+					neuron->Update(0);
+				}
+				for(NeuronPtr neuron : layer) {
+					neuron->FlipState();
+				}
+			}
+
+			for (auto it = hyper_config->layers_[hyper_config->layers_.size()-1].begin(); it != hyper_config->layers_[hyper_config->layers_.size()-1].end(); ++it) 
+			{
+				auto outNeuron = *it;
+				if(outNeuron->Id() == "weight") 
+				{
+					(*policy)[j][i] = outNeuron->GetOutput();
+					break;
+				}
+			}
+		}
+	}
+	last = genotype;
+	return policy;
+}
+
+CPPNEAT::GeneticEncodingPtr convertForHyperFromSplines(PolicyPtr policy)
+{
+	return last;
+}
+
 
 }	
 }
