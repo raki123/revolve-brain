@@ -16,14 +16,14 @@
 
 namespace revolve {
     namespace brain {
+	typedef std::vector<double> Spline;
+        typedef std::vector<Spline> Policy;
+        typedef std::shared_ptr<Policy> PolicyPtr;
 
-        class RLPowerLearner : public Learner<std::vector<std::vector<double>>> {
+        class RLPowerLearner : public Learner<PolicyPtr> {
 
         public:
 	    struct Config;
-            typedef std::vector<double> Spline;
-            typedef std::vector<Spline> Policy;
-            typedef std::shared_ptr<Policy> PolicyPtr;
 
             /**
              * The RLPower constructor reads out configuration file, deretmines which algorithm type to apply and
@@ -92,10 +92,10 @@ namespace revolve {
             void generateInitPolicy();
 
 	    virtual void reportFitness(std::string id, 
-				       Policy genome,
+				       PolicyPtr genome,
 				       double fitness);
 	    
-	    virtual Policy getNewGenome(std::string id);
+	    virtual PolicyPtr getNewGenome(std::string id);
 
             /**
              * Load saved policy from JSON file
@@ -129,7 +129,7 @@ namespace revolve {
              * Randomly select two policies and return the one with higher fitness
              * @return an iterator from 'ranked_policies_' map
              */
-            std::map<double, RLPowerLearner::PolicyPtr>::iterator binarySelection();
+            std::map<double, PolicyPtr>::iterator binarySelection();
 
 
             PolicyPtr current_policy_ = NULL; // Pointer to the current policy

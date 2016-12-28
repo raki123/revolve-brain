@@ -22,7 +22,7 @@ public:
 		INPUT =3,
 		BIAS = 4,
 		OSCILLATOR = 5,
-		UNDEFINED = 6
+		INPUT_OSCILLATOR = 6
 	};
 	struct ParamSpec {
 		std::string name;

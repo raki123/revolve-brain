@@ -14,10 +14,7 @@ template <typename Phenotype, typename Genome>
 class ConvSplitBrain : public SplitBrain<Phenotype,Genome> {
 public:
     ConvSplitBrain(Phenotype (*convertForController)(Genome), Genome (*convertForLearner)(Phenotype), std::string model_name) 
-        : eval_running(false)
-	, reset(false)
-	, reset_duration(3)
-	, first_run(true)
+	: first_run(true)
 	, run_count(0)
         , convertForController_(convertForController)
 	, convertForLearner_(convertForLearner) {
@@ -44,7 +41,7 @@ public:
 	    evaluator_->start();
 	    first_run = false;
 	}
-	if ((t - start_eval_time_) > (evaluation_rate_ + (reset?reset_duration:0))) { //&& generation_counter_ < max_evaluations_) {
+	if ((t - start_eval_time_) > evaluation_rate_) { //&& generation_counter_ < max_evaluations_) {
 	    double fitness = evaluator_->fitness();
 	    writeCurrent(fitness);
 	    this->learner->reportFitness("test", convertForLearner_(this->controller->getGenome()), fitness);
@@ -52,25 +49,9 @@ public:
 	    this->controller->setGenome(controllerGenome);
 	    start_eval_time_ = t;
 	    generation_counter_++;
-	    eval_running = false;
+	    evaluator_->start();	
 	}
-	if(reset && reset_duration > (t -start_eval_time_)) {
-		//only works for spider
-	    double outs[8] = {0.5,0,0.5,0,0.5,0,0.5,0};
-	    double * out = &outs[0];
-	    unsigned int p = 0;
-	    for (auto actuator: actuators) {
-		actuator->update(out + p, step);
-		p += actuator->outputs();
-	    }
-	} 
-	else {
-	    if(!eval_running) {
-	          evaluator_->start();
-		  eval_running = true;
-	    }
-	    this->controller->update(actuators, sensors, t, step);
-	}
+	this->controller->update(actuators, sensors, t, step);
     }
     
 void writeCurrent(double fitness) 
@@ -88,13 +69,10 @@ void writeCurrent(double fitness)
     outputFile << "  velocities:" << std::endl;
     outputFile << "  - " << fitness << std::endl;
     outputFile.close();
-    std::ofstream networkOutput(model_name + "-" + std::to_string(run_count) + "-" + std::to_string(generation_counter_) + ".dot");
+    //std::ofstream networkOutput(model_name + "-" + std::to_string(run_count) + "-" + std::to_string(generation_counter_) + ".dot");
 }
 
 protected:
-    bool eval_running;
-    bool reset;
-    bool reset_duration;
     std::string model_name;
     bool first_run;
     int run_count;

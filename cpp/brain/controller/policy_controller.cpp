@@ -9,31 +9,22 @@ const double PolicyController::CYCLE_LENGTH = 5; // seconds
 const unsigned int PolicyController::INTERPOLATION_CACHE_SIZE = 100; // number of data
 
 PolicyController::PolicyController(unsigned int n_actuators,
-                                   unsigned int n_spline_points,
                                    unsigned int interpolation_cache_size)
-        : n_actuators_(n_actuators)
-          , n_spline_points(n_spline_points)
-          , interpolation_cache_size(interpolation_cache_size)
-          , interpolation_cache(nullptr)
-          , cycle_start_time(-1)
+          : n_actuators_(n_actuators)
+	  , interpolation_cache_size_(interpolation_cache_size)
+          , interpolation_cache_(nullptr)
+          , cycle_start_time_(-1)
 {
-    this->policy = std::make_shared<Policy>(n_actuators);
-    for (unsigned int i = 0; i < n_actuators; i++) {
-        Spline spline(n_spline_points, 0);
-        this->policy->at(i) = spline;
-    }
+	// Init of empty cache
+	interpolation_cache_ = std::make_shared<Policy>(n_actuators);
 
-    // Init of empty cache
-    interpolation_cache = std::make_shared<Policy>(n_actuators);
-
-    for (unsigned int i = 0; i < n_actuators; i++) {
-        interpolation_cache->at(i).resize(interpolation_cache_size, 0);
-    }
+	for (unsigned int i = 0; i < n_actuators; i++) {
+		interpolation_cache_->at(i).resize(interpolation_cache_size_, 0);
+	}
 }
 
-PolicyController::PolicyController(unsigned int n_actuators,
-                                   unsigned int n_spline_points)
-        : PolicyController(n_actuators, n_spline_points, INTERPOLATION_CACHE_SIZE)
+PolicyController::PolicyController(unsigned int n_actuators)
+        : PolicyController(n_actuators, INTERPOLATION_CACHE_SIZE)
 {}
 
 PolicyController::~PolicyController()
@@ -46,7 +37,7 @@ PolicyController::update(const std::vector<ActuatorPtr> &actuators,
                          double step)
 {
     // generate outputs
-    double *output_vector = new double[n_actuators];
+    double *output_vector = new double[n_actuators_];
     this->generateOutput(t, output_vector);
 
     // Send new signals to the actuators
@@ -63,27 +54,27 @@ void
 PolicyController::generateOutput(const double time,
                                  double *output_vector)
 {
-    if (cycle_start_time < 0) {
-        cycle_start_time = time;
+    if (cycle_start_time_ < 0) {
+        cycle_start_time_ = time;
     }
 
     // get correct X value (between 0 and CYCLE_LENGTH)
-    double x = time - cycle_start_time;
-    while (x >= spline_controller::CYCLE_LENGTH) {
-        cycle_start_time += spline_controller::CYCLE_LENGTH;
-        x = time - cycle_start_time;
+    double x = time - cycle_start_time_;
+    while (x >= PolicyController::CYCLE_LENGTH) {
+        cycle_start_time_ += PolicyController::CYCLE_LENGTH;
+        x = time - cycle_start_time_;
     }
 
     // adjust X on the cache coordinate space
-    x = (x / CYCLE_LENGTH) * interpolation_cache_size;
+    x = (x / CYCLE_LENGTH) * interpolation_cache_size_;
     // generate previous and next values
-    int x_a = ((int) x) % interpolation_cache_size;
-    int x_b = (x_a + 1) % interpolation_cache_size;
+    int x_a = ((int) x) % interpolation_cache_size_;
+    int x_b = (x_a + 1) % interpolation_cache_size_;
 
     // linear interpolation for every actuator
-    for (unsigned int i = 0; i < n_actuators; i++) {
-        double y_a = interpolation_cache->at(i)[x_a];
-        double y_b = interpolation_cache->at(i)[x_b];
+    for (unsigned int i = 0; i < n_actuators_; i++) {
+        double y_a = interpolation_cache_->at(i)[x_a];
+        double y_b = interpolation_cache_->at(i)[x_b];
 
         output_vector[i] = y_a +
                            ((y_b - y_a) * (x - x_a) / (x_b - x_a));
@@ -100,12 +91,15 @@ void
 PolicyController::setGenome(PolicyPtr policy)
 {
     policy_ = policy;
+    update_cache();
+    cycle_start_time_ = -1;
+    //TODO:: make sure the current time in cycle is correct.
 }
 
 void
 PolicyController::update_cache()
 {
-    this->InterpolateCubic(policy.get(), interpolation_cache.get());
+    this->InterpolateCubic(policy_.get(), interpolation_cache_.get());
 }
 
 void
@@ -176,28 +170,27 @@ PolicyController::GenerateRandomController(double noise_sigma,
     std::mt19937 mt(rd());
     std::normal_distribution<double> dist(0, noise_sigma);
 
-    spline_controller *controller = new spline_controller(n_actuators,
-                                                          n_spline_points,
+    PolicyController *controller = new PolicyController(n_actuators,
                                                           interpolation_cache_size);
 
     // Init first random controller
-    if (!controller->policy)
-        controller->policy = std::make_shared<Policy>(n_actuators);
+    if (!controller->policy_)
+        controller->policy_ = std::make_shared<Policy>(n_actuators);
 
     for (unsigned int i = 0; i < n_actuators; i++) {
         Spline spline(n_spline_points);
         for (unsigned int j = 0; j < n_spline_points; j++) {
             spline[j] = dist(mt);
         }
-        controller->policy->at(i) = spline;
+        controller->policy_->at(i) = spline;
     }
 
     // Init of empty cache
-    if (!controller->interpolation_cache)
-        controller->interpolation_cache = std::make_shared<Policy>(n_actuators);
+    if (!controller->interpolation_cache_)
+        controller->interpolation_cache_ = std::make_shared<Policy>(n_actuators);
 
     for (unsigned int i = 0; i < n_actuators; i++) {
-        controller->interpolation_cache->at(i).resize(controller->interpolation_cache_size, 0);
+        controller->interpolation_cache_->at(i).resize(controller->interpolation_cache_size_, 0);
     }
 
     controller->update_cache();

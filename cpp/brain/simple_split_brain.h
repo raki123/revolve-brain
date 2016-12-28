@@ -2,7 +2,7 @@
 #define REVOLVE_BRAIN_SIMPLE_SPLIT_BRAIN_H_
 
 #include "converting_split_brain.h"
-#include "../evaluator.h"
+#include "evaluator.h"
 #include <iostream>
 
 namespace revolve {
