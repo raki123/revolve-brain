@@ -56,20 +56,12 @@ public:
     
 void writeCurrent(double fitness) 
 {
-    std::ofstream outputFile;
-    if(generation_counter_ == 0) {
-        std::ifstream infile(model_name + "-" + std::to_string(run_count) + ".log");
-        while(infile.good()) {
-	    run_count++;
-	    infile = std::ifstream(model_name + "-" + std::to_string(run_count) + ".log");
-	}
-    }
-    outputFile.open(model_name + "-" + std::to_string(run_count) + ".log", std::ios::app | std::ios::out | std::ios::ate);
-    outputFile << "- generation: " << generation_counter_ << std::endl;
-    outputFile << "  velocities:" << std::endl;
-    outputFile << "  - " << fitness << std::endl;
-    outputFile.close();
-    //std::ofstream networkOutput(model_name + "-" + std::to_string(run_count) + "-" + std::to_string(generation_counter_) + ".dot");
+        std::ofstream outputFile;
+        outputFile.open(model_name + ".log", std::ios::app | std::ios::out | std::ios::ate);
+        outputFile << "- generation: " << generation_counter_ << std::endl;
+        outputFile << "  velocity: " << fitness << std::endl;
+        // TODO: Should we record an entire generation?
+        outputFile.close();
 }
 
 protected:

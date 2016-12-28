@@ -129,7 +129,7 @@ void RLPowerLearner::reportFitness(std::string id,
 
     // Write fitness and genomes log to output files
     this->writeCurrent();
-    this->writeElite();
+//    this->writeElite();
 
     // Update generation counter and check is it finished
     generation_counter_++;
