@@ -19,7 +19,7 @@ std::map<int, unsigned int> input_map;
 std::map<int, unsigned int> output_map;
 
 
-void set_learning_conf()
+void set_learning_conf(int initial_structural_mutations)
 {
 	learning_configuration.asexual = false;
 	learning_configuration.pop_size = 50;
@@ -34,6 +34,7 @@ void set_learning_conf()
 	learning_configuration.max_generations = 40;
 	learning_configuration.speciation_threshold = 0.03;
 	learning_configuration.repeat_evaluations = 1;
+	learning_configuration.initial_structural_mutations = initial_structural_mutations;
 }
 
 void set_param_spec(CPPNEAT::Neuron::ParamSpec &spec, std::string name, double eps, double min_value, double max_value, bool min_inclusive, bool max_inclusive) {
@@ -443,6 +444,7 @@ boost::shared_ptr<ExtNNConfig> convertForExtNNFromHyper(CPPNEAT::GeneticEncoding
 			if(outNeuron->Id() == "weight") 
 			{
 				connection->SetWeight(outNeuron->GetOutput());
+// 							std::cout << outNeuron->Id() << outNeuron->GetOutput() << std:: endl;
 				break;
 			}
 		}
@@ -451,30 +453,30 @@ boost::shared_ptr<ExtNNConfig> convertForExtNNFromHyper(CPPNEAT::GeneticEncoding
 	{		
 		std::tuple<int,int,int> coord_src = neuron_coordinates[neuron->Id()];
 		std::tuple<int,int,int> coord_dst = std::make_tuple(0,0,0);
-		for(NeuronPtr neuron : hyper_config->layers_[0]) 
+		for(NeuronPtr input_neuron : hyper_config->layers_[0]) 
 		{
-			//could be faster by neuron->Id()[6] but less easy to read
-			if(neuron->Id() == "Input-0") { 
-				neuron->SetInput(std::get<0>(coord_src));
-			} else if(neuron->Id() == "Input-1") { 
-				neuron->SetInput(std::get<1>(coord_src));
-			} else if(neuron->Id() == "Input-2") { 
-				neuron->SetInput(std::get<2>(coord_src));
-			} else if(neuron->Id() == "Input-3") { 
-				neuron->SetInput(std::get<0>(coord_dst));
-			} else if(neuron->Id() == "Input-4") { 
-				neuron->SetInput(std::get<1>(coord_dst));
-			} else if(neuron->Id() == "Input-5") { 
-				neuron->SetInput(std::get<2>(coord_dst));
+			//could be faster by input_neuron->Id()[6] but less easy to read
+			if(input_neuron->Id() == "Input-0") { 
+				input_neuron->SetInput(std::get<0>(coord_src));
+			} else if(input_neuron->Id() == "Input-1") { 
+				input_neuron->SetInput(std::get<1>(coord_src));
+			} else if(input_neuron->Id() == "Input-2") { 
+				input_neuron->SetInput(std::get<2>(coord_src));
+			} else if(input_neuron->Id() == "Input-3") { 
+				input_neuron->SetInput(std::get<0>(coord_dst));
+			} else if(input_neuron->Id() == "Input-4") { 
+				input_neuron->SetInput(std::get<1>(coord_dst));
+			} else if(input_neuron->Id() == "Input-5") { 
+				input_neuron->SetInput(std::get<2>(coord_dst));
 			} 
 		}
 
 		for(std::vector<NeuronPtr> layer : hyper_config->layers_) {
-			for(NeuronPtr neuron : layer) {
-				neuron->Update(0);
+			for(NeuronPtr hidden_neuron : layer) {
+				hidden_neuron->Update(0);
 			}
-			for(NeuronPtr neuron : layer) {
-				neuron->FlipState();
+			for(NeuronPtr hidden_neuron : layer) {
+				hidden_neuron->FlipState();
 			}
 		}
 

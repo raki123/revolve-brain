@@ -30,20 +30,19 @@ public:
 		double speciation_threshold;
 		int repeat_evaluations;
 		GeneticEncodingPtr start_from;
+		int initial_structural_mutations;
 	};
 	Learner(MutatorPtr mutator, LearningConfiguration conf);
 	void initialise(std::vector<GeneticEncodingPtr> init_genotypes);
+	
+	void apply_structural_mutation(GeneticEncodingPtr genotype);
 private:
 	virtual void reportFitness(std::string id, GeneticEncodingPtr genotype, double fitness);
 	virtual GeneticEncodingPtr getNewGenome(std::string id);
-
-	
-private:
 	std::vector<GeneticEncodingPtr> get_init_brains();
 	void share_fitness();
 	void produce_new_generation();
 	GeneticEncodingPtr produce_child(GeneticEncodingPtr parent1, GeneticEncodingPtr parent2);
-	void apply_structural_mutation(GeneticEncodingPtr genotype);
 	std::pair<GeneticEncodingPtr, GeneticEncodingPtr> select_for_tournament(std::vector<std::pair<GeneticEncodingPtr, double>> candidates);
 
 
@@ -74,6 +73,7 @@ private:
 	double speciation_threshold;
 	int repeat_evaluations;
 	GeneticEncodingPtr start_from;
+	int initial_structural_mutations;
 	std::mt19937 generator;
 
 }; 

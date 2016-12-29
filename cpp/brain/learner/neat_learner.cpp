@@ -24,8 +24,11 @@ Learner::Learner(MutatorPtr mutator, Learner::LearningConfiguration conf)
 	, speciation_threshold(conf.speciation_threshold)
 	, repeat_evaluations(conf.repeat_evaluations)
 	, start_from(conf.start_from)
+	, initial_structural_mutations(conf.initial_structural_mutations)
 	, generation_number(0)
 	, total_brains_evaluated(0) {
+	std::random_device rd;
+	generator.seed(rd());
 	if(pop_size < 2) {
 		pop_size = 2;
 	}
@@ -39,6 +42,8 @@ Learner::Learner(MutatorPtr mutator, Learner::LearningConfiguration conf)
 		std::cout << "generating inital population from starting network" << std::endl;
 		initialise(std::vector<GeneticEncodingPtr>());
 		this->mutator->make_starting_genotype_known(start_from);
+	} else {
+		std::cout << "no starting network given, initialise has to be called" << std::endl;
 	}
 	
 }
@@ -47,6 +52,7 @@ void Learner::initialise(std::vector< GeneticEncodingPtr > init_genotypes) {
 	if(init_genotypes.empty()) {
 		brain_population = get_init_brains();
 	} else {
+		std::cout << "initialised with starting population" << std::endl;
 		brain_population = init_genotypes;
 	}
 	for(GeneticEncodingPtr brain : brain_population) {
@@ -55,21 +61,7 @@ void Learner::initialise(std::vector< GeneticEncodingPtr > init_genotypes) {
 	active_brain = evaluation_queue.back();
 	evaluation_queue.pop_back();	
 }
-//     @trollius.coroutine
-//     def initialize(self, world, init_genotypes=None):
-//         if init_genotypes is None:
-//             brain_population = self.get_init_brains()
-//         else:
-//             brain_population = init_genotypes
-// 
-//         for br in brain_population:
-//             validate_genotype(br, "initial generation created invalid genotype")
-//             self.evaluation_queue.append(br)
-// 
-//         first_brain = self.evaluation_queue.popleft()
-// 
-//         self.reset_fitness()
-//         yield From(self.activate_brain(world, first_brain))
+
 std::vector< GeneticEncodingPtr > Learner::get_init_brains() {
 	std::vector<GeneticEncodingPtr> init_pop;
 	int i = 0;
@@ -78,7 +70,9 @@ std::vector< GeneticEncodingPtr > Learner::get_init_brains() {
 		if(!mutated_genotype->is_valid()) {
 			std::cerr << "copying caused invalid genotype" << std::endl;
 		}
-		apply_structural_mutation(mutated_genotype);
+		for(int j = 0; j < initial_structural_mutations && initial_structural_mutations > 0; j++) {
+			apply_structural_mutation(mutated_genotype);
+		}
 		
 		mutator->mutate_weights(mutated_genotype, weight_mutation_probability, weight_mutation_sigma);
 		

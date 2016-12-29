@@ -28,6 +28,8 @@ Mutator::Mutator(std::map<Neuron::Ntype, Neuron::NeuronTypeSpec> brain_spec,
 	, max_attempts(max_attempts)
 	, addable_neurons(addable_neurons)
 	, layered(layered) {
+	std::random_device rd;
+	generator.seed(rd());
 	if(addable_neurons.size() == 0) {
 		this->addable_neurons = get_addable_types(brain_spec);
 	}
@@ -164,7 +166,8 @@ bool Mutator::add_connection_mutation(GeneticEncodingPtr genotype, double sigma)
 
 std::map<std::string, double> get_random_parameters(Neuron::NeuronTypeSpec param_specs) {
 	std::map<std::string, double> params;
-	std::mt19937 generator;
+	std::random_device rd;
+	std::mt19937 generator(rd());
 	std::uniform_real_distribution<double> uniform(0,1);
 	for(Neuron::ParamSpec spec : param_specs.param_specs) {
 		params[spec.name] = spec.min_value + uniform(generator)*(spec.max_value - spec.min_value);

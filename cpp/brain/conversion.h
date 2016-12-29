@@ -19,7 +19,7 @@ namespace brain {
 	extern std::map<int, unsigned int> output_map;
 
 	void set_brain_spec(bool hyperneat);
-	void set_learning_conf();
+	void set_learning_conf(int initial_structural_mutations);
 	boost::shared_ptr<ExtNNConfig> convertForController(CPPNEAT::GeneticEncodingPtr genotype);
 	CPPNEAT::GeneticEncodingPtr convertForLearner(boost::shared_ptr<ExtNNConfig> config);
 
