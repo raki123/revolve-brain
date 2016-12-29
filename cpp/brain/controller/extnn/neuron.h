@@ -76,7 +76,7 @@ public:
 	 * Method to set the input of the neuron
 	 * @param value: the value the input should be set to
 	 */
-	virtual void SetInput(double value) {};
+	virtual void SetInput(double /*value*/) {};
 	
 	/**
 	 * Calculate the output and save it for when FlipState is called

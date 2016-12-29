@@ -26,7 +26,7 @@ public:
 		double param_mutation_sigma;
 		double structural_augmentation_probability;
 		double structural_removal_probability;
-		double max_generations;
+		int max_generations;
 		double speciation_threshold;
 		int repeat_evaluations;
 		GeneticEncodingPtr start_from;
@@ -36,6 +36,23 @@ public:
 	void initialise(std::vector<GeneticEncodingPtr> init_genotypes);
 	
 	void apply_structural_mutation(GeneticEncodingPtr genotype);
+	
+	//standard parameters
+	static const bool LAYERED_NETWORK;
+	static const bool ASEXUAL;
+	static const int POP_SIZE;
+	static const int TOURNAMENT_SIZE;
+	static const int NUM_CHILDREN;
+	static const double WEIGHT_MUTATION_PROBABILITY;
+	static const double WEIGHT_MUTATION_SIGMA;
+	static const double PARAM_MUTATION_PROBABILITY;
+	static const double PARAM_MUTATION_SIGMA;
+	static const double STRUCTURAL_AUGMENTATION_PROBABILITY;
+	static const double STRUCTURAL_REMOVAL_PROBABILITY;
+	static const int MAX_GENERATIONS;
+	static const double SPECIATION_TRESHOLD;
+	static const int REPEAT_EVALUATIONS;
+	static const int INITIAL_STRUCTURAL_MUTATIONS;
 private:
 	virtual void reportFitness(std::string id, GeneticEncodingPtr genotype, double fitness);
 	virtual GeneticEncodingPtr getNewGenome(std::string id);
@@ -69,7 +86,7 @@ private:
 	double param_mutation_sigma;
 	double structural_augmentation_probability;
 	double structural_removal_probability;
-	double max_generations;
+	int max_generations;
 	double speciation_threshold;
 	int repeat_evaluations;
 	GeneticEncodingPtr start_from;

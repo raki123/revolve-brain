@@ -8,6 +8,8 @@
 namespace CPPNEAT {
 Learner::Learner(MutatorPtr mutator, Learner::LearningConfiguration conf)
 	: active_brain(nullptr)
+	, generation_number(0)
+	, total_brains_evaluated(0)
 	, mutator(mutator)
 	, layered_network(conf.layered_network)
 	, asexual(conf.asexual)
@@ -24,9 +26,7 @@ Learner::Learner(MutatorPtr mutator, Learner::LearningConfiguration conf)
 	, speciation_threshold(conf.speciation_threshold)
 	, repeat_evaluations(conf.repeat_evaluations)
 	, start_from(conf.start_from)
-	, initial_structural_mutations(conf.initial_structural_mutations)
-	, generation_number(0)
-	, total_brains_evaluated(0) {
+	, initial_structural_mutations(conf.initial_structural_mutations) {
 	std::random_device rd;
 	generator.seed(rd());
 	if(pop_size < 2) {
@@ -203,5 +203,21 @@ std::pair< GeneticEncodingPtr, GeneticEncodingPtr > Learner::select_for_tourname
 	std::sort(candidates.begin(), candidates.end(), fitness_cmp);
 	return std::pair<GeneticEncodingPtr, GeneticEncodingPtr>(candidates[0].first, candidates[1].first);
 }
+
+const bool Learner::LAYERED_NETWORK = false;
+const bool Learner::ASEXUAL = false;
+const int Learner::POP_SIZE = 50;
+const int Learner::TOURNAMENT_SIZE = 40;
+const int Learner::NUM_CHILDREN = 45;
+const double Learner::WEIGHT_MUTATION_PROBABILITY = 0.8;
+const double Learner::WEIGHT_MUTATION_SIGMA = 5.0;
+const double Learner::PARAM_MUTATION_PROBABILITY = 0.8;
+const double Learner::PARAM_MUTATION_SIGMA = 0.25;
+const double Learner::STRUCTURAL_AUGMENTATION_PROBABILITY = 0.8;
+const double Learner::STRUCTURAL_REMOVAL_PROBABILITY = 0;
+const int Learner::MAX_GENERATIONS = 20;
+const double Learner::SPECIATION_TRESHOLD = 0.03;
+const int Learner::REPEAT_EVALUATIONS = 1;
+const int Learner::INITIAL_STRUCTURAL_MUTATIONS = 1;
 
 }
