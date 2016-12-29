@@ -5,12 +5,14 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <random>
 
 namespace CPPNEAT {
 
 GeneticEncodingPtr Crossover::crossover(GeneticEncodingPtr genotype_more_fit, GeneticEncodingPtr genotype_less_fit) {
 	assert(genotype_less_fit->layered == genotype_more_fit->layered);
-	std::mt19937 generator;
+    std::random_device rd;
+	std::mt19937 mt(rd());
 	std::uniform_real_distribution<double> uniform(0,1);
 	genotype_more_fit = genotype_more_fit->copy();
 	genotype_less_fit = genotype_less_fit->copy();
@@ -22,7 +24,7 @@ GeneticEncodingPtr Crossover::crossover(GeneticEncodingPtr genotype_more_fit, Ge
 	std::vector<GenePtr> child_genes;
 	for(std::pair<GenePtr, GenePtr> pair : gene_pairs) {
 		if(pair.first != nullptr && pair.second != nullptr) {
-			if(uniform(generator) < 0.5) {
+			if(uniform(mt) < 0.5) {
 				child_genes.push_back(pair.first);
 			} else {
 				child_genes.push_back(pair.second);
