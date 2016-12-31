@@ -18,11 +18,11 @@ public:
     ConvSplitBrain(Phenotype (*convertForController)(Genome),
                    Genome (*convertForLearner)(Phenotype),
                    std::string model_name)
-            : first_run(true)
+            : model_name(model_name)
+              , first_run(true)
               , run_count(0)
               , convertForController_(convertForController)
               , convertForLearner_(convertForLearner)
-              , model_name(model_name)
     {};
 
     virtual
