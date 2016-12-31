@@ -11,7 +11,6 @@ Learner::Learner(MutatorPtr mutator, Learner::LearningConfiguration conf)
 	, generation_number(0)
 	, total_brains_evaluated(0)
 	, mutator(mutator)
-	, layered_network(conf.layered_network)
 	, asexual(conf.asexual)
 	, pop_size(conf.pop_size)
 	, tournament_size(conf.tournament_size)
@@ -116,20 +115,48 @@ GeneticEncodingPtr Learner::getNewGenome(std::string id) {
 }
 
 void Learner::share_fitness() {
-	std::map<GeneticEncodingPtr, double> new_fitness;
-	for(auto it : brain_fitness) {
-		GeneticEncodingPtr cur_brain = it.first;
-		double cur_fitness = it.second;
-		int species_size = 1;
-		for(auto it2 : brain_fitness) {
-			GeneticEncodingPtr other_brain = it2.first;
-			if(other_brain != cur_brain) {
-				if(GeneticEncoding::get_dissimilarity(other_brain, cur_brain,1,1,1) < speciation_threshold) {
-					species_size++;
-				}
+	//speciate
+	std::map<GeneticEncodingPtr, std::vector<GeneticEncodingPtr>> old_species = species;
+	species.clear();
+	//choose representative from previous generation (or do nothing for first run)
+	for(std::pair<GeneticEncodingPtr, std::vector<GeneticEncodingPtr>> sppair : old_species) 
+	{
+		if(sppair.second.size() > 0) //remove species without survivors could also be done somewhere else but doesnt really matter
+		{
+			std::uniform_int_distribution<int> choose(0,sppair.second.size()-1);
+			GeneticEncodingPtr representative = sppair.second[choose(generator)];
+			species.insert(std::make_pair(representative, std::vector<GeneticEncodingPtr>()));
+		}
+	}
+	
+	for(std::pair<GeneticEncodingPtr,double> cur_brain : brain_velocity) 
+	{
+		bool added = false;
+		//search for matching species
+		for(std::pair<GeneticEncodingPtr, std::vector<GeneticEncodingPtr>> sppair : species) 
+		{
+			//TODO:: coefficients?
+			if(GeneticEncoding::get_dissimilarity(sppair.first, cur_brain.first,1,1,0.4) < speciation_threshold) 
+			{
+				added = true;
+				species[sppair.first].push_back(cur_brain.first);
+				break;
 			}
 		}
-		new_fitness[cur_brain] = cur_fitness/species_size;
+		//add new species in case of no matches
+		if(!added) 
+		{
+			species.insert(std::make_pair(cur_brain.first, std::vector<GeneticEncodingPtr>(1, cur_brain.first)));
+		}
+	}
+	//actual sharing
+	std::map<GeneticEncodingPtr, double> new_fitness;
+	for(std::pair<GeneticEncodingPtr, std::vector<GeneticEncodingPtr>> sppair : species)
+	{
+		for(GeneticEncodingPtr brain : sppair.second) 
+		{
+			new_fitness[brain] = brain_velocity[brain]/sppair.second.size();
+		}
 	}
 	brain_fitness = new_fitness;
 }
@@ -196,7 +223,6 @@ void Learner::apply_structural_mutation(GeneticEncodingPtr genotype) {
 	}
 }
 
-//ALERT::not sure if real tournament selection
 std::pair< GeneticEncodingPtr, GeneticEncodingPtr > Learner::select_for_tournament(std::vector< std::pair< GeneticEncodingPtr, double > > candidates) {
 	std::shuffle(candidates.begin(), candidates.end(), generator);
 	candidates = std::vector<std::pair<GeneticEncodingPtr, double>>(candidates.begin(), candidates.begin() + tournament_size);
@@ -204,7 +230,6 @@ std::pair< GeneticEncodingPtr, GeneticEncodingPtr > Learner::select_for_tourname
 	return std::pair<GeneticEncodingPtr, GeneticEncodingPtr>(candidates[0].first, candidates[1].first);
 }
 
-const bool Learner::LAYERED_NETWORK = false;
 const bool Learner::ASEXUAL = false;
 const int Learner::POP_SIZE = 50;
 const int Learner::TOURNAMENT_SIZE = 40;

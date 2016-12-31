@@ -31,7 +31,7 @@ namespace brain {
 	extern boost::shared_ptr<ExtNNConfig> cpg_network;
 	extern std::map<std::string, std::tuple<int,int,int>> neuron_coordinates;
 	extern CPPNEAT::GeneticEncodingPtr last;
-;
+
 	//converts a layered genotype to a layered phenotype
 	//only works if genotype->layered == true
 	boost::shared_ptr<LayeredExtNNConfig> convertForLayeredExtNN(CPPNEAT::GeneticEncodingPtr genotype); 

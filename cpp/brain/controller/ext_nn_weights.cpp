@@ -138,6 +138,9 @@ void ExtNNController::setGenome(std::vector< double > weights)
 		std::cerr << "incorrect amount of weights (" << weights.size() << ") delivered. expected " << matches << std::endl;
 		throw std::runtime_error("Weight size error");
 	}
+	for(NeuronPtr neuron: allNeurons_) {
+		neuron->reset();
+	}
 }
 void ExtNNController::writeNetwork(std::ofstream &write_to) 
 {

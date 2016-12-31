@@ -58,6 +58,11 @@ std::vector< std::pair< std::string, NeuralConnectionPtr > > Neuron::getIncoming
 	return this->incomingConnections_;
 }
 
+void Neuron::reset()
+{
+	this->output_ = 0;
+}
+
 
 }
 }

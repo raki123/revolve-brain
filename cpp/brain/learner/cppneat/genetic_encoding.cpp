@@ -79,7 +79,21 @@ double GeneticEncoding::get_dissimilarity(GeneticEncodingPtr genotype1, GeneticE
 	int excess_num = 0, disjoint_num = 0;
 	GeneticEncoding::get_excess_disjoint(genotype1, genotype2, excess_num, disjoint_num);
 	int num_genes = std::max(genotype1->num_genes(), genotype2->num_genes());
-	double dissimilarity = (disjoint_coef*disjoint_num+excess_coef*excess_num)/num_genes;
+	std::vector<std::pair<GenePtr, GenePtr>> gene_pairs = GeneticEncoding::get_pairs(genotype1->get_sorted_genes(), genotype2->get_sorted_genes());
+	double weight_diff = 0;
+	int count = 0;
+	for(std::pair<GenePtr, GenePtr> pair : gene_pairs) 
+	{
+		if(pair.first != nullptr && pair.second != nullptr) {
+			if(pair.first->gene_type == Gene::CONNECTION_GENE) {
+				weight_diff += std::abs(boost::dynamic_pointer_cast<ConnectionGene>(pair.first)->weight 
+							- boost::dynamic_pointer_cast<ConnectionGene>(pair.second)->weight);
+				count++;
+			}
+		}
+	}
+	double average_weight_diff = count > 0?weight_diff/count:0;
+	double dissimilarity = (disjoint_coef*disjoint_num+excess_coef*excess_num)/num_genes + weight_diff_coef*average_weight_diff;
 	return dissimilarity;
 	
 }

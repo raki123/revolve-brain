@@ -32,6 +32,8 @@ public:
 	virtual void setNeuronParameters(std::map<std::string, double> params);
 	
 	virtual std::string getType();
+	
+	virtual void reset() override;
 
 protected:
 	double bias_; //bias of the neuron

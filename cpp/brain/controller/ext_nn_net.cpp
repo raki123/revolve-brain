@@ -122,6 +122,9 @@ boost::shared_ptr<ExtNNConfig> ExtNNController1::getGenome()
 void ExtNNController1::setGenome(boost::shared_ptr<ExtNNConfig> Config)
 {
 	allNeurons_ = Config->allNeurons_;
+	for(NeuronPtr neuron: allNeurons_) {
+		neuron->reset();
+	}
 	inputNeurons_ = Config->inputNeurons_;
 	outputNeurons_ = Config->outputNeurons_;
 	hiddenNeurons_ = Config->hiddenNeurons_;

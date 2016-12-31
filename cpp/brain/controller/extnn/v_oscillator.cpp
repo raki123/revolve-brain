@@ -112,6 +112,11 @@ std::string VOscillator::getType()
 	return "VOscillator";
 }
 
+void VOscillator::reset()
+{
+	this->stateDeriv_ = 0;
+	this->output_ = sqrt(this->energy_);	
+}
 
 }
 }
