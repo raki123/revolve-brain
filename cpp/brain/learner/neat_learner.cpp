@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <iostream>
 #include <random>
+#include <fstream>
 
 namespace CPPNEAT {
 Learner::Learner(MutatorPtr mutator, Learner::LearningConfiguration conf)
@@ -105,6 +106,7 @@ void Learner::reportFitness(std::string id, GeneticEncodingPtr genotype, double 
 			generation_number++;
 		}
 		active_brain = evaluation_queue.back();
+        this->writeGenome(active_brain);
 		evaluation_queue.pop_back();
 		fitness_buffer.clear();
 		if(generation_number >= max_generations) {
@@ -115,6 +117,41 @@ void Learner::reportFitness(std::string id, GeneticEncodingPtr genotype, double 
 }
 GeneticEncodingPtr Learner::getNewGenome(std::string id) {
 	return active_brain;
+}
+
+void Learner::writeGenome(GeneticEncodingPtr genome){
+    std::ofstream outputFile;
+    // TODO: Add robot name field
+    std::string robot_name_ = "spider.temp";
+    outputFile.open(robot_name_ + ".policy", std::ios::app | std::ios::out | std::ios::ate);
+    outputFile << "- evaluation: " << generation_number << std::endl;
+//    outputFile << "  steps: " << source_y_size_ << std::endl;
+    outputFile << "  brain:" << std::endl;
+    outputFile << "    neuron_genes:" << std::endl;
+    auto neuron_genes = genome->neuron_genes;
+    for (auto it = neuron_genes.begin(); it != neuron_genes.end(); it++){
+        auto neuron = it->get()->neuron;
+        outputFile << "      - " << neuron->neuron_id << " " << neuron->neuron_type << " " << neuron->layer << std::endl;
+    }
+    outputFile << "    connection_genes:" << std::endl;
+    auto connection_genes = genome->connection_genes;
+    for (auto it = connection_genes.begin(); it != connection_genes.end(); it++){
+        auto connection = it->get();
+        outputFile << "      - " << connection->mark_from << " " << connection->weight << " " << connection->mark_to << std::endl;
+    }
+    outputFile << "    layers:" << std::endl;
+    auto layers = genome->layers;
+    int n_layer = 1;
+    for (auto it = layers.begin(); it != layers.end(); it++){
+        outputFile << "    " << n_layer << std::endl;
+        for (auto it2 = it->begin(); it2 != it->end(); it2++) {
+            auto neuron = it2->get()->neuron;
+            outputFile << "      - " << neuron->neuron_id << " " << neuron->neuron_type << " " << neuron->layer
+                       << std::endl;
+        }
+        n_layer++;
+    }
+    outputFile.close();
 }
 
 void Learner::share_fitness() {

@@ -59,6 +59,7 @@ private:
 	virtual void reportFitness(std::string id, GeneticEncodingPtr genotype, double fitness);
 	virtual GeneticEncodingPtr getNewGenome(std::string id);
 	std::vector<GeneticEncodingPtr> get_init_brains();
+	void writeGenome(GeneticEncodingPtr genome);
 	void share_fitness();
 	void produce_new_generation();
 	GeneticEncodingPtr produce_child(GeneticEncodingPtr parent1, GeneticEncodingPtr parent2);
