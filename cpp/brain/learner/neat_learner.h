@@ -1,6 +1,8 @@
 #ifndef CPPNEAT_LEARNER_H_
 #define CPPNEAT_LEARNER_H_
 
+//#define CPPNEAT_DEBUG
+
 #include "cppneat/types.h"
 #include "cppneat/mutator.h"
 #include "learner.h"
@@ -30,6 +32,7 @@ public:
 		int repeat_evaluations;
 		GeneticEncodingPtr start_from;
 		int initial_structural_mutations;
+		double interspecies_mate_probability;
 	};
 	Learner(MutatorPtr mutator, LearningConfiguration conf);
 	void initialise(std::vector<GeneticEncodingPtr> init_genotypes);
@@ -51,6 +54,7 @@ public:
 	static const double SPECIATION_TRESHOLD;
 	static const int REPEAT_EVALUATIONS;
 	static const int INITIAL_STRUCTURAL_MUTATIONS;
+	static const double INTERSPECIES_MATE_PROBABILITY;
 private:
 	virtual void reportFitness(std::string id, GeneticEncodingPtr genotype, double fitness);
 	virtual GeneticEncodingPtr getNewGenome(std::string id);
@@ -58,7 +62,7 @@ private:
 	void share_fitness();
 	void produce_new_generation();
 	GeneticEncodingPtr produce_child(GeneticEncodingPtr parent1, GeneticEncodingPtr parent2);
-	std::pair<GeneticEncodingPtr, GeneticEncodingPtr> select_for_tournament(std::vector<std::pair<GeneticEncodingPtr, double>> candidates);
+	std::pair<GeneticEncodingPtr, GeneticEncodingPtr> select_for_tournament(std::vector<std::pair<GeneticEncodingPtr, double>> candidates, unsigned int tourn_size);
 
 
 	GeneticEncodingPtr active_brain;
@@ -89,6 +93,7 @@ private:
 	int repeat_evaluations;
 	GeneticEncodingPtr start_from;
 	int initial_structural_mutations;
+	double interspecies_mate_probability;
 	std::mt19937 generator;
 
 }; 

@@ -388,6 +388,7 @@ bool GeneticEncoding::neuron_exists(int innov_number) {
 	}
 }
 
+#ifdef CPPNEAT_DEBUG
 bool GeneticEncoding::is_valid()
 {
 	if(!layered) 
@@ -422,7 +423,7 @@ bool GeneticEncoding::is_valid()
 	}
 	return true;
 }
-
+#endif
 
 std::pair<unsigned int,unsigned int > GeneticEncoding::convert_index_to_layer_index(unsigned int index)
 {

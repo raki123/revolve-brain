@@ -25,7 +25,8 @@ Learner::Learner(MutatorPtr mutator, Learner::LearningConfiguration conf)
 	, speciation_threshold(conf.speciation_threshold)
 	, repeat_evaluations(conf.repeat_evaluations)
 	, start_from(conf.start_from)
-	, initial_structural_mutations(conf.initial_structural_mutations) {
+	, initial_structural_mutations(conf.initial_structural_mutations)
+	, interspecies_mate_probability(conf.interspecies_mate_probability) {
 	std::random_device rd;
 	generator.seed(rd());
 	if(pop_size < 2) {
@@ -66,23 +67,25 @@ std::vector< GeneticEncodingPtr > Learner::get_init_brains() {
 	int i = 0;
 	while(i++ < pop_size) {
 		GeneticEncodingPtr mutated_genotype = start_from->copy();
+#ifdef CPPNEAT_DEBUG
 		if(!mutated_genotype->is_valid()) {
 			std::cerr << "copying caused invalid genotype" << std::endl;
 		}
+#endif
 		for(int j = 0; j < initial_structural_mutations && initial_structural_mutations > 0; j++) {
 			apply_structural_mutation(mutated_genotype);
 		}
 		
-		mutator->mutate_weights(mutated_genotype, weight_mutation_probability, weight_mutation_sigma);
+		mutator->mutate_weights(mutated_genotype, 1, weight_mutation_sigma);
 		
-		mutator->mutate_neuron_params(mutated_genotype, param_mutation_probability, param_mutation_sigma);
+		mutator->mutate_neuron_params(mutated_genotype, 1, param_mutation_sigma);
 		init_pop.push_back(mutated_genotype);
 	}
 	return init_pop;
 }
 
 void Learner::reportFitness(std::string id, GeneticEncodingPtr genotype, double fitness) {
-	std::cout << "Evalutation over\n" << "Evaluated " << ++total_brains_evaluated << " brains \n" << "Last fitness: " << fitness << std::endl;
+	std::cout << "Evalutation over\n" << "Evaluated " << ++total_brains_evaluated << " brains \n" << "Last fitness: " << fitness <<  std::endl;
 	
 	fitness_buffer.push_back(fitness);
 	if(fitness_buffer.size() == repeat_evaluations) {
@@ -121,12 +124,9 @@ void Learner::share_fitness() {
 	//choose representative from previous generation (or do nothing for first run)
 	for(std::pair<GeneticEncodingPtr, std::vector<GeneticEncodingPtr>> sppair : old_species) 
 	{
-		if(sppair.second.size() > 0) //remove species without survivors could also be done somewhere else but doesnt really matter
-		{
-			std::uniform_int_distribution<int> choose(0,sppair.second.size()-1);
-			GeneticEncodingPtr representative = sppair.second[choose(generator)];
-			species.insert(std::make_pair(representative, std::vector<GeneticEncodingPtr>()));
-		}
+		std::uniform_int_distribution<int> choose(0,sppair.second.size()-1);
+		GeneticEncodingPtr representative = sppair.second[choose(generator)];
+		species.insert(std::make_pair(representative, std::vector<GeneticEncodingPtr>()));
 	}
 	
 	for(std::pair<GeneticEncodingPtr,double> cur_brain : brain_velocity) 
@@ -135,7 +135,7 @@ void Learner::share_fitness() {
 		//search for matching species
 		for(std::pair<GeneticEncodingPtr, std::vector<GeneticEncodingPtr>> sppair : species) 
 		{
-			//TODO:: coefficients?
+			//TODO:: coefficients
 			if(GeneticEncoding::get_dissimilarity(sppair.first, cur_brain.first,1,1,0.4) < speciation_threshold) 
 			{
 				added = true;
@@ -149,6 +149,16 @@ void Learner::share_fitness() {
 			species.insert(std::make_pair(cur_brain.first, std::vector<GeneticEncodingPtr>(1, cur_brain.first)));
 		}
 	}
+	old_species = species;
+	species.clear();
+	//only keep species which are not empty
+	for(std::pair<GeneticEncodingPtr, std::vector<GeneticEncodingPtr>> sppair : old_species) 
+	{
+		if(sppair.second.size() > 0) 
+		{
+			species.insert(sppair);
+		}
+	}
 	//actual sharing
 	std::map<GeneticEncodingPtr, double> new_fitness;
 	for(std::pair<GeneticEncodingPtr, std::vector<GeneticEncodingPtr>> sppair : species)
@@ -160,37 +170,125 @@ void Learner::share_fitness() {
 	}
 	brain_fitness = new_fitness;
 }
-bool fitness_cmp(std::pair<GeneticEncodingPtr,double> genotype1, std::pair<GeneticEncodingPtr, double> genotype2) {
+
+bool fitness_cmp(std::pair<GeneticEncodingPtr,double> genotype1, std::pair<GeneticEncodingPtr, double> genotype2)
+{
 	return genotype1.second > genotype2.second;
 }
-void Learner::produce_new_generation() {
-	std::vector<std::pair<GeneticEncodingPtr, double>> fitness_pairs;
-	for(auto it : brain_fitness) {
-		fitness_pairs.push_back(std::pair<GeneticEncodingPtr, double>(it.first, it.second));
+
+void Learner::produce_new_generation()
+{
+	//calculate number of children for each species
+	double overall_fitness = 0;
+	std::map<GeneticEncodingPtr, double> species_fitness;
+	for(std::pair<GeneticEncodingPtr, std::vector<GeneticEncodingPtr>> sppair : species)
+	{
+		double cur_sum = 0;
+		for(GeneticEncodingPtr brain : sppair.second) 
+		{
+			cur_sum += brain_fitness[brain];
+		}
+		species_fitness[sppair.first] = cur_sum;
+		overall_fitness += cur_sum;
 	}
+	std::map<GeneticEncodingPtr, int> species_offspring;
+	int cur_children = 0;
+	double average_fitness = overall_fitness/num_children;
+	GeneticEncodingPtr best = species_fitness.begin()->first;
+	double treshold = 0;
+	for(auto it = species_fitness.begin(); it != species_fitness.end(); ++it) 
+	{
+		while(treshold + it->second >= (cur_children+1)*average_fitness)
+		{
+			species_offspring[it->first]++;
+			cur_children++;
+		}
+		treshold += it->second;
+		if(species_fitness[best] < it->second)
+		{
+			best = it->first;
+		}
+	}
+	//should not happen, but might (>= for double flawed)
+	if(cur_children < num_children) 
+	{
+		std::cout << "i get here" << std::endl;
+		assert(cur_children == num_children - 1);
+		species_offspring[best]++;
+	}
+	//reproduce
+	std::uniform_real_distribution<double> uniform(0,1);
+	for(std::pair<GeneticEncodingPtr, std::vector<GeneticEncodingPtr>> sppair : species) 
+	{
+		std::vector<std::pair<GeneticEncodingPtr, double>> fitness_pairs;
+		for(GeneticEncodingPtr brain : sppair.second) 
+		{
+			fitness_pairs.push_back(std::pair<GeneticEncodingPtr, double>(brain, brain_fitness[brain]));
+		}
+		std::sort(fitness_pairs.begin(), fitness_pairs.end(), fitness_cmp);
+		
+		std::vector<std::pair<GeneticEncodingPtr, GeneticEncodingPtr>> parent_pairs;
+		int i = 0;
+		while(i++ < species_offspring[sppair.first]) 
+		{
+			if(sppair.second.size() == 1 || uniform(generator) < interspecies_mate_probability) 
+			{
+				//if there is only one individual in species or we are below threshold probability we want interspecies mating
+				std::uniform_int_distribution<int> choose(0,sppair.second.size()-1);
+				GeneticEncodingPtr mom = sppair.second[choose(generator)];
+				std::uniform_int_distribution<int> chooose(0,species.size()-1);
+				int until = chooose(generator);
+				auto species_iterator = species.begin();
+				for(int k = 0; k < until; k++) {
+					++species_iterator;
+				}
+				std::vector<GeneticEncodingPtr> bachelors = (species_iterator)->second;
+				std::vector<std::pair<GeneticEncodingPtr,double>> to_sort;
+				for(GeneticEncodingPtr brain : bachelors) 
+				{
+					to_sort.push_back(std::pair<GeneticEncodingPtr, double>(brain, brain_fitness[brain]));
+				}
+				std::sort(to_sort.begin(), to_sort.end(), fitness_cmp);
+				GeneticEncodingPtr dad = to_sort[0].first;
+				parent_pairs.push_back(brain_fitness[mom] > brain_fitness[dad]?
+						       std::make_pair(mom,dad) :
+						       std::make_pair(dad,mom));
+			}
+			else 
+			{
+				std::pair<GeneticEncodingPtr, GeneticEncodingPtr> selected = select_for_tournament(fitness_pairs, 2);
+				parent_pairs.push_back(selected);
+			}
+		}
+		for(std::pair<GeneticEncodingPtr, GeneticEncodingPtr> parents : parent_pairs)
+		{
+			GeneticEncodingPtr child_genotype = produce_child(parents.first, parents.second);
+			evaluation_queue.push_back(child_genotype);
+		}
+	}
+	//elitism
 	std::vector<std::pair<GeneticEncodingPtr, double>> velocity_pairs;
 	for(auto it : brain_velocity) {
 		velocity_pairs.push_back(std::pair<GeneticEncodingPtr, double>(it.first, it.second));
 	}
-	std::sort(fitness_pairs.begin(), fitness_pairs.end(), fitness_cmp);
 	std::sort(velocity_pairs.begin(), velocity_pairs.end(), fitness_cmp);
-	
-	std::vector<std::pair<GeneticEncodingPtr, GeneticEncodingPtr>> parent_pairs;
 	int i = 0;
-	while(i++ < num_children) {
-		std::pair<GeneticEncodingPtr, GeneticEncodingPtr> selected = select_for_tournament(fitness_pairs);
-		parent_pairs.push_back(selected);
-	}
-	for(std::pair<GeneticEncodingPtr, GeneticEncodingPtr> parents : parent_pairs) {
-		GeneticEncodingPtr child_genotype = produce_child(parents.first, parents.second);
-		evaluation_queue.push_back(child_genotype);
-	}
-	i = 0;
-	while(i++ < (pop_size - num_children)) {
+	while(i < (pop_size - num_children)) {
 		evaluation_queue.push_back(velocity_pairs[i].first);
+		i++;
 	}
+	//remove old fitness
 	brain_fitness.clear();
 	brain_velocity.clear();
+	//debug
+	std::cout << "Produced new generation with: " << std::endl;
+	std::cout << "* " << species.size() << " species with sizes: " << std::endl;
+	auto species_iterator = species.begin();
+	for(unsigned int j = 0; j < species.size(); j++) 
+	{
+		std::cout << "** " << (species_iterator++)->second.size() << std::endl;
+	}
+	std::cout << "* overall number of individuals in queue: " << evaluation_queue.size() << std::endl;
 }
 
 GeneticEncodingPtr Learner::produce_child(GeneticEncodingPtr parent1, GeneticEncodingPtr parent2) {
@@ -223,9 +321,9 @@ void Learner::apply_structural_mutation(GeneticEncodingPtr genotype) {
 	}
 }
 
-std::pair< GeneticEncodingPtr, GeneticEncodingPtr > Learner::select_for_tournament(std::vector< std::pair< GeneticEncodingPtr, double > > candidates) {
+std::pair< GeneticEncodingPtr, GeneticEncodingPtr > Learner::select_for_tournament(std::vector< std::pair< GeneticEncodingPtr, double > > candidates, unsigned int tourn_size) {
 	std::shuffle(candidates.begin(), candidates.end(), generator);
-	candidates = std::vector<std::pair<GeneticEncodingPtr, double>>(candidates.begin(), candidates.begin() + tournament_size);
+	candidates = std::vector<std::pair<GeneticEncodingPtr, double>>(candidates.begin(), candidates.begin() + tourn_size);
 	std::sort(candidates.begin(), candidates.end(), fitness_cmp);
 	return std::pair<GeneticEncodingPtr, GeneticEncodingPtr>(candidates[0].first, candidates[1].first);
 }
@@ -244,5 +342,6 @@ const int Learner::MAX_GENERATIONS = 20;
 const double Learner::SPECIATION_TRESHOLD = 0.03;
 const int Learner::REPEAT_EVALUATIONS = 1;
 const int Learner::INITIAL_STRUCTURAL_MUTATIONS = 1;
+const double Learner::INTERSPECIES_MATE_PROBABILITY = 0.001;
 
 }

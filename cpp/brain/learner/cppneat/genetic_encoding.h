@@ -51,9 +51,9 @@ public:
 	//layered
 	void remove_neuron_gene(int layer, int index);
 	bool neuron_exists(int innov_number);
-	
+#ifdef CPPNEAT_DEBUG
 	bool is_valid();
-
+#endif
 	std::pair<unsigned int,unsigned int> convert_index_to_layer_index(unsigned int index);
 	std::pair<unsigned int,unsigned int> convert_in_to_layer_index(int innov_number);
    
