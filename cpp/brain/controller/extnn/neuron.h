@@ -107,6 +107,9 @@ public:
 	virtual void setNeuronParameters(std::map<std::string, double> params) = 0;
 	
 	virtual std::string getType() = 0;
+	
+	//reset the current activation of the neuron
+	virtual void reset();
 protected:
 
 	std::vector<std::pair<std::string, NeuralConnectionPtr> > incomingConnections_; //vector of the incoming connections and the name of their socket

@@ -32,6 +32,7 @@ public:
 	
 	virtual std::string getType();
 
+	virtual void reset() override;
 
 protected:
 	double alpha_; //TODO:: find out what these parameters mean

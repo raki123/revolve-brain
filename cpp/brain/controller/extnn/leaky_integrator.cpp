@@ -78,6 +78,12 @@ std::string LeakyIntegrator::getType()
 	return "LeakyIntegrator";
 }
 
+void LeakyIntegrator::reset() 
+{
+	this->stateDeriv_ = 0;
+	this->state_ = 0;
+	this->output_ = 0;
+}
 
 }
 }

@@ -15,7 +15,6 @@ namespace CPPNEAT {
 class Learner : public revolve::brain::Learner<GeneticEncodingPtr> {
 public:
 	struct LearningConfiguration {
-		bool layered_network;
 		bool asexual;
 		int pop_size;
 		int tournament_size;
@@ -38,7 +37,6 @@ public:
 	void apply_structural_mutation(GeneticEncodingPtr genotype);
 	
 	//standard parameters
-	static const bool LAYERED_NETWORK;
 	static const bool ASEXUAL;
 	static const int POP_SIZE;
 	static const int TOURNAMENT_SIZE;
@@ -69,13 +67,13 @@ private:
 	std::vector<GeneticEncodingPtr> brain_population;
 	std::map<GeneticEncodingPtr, double> brain_fitness;
 	std::map<GeneticEncodingPtr, double> brain_velocity;
+	std::map<GeneticEncodingPtr, std::vector<GeneticEncodingPtr>> species;
 	std::vector<double> fitness_buffer;
 	int generation_number;
 	int total_brains_evaluated;
 	
 	MutatorPtr mutator;
 	
-	bool layered_network;
 	bool asexual;
 	int pop_size;
 	int tournament_size;
