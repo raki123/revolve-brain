@@ -29,7 +29,7 @@ public:
 	
 	void mutate_structure(GeneticEncodingPtr genotype, double probability);
 	bool add_connection_mutation(GeneticEncodingPtr genotype, double sigma);
-	void add_neuron_mutation(GeneticEncodingPtr genotype);
+	void add_neuron_mutation(GeneticEncodingPtr genotype, double sigma);
 	void remove_connection_mutation(GeneticEncodingPtr genotype);
 	void remove_neuron_mutation(GeneticEncodingPtr genotype);
 	int add_neuron(NeuronPtr neuron, GeneticEncodingPtr genotype, ConnectionGenePtr split);

@@ -21,22 +21,22 @@ Neuron::Neuron(std::string neuron_id, Layer layer, Ntype neuron_type, std::map<s
 }
 
 void Neuron::set_neuron_param(double value, ParamSpec param_spec) {
-	if(value > param_spec.max_value) {
-		if(param_spec.max_inclusive) {
-			value = param_spec.max_value;
-		}
-		else {
-			value = param_spec.max_value - param_spec.epsilon;
-		}
-	}
-	if(value < param_spec.min_value) {
-		if(param_spec.min_inclusive) {
-			value = param_spec.min_value;
-		}
-		else {
-			value = param_spec.min_value + param_spec.epsilon;
-		}
-	}
+// 	if(value > param_spec.max_value) {
+// 		if(param_spec.max_inclusive) {
+// 			value = param_spec.max_value;
+// 		}
+// 		else {
+// 			value = param_spec.max_value - param_spec.epsilon;
+// 		}
+// 	}
+// 	if(value < param_spec.min_value) {
+// 		if(param_spec.min_inclusive) {
+// 			value = param_spec.min_value;
+// 		}
+// 		else {
+// 			value = param_spec.min_value + param_spec.epsilon;
+// 		}
+// 	}
 	neuron_params[param_spec.name] = value;
 }
 	

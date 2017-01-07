@@ -52,7 +52,8 @@ void Mutator::mutate_neuron_params(GeneticEncodingPtr genotype, double probabili
 					std::uniform_int_distribution<int> uniform_int(0, neuron_params.size()-1);
 					Neuron::ParamSpec param = neuron_params[uniform_int(generator)];
 					double cur_val = neuron_gene->neuron->neuron_params[param.name];
-					std::normal_distribution<double> normal(0,sigma*(param.max_value-param.min_value));
+// 					std::normal_distribution<double> normal(0,sigma*(param.max_value-param.min_value));
+					std::normal_distribution<double> normal(0,sigma);
 					cur_val += normal(generator);
 					neuron_gene->neuron->set_neuron_param(cur_val, param);				
 				}
@@ -67,7 +68,8 @@ void Mutator::mutate_neuron_params(GeneticEncodingPtr genotype, double probabili
 						std::uniform_int_distribution<int> uniform_int(0, neuron_params.size()-1);
 						Neuron::ParamSpec param = neuron_params[uniform_int(generator)];
 						double cur_val = neuron_gene->neuron->neuron_params[param.name];
-						std::normal_distribution<double> normal(0,sigma*(param.max_value-param.min_value));
+// 						std::normal_distribution<double> normal(0,sigma*(param.max_value-param.min_value));
+						std::normal_distribution<double> normal(0,sigma);
 						cur_val += normal(generator);
 						neuron_gene->neuron->set_neuron_param(cur_val, param);				
 					}
@@ -96,7 +98,7 @@ void Mutator::mutate_structure(GeneticEncodingPtr genotype, double probability) 
 			if(uniform(generator) < 0.5) {
 				add_connection_mutation(genotype, new_connection_sigma);
 			} else {
-				add_neuron_mutation(genotype);
+				add_neuron_mutation(genotype, new_connection_sigma);
 			}
 		}
 	}
@@ -125,10 +127,12 @@ bool Mutator::add_connection_mutation(GeneticEncodingPtr genotype, double sigma)
 		}
 		std::normal_distribution<double> normal(0,sigma);
 		add_connection(mark_from, mark_to, normal(generator), genotype, "");
+#ifdef CPPNEAT_DEBUG
 		if(!genotype->is_valid()) {
 			std::cerr << "add connection mutation caused invalid genotye" << std::endl;
 			throw std::runtime_error("mutation error");
 		}
+#endif
 		return true;
 	} else {
 		std::uniform_int_distribution<unsigned int> choice(0,genotype->num_neuron_genes() -1);
@@ -156,31 +160,35 @@ bool Mutator::add_connection_mutation(GeneticEncodingPtr genotype, double sigma)
 		}
 		std::normal_distribution<double> normal(0,sigma);
 		add_connection(mark_from, mark_to, normal(generator), genotype, "");
+#ifdef CPPNEAT_DEBUG
 		if(!genotype->is_valid()) {
 			std::cerr << "add connection mutation caused invalid genotye" << std::endl;
 			throw std::runtime_error("mutation error");
 		}
+#endif
 		return true;
 	}
 }
 
-std::map<std::string, double> get_random_parameters(Neuron::NeuronTypeSpec param_specs) {
+std::map<std::string, double> get_random_parameters(Neuron::NeuronTypeSpec param_specs, double sigma) {
 	std::map<std::string, double> params;
 	std::random_device rd;
 	std::mt19937 generator(rd());
-	std::uniform_real_distribution<double> uniform(0,1);
+	std::normal_distribution<double> normal(0,sigma);
 	for(Neuron::ParamSpec spec : param_specs.param_specs) {
-		params[spec.name] = spec.min_value + uniform(generator)*(spec.max_value - spec.min_value);
-		if(!spec.min_inclusive) {
-			params[spec.name] = std::max(params[spec.name], spec.min_value + spec.epsilon);
-		}
-		if(!spec.max_inclusive) {
-			params[spec.name] = std::min(params[spec.name], spec.max_value - spec.epsilon);
-		}
+// 		params[spec.name] = spec.min_value + normal(generator)*(spec.max_value - spec.min_value);
+// 		if(!spec.min_inclusive) {
+// 			params[spec.name] = std::max(params[spec.name], spec.min_value + spec.epsilon);
+// 		}
+// 		if(!spec.max_inclusive) {
+// 			params[spec.name] = std::min(params[spec.name], spec.max_value - spec.epsilon);
+// 		}
+		params[spec.name] = normal(generator);
+
 	}
 	return params;
 }
-void Mutator::add_neuron_mutation(GeneticEncodingPtr genotype) {
+void Mutator::add_neuron_mutation(GeneticEncodingPtr genotype, double sigma) {
 	assert(genotype->connection_genes.size() > 0);
 	assert(addable_neurons.size() > 0);
 	if(!genotype->layered) {
@@ -199,7 +207,7 @@ void Mutator::add_neuron_mutation(GeneticEncodingPtr genotype) {
 		std::uniform_int_distribution<int> choice2(0,addable_neurons.size()-1);
 		Neuron::Ntype new_neuron_type = addable_neurons[choice2(generator)];
 		
-		std::map<std::string, double> new_neuron_params = get_random_parameters(brain_spec[new_neuron_type]);
+		std::map<std::string, double> new_neuron_params = get_random_parameters(brain_spec[new_neuron_type], sigma);
 		
 		NeuronPtr neuron_middle(new Neuron("augment " + std::to_string(innovation_number+1), 
 						Neuron::HIDDEN_LAYER,
@@ -224,28 +232,34 @@ void Mutator::add_neuron_mutation(GeneticEncodingPtr genotype) {
 		std::uniform_int_distribution<int> choice2(0,addable_neurons.size()-1);
 		Neuron::Ntype new_neuron_type = addable_neurons[choice2(generator)];
 		
-		std::map<std::string, double> new_neuron_params = get_random_parameters(brain_spec[new_neuron_type]);
+		std::map<std::string, double> new_neuron_params = get_random_parameters(brain_spec[new_neuron_type], sigma);
 		
 		NeuronPtr neuron_middle(new Neuron("augment " + std::to_string(innovation_number+1), 
 						Neuron::HIDDEN_LAYER,
 						new_neuron_type,
 						new_neuron_params));
 		int mark_middle = add_neuron(neuron_middle, genotype, split);
-			if(!genotype->is_valid()) {
-		std::cerr << "add neuron mutation caused invalid genotye1" << std::endl;
-		throw std::runtime_error("mutation error");
-	}
+#ifdef CPPNEAT_DEBUG
+		if(!genotype->is_valid()) {
+			std::cerr << "add neuron mutation caused invalid genotye1" << std::endl;
+			throw std::runtime_error("mutation error");
+		}
+#endif
 		add_connection(mark_from, mark_middle, old_weight, genotype, "");
-			if(!genotype->is_valid()) {
-		std::cerr << "add neuron mutation caused invalid genotye2" << std::endl;
-		throw std::runtime_error("mutation error");
-	}
+#ifdef CPPNEAT_DEBUG
+		if(!genotype->is_valid()) {
+			std::cerr << "add neuron mutation caused invalid genotye2" << std::endl;
+			throw std::runtime_error("mutation error");
+		}
+#endif
 		add_connection(mark_middle, mark_to, 1.0, genotype, "");
 	}
+#ifdef CPPNEAT_DEBUG
 	if(!genotype->is_valid()) {
 		std::cerr << "add neuron mutation caused invalid genotye" << std::endl;
 		throw std::runtime_error("mutation error");
 	}
+#endif
 }
 
 void Mutator::remove_connection_mutation(GeneticEncodingPtr genotype) {

@@ -533,7 +533,7 @@ CPPNEAT::GeneticEncodingPtr get_hyper_neat_net_splines()
 	
 	//add outputs
 	empty["rv:bias"] = 0;
-	empty["rv:gain"] = 1;
+	empty["rv:gain"] = 0;
 	CPPNEAT::NeuronPtr weight_neuron(new CPPNEAT::Neuron("weight",
 							CPPNEAT::Neuron::OUTPUT_LAYER,
 							CPPNEAT::Neuron::SIMPLE,
@@ -547,7 +547,7 @@ CPPNEAT::GeneticEncodingPtr get_hyper_neat_net_splines()
 	{
 		CPPNEAT::ConnectionGenePtr connection_to_weight(new CPPNEAT::ConnectionGene(weight_neuron_gene->getInnovNumber(),
 										  i + 1,
-										  10,
+										  0,
 										  innov_number++,
 										  true,
 										  ""));
