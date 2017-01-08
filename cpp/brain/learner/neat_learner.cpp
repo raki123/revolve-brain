@@ -87,7 +87,8 @@ std::vector< GeneticEncodingPtr > Learner::get_init_brains() {
 
 void Learner::reportFitness(std::string id, GeneticEncodingPtr genotype, double fitness) {
 	std::cout << "Evalutation over\n" << "Evaluated " << ++total_brains_evaluated << " brains \n" << "Last fitness: " << fitness <<  std::endl;
-	
+    this->writeGenome(id, active_brain);
+
 	fitness_buffer.push_back(fitness);
 	if(fitness_buffer.size() == repeat_evaluations) {
 		double sum = 0;
@@ -97,16 +98,15 @@ void Learner::reportFitness(std::string id, GeneticEncodingPtr genotype, double 
 		double average_fitness = sum/repeat_evaluations;
 		brain_fitness[active_brain] = average_fitness;
 		brain_velocity[active_brain] = average_fitness;
-		
+
 		if(evaluation_queue.size() == 0) {
 			share_fitness();
-			
+
 			produce_new_generation();
 			std::reverse(evaluation_queue.begin(), evaluation_queue.end());
 			generation_number++;
 		}
 		active_brain = evaluation_queue.back();
-        this->writeGenome(active_brain);
 		evaluation_queue.pop_back();
 		fitness_buffer.clear();
 		if(generation_number >= max_generations) {
@@ -119,11 +119,9 @@ GeneticEncodingPtr Learner::getNewGenome(std::string id) {
 	return active_brain;
 }
 
-void Learner::writeGenome(GeneticEncodingPtr genome){
+void Learner::writeGenome(std::string robot_name, GeneticEncodingPtr genome){
     std::ofstream outputFile;
-    // TODO: Add robot name field
-    std::string robot_name_ = "spider.temp";
-    outputFile.open(robot_name_ + ".policy", std::ios::app | std::ios::out | std::ios::ate);
+    outputFile.open(robot_name + ".policy", std::ios::app | std::ios::out | std::ios::ate);
     outputFile << "- evaluation: " << generation_number << std::endl;
 //    outputFile << "  steps: " << source_y_size_ << std::endl;
     outputFile << "  brain:" << std::endl;

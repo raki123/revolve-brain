@@ -51,7 +51,7 @@ public:
         if ((t - start_eval_time_) > evaluation_rate_) { //&& generation_counter_ < max_evaluations_) {
             double fitness = evaluator_->fitness();
             writeCurrent(fitness);
-            this->learner->reportFitness("test", convertForLearner_(this->controller->getGenome()), fitness);
+            this->learner->reportFitness(model_name, convertForLearner_(this->controller->getGenome()), fitness);
             Phenotype controllerGenome = convertForController_(this->learner->getNewGenome("test"));
             this->controller->setGenome(controllerGenome);
             start_eval_time_ = t;
