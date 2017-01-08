@@ -83,7 +83,7 @@ protected:
 
     EvaluatorPtr evaluator_;
     double start_eval_time_ = 0;
-    double evaluation_rate_ = 30;
+    double evaluation_rate_ = 30.0;
     int generation_counter_ = 0;
 };
 

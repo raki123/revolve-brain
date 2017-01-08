@@ -120,7 +120,7 @@ std::vector< GeneticEncodingPtr > Learner::get_init_brains() {
 
 void Learner::reportFitness(std::string id, GeneticEncodingPtr genotype, double fitness) {
 	std::cout << "Evalutation over\n" << "Evaluated " << ++total_brains_evaluated << " brains \n" << "Last fitness: " << fitness <<  std::endl;
-    this->writeGenome(id, active_brain);
+    this->writeGenome(id, genotype);
 
 	fitness_buffer.push_back(fitness);
 	if(fitness_buffer.size() == repeat_evaluations) {
@@ -155,14 +155,15 @@ GeneticEncodingPtr Learner::getNewGenome(std::string id) {
 void Learner::writeGenome(std::string robot_name, GeneticEncodingPtr genome){
     std::ofstream outputFile;
     outputFile.open(robot_name + ".policy", std::ios::app | std::ios::out | std::ios::ate);
-    outputFile << "- evaluation: " << generation_number << std::endl;
+    outputFile << "- evaluation: " << total_brains_evaluated << std::endl;
 //    outputFile << "  steps: " << source_y_size_ << std::endl;
     outputFile << "  brain:" << std::endl;
     outputFile << "    neuron_genes:" << std::endl;
     auto neuron_genes = genome->neuron_genes;
     for (auto it = neuron_genes.begin(); it != neuron_genes.end(); it++){
         auto neuron = it->get()->neuron;
-        outputFile << "      - " << neuron->neuron_id << " " << neuron->neuron_type << " " << neuron->layer << std::endl;
+        outputFile << "      - " << it->get()->getInnovNumber()
+                   << " " << neuron->neuron_type << " " << neuron->layer << std::endl;
     }
     outputFile << "    connection_genes:" << std::endl;
     auto connection_genes = genome->connection_genes;
@@ -174,11 +175,15 @@ void Learner::writeGenome(std::string robot_name, GeneticEncodingPtr genome){
     auto layers = genome->layers;
     int n_layer = 1;
     for (auto it = layers.begin(); it != layers.end(); it++){
-        outputFile << "    " << n_layer << std::endl;
+        outputFile << "      - layer_" << n_layer << ":" << std::endl;
         for (auto it2 = it->begin(); it2 != it->end(); it2++) {
             auto neuron = it2->get()->neuron;
-            outputFile << "      - " << neuron->neuron_id << " " << neuron->neuron_type << " " << neuron->layer
-                       << std::endl;
+            auto neuron_params = neuron->neuron_params;
+            outputFile << "        - " << neuron->neuron_id << " " << neuron->neuron_type << " " << neuron->layer
+                       << ":" << std::endl;
+            for(auto np = neuron_params.begin(); np != neuron_params.end(); np++){
+                outputFile << "          - " << np->first << " " << np->second << std::endl;
+            }
         }
         n_layer++;
     }
