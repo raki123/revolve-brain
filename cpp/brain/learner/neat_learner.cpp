@@ -46,7 +46,24 @@ Learner::Learner(MutatorPtr mutator, Learner::LearningConfiguration conf)
 	} else {
 		std::cout << "no starting network given, initialise has to be called" << std::endl;
 	}
-	
+	std::cout << "---------------------------------------------------------------------------------------------" <<std::endl;
+	std::cout << "	Starting NEAT learner with the following parameters" << std::endl;
+	std::cout << "	Asexual reproduction: " << asexual << std::endl;
+	std::cout << "	Population size: " << pop_size << std::endl;
+	std::cout << "	Tournament size: (currently not applicable, always 2) " << tournament_size << std::endl;
+	std::cout << "	Number of children: (rest of new individuals are elite of previous generation) " << num_children << std::endl;
+	std::cout << "	Weight mutation probability: " << weight_mutation_probability << std::endl;
+	std::cout << "	Weight mutation sigma: " << weight_mutation_sigma << std::endl;
+	std::cout << "	Param mutation probability: " << param_mutation_probability << std::endl;
+	std::cout << "	Param mutation sigma: " << param_mutation_sigma << std::endl;
+	std::cout << "	Probability of structural additions: " << structural_augmentation_probability << std::endl;
+	std::cout << "	Probability of structural removal: " << structural_removal_probability << std::endl;
+	std::cout << "	Number of generations: " << max_generations << std::endl;
+	std::cout << "	Speciation threshold: (maximum dissimilarity to be in same species) " << speciation_threshold << std::endl;
+	std::cout << "	How often do we evaluate before we take the average fitness: " << repeat_evaluations << std::endl;
+	std::cout << "	How many initial structural mutations do we apply in case a starting genome was given: " << initial_structural_mutations << std::endl;
+	std::cout << "	Probability to mate outside of species while there is more than one member inside the species: " << interspecies_mate_probability << std::endl;
+	std::cout << "---------------------------------------------------------------------------------------------" <<std::endl;
 }
 
 void Learner::initialise(std::vector< GeneticEncodingPtr > init_genotypes) {
