@@ -46,7 +46,40 @@ Learner::Learner(MutatorPtr mutator, Learner::LearningConfiguration conf)
 	} else {
 		std::cout << "no starting network given, initialise has to be called" << std::endl;
 	}
-	
+	std::cout << "\033[1;33m" << "-----------------------------------------------------------------------------------------------------------" <<  "\033[0m" <<std::endl;
+	std::cout.width(35);
+	std::cout << std::right << "\033[1;31m" << "Starting NEAT learner with the following parameters" << "\033[0m" << std::endl;
+	std::cout.width(100);
+	std::cout << std::right << "Asexual reproduction: "<< "\033[1;36m" << asexual << "\033[0m" << std::endl;
+	std::cout.width(100);
+	std::cout << std::right << "Population size: " << "\033[1;36m" << pop_size << "\033[0m" << std::endl;
+	std::cout.width(100);
+	std::cout << std::right << "Tournament size: (currently not applicable, always 2) " << "\033[1;36m" << tournament_size << "\033[0m" << std::endl;
+	std::cout.width(100);
+	std::cout << std::right << "Number of children: (rest of new individuals are elite of previous generation) " << "\033[1;36m" << num_children << "\033[0m" << std::endl;
+	std::cout.width(100);
+	std::cout << std::right << "Weight mutation probability: " << "\033[1;36m" << weight_mutation_probability << "\033[0m" << std::endl;
+	std::cout.width(100);
+	std::cout << std::right << "Weight mutation sigma: " << "\033[1;36m" << weight_mutation_sigma << "\033[0m" << std::endl;
+	std::cout.width(100);
+	std::cout << std::right << "Param mutation probability: " << "\033[1;36m" << param_mutation_probability << "\033[0m" << std::endl;
+	std::cout.width(100);
+	std::cout << std::right << "Param mutation sigma: " << "\033[1;36m" << param_mutation_sigma << "\033[0m" << std::endl;
+	std::cout.width(100);
+	std::cout << std::right << "Probability of structural additions: " << "\033[1;36m" << structural_augmentation_probability << "\033[0m" << std::endl;
+	std::cout.width(100);
+	std::cout << std::right << "Probability of structural removal: " << "\033[1;36m" << structural_removal_probability << "\033[0m" << std::endl;
+	std::cout.width(100);
+	std::cout << std::right << "Number of generations: " << "\033[1;36m" << max_generations << "\033[0m" << std::endl;
+	std::cout.width(100);
+	std::cout << std::right << "Speciation threshold: (maximum dissimilarity to be in same species) " << "\033[1;36m" << speciation_threshold << "\033[0m" << std::endl;
+	std::cout.width(100);
+	std::cout << std::right << "How often do we evaluate before we take the average fitness: " << "\033[1;36m" << repeat_evaluations << "\033[0m" << std::endl;
+	std::cout.width(100);
+	std::cout << std::right << "How many initial structural mutations do we apply in case a starting genome was given: " << "\033[1;36m" << initial_structural_mutations << "\033[0m" << std::endl;
+	std::cout.width(100);
+	std::cout << std::right << "Probability to mate outside of species while there is more than one member inside the species: " << "\033[1;36m" << interspecies_mate_probability << "\033[0m" << std::endl;
+	std::cout << "\033[1;33m" << "-----------------------------------------------------------------------------------------------------------" << "\033[0m" << std::endl;
 }
 
 void Learner::initialise(std::vector< GeneticEncodingPtr > init_genotypes) {
@@ -247,7 +280,6 @@ void Learner::produce_new_generation()
 	//should not happen, but might (>= for double flawed)
 	if(cur_children < num_children) 
 	{
-		std::cout << "i get here" << std::endl;
 		assert(cur_children == num_children - 1);
 		species_offspring[best]++;
 	}
