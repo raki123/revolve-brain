@@ -158,13 +158,6 @@ void Learner::writeGenome(std::string robot_name, GeneticEncodingPtr genome){
     outputFile << "- evaluation: " << total_brains_evaluated << std::endl;
 //    outputFile << "  steps: " << source_y_size_ << std::endl;
     outputFile << "  brain:" << std::endl;
-    outputFile << "    neuron_genes:" << std::endl;
-    auto neuron_genes = genome->neuron_genes;
-    for (auto it = neuron_genes.begin(); it != neuron_genes.end(); it++){
-        auto neuron = it->get()->neuron;
-        outputFile << "      - " << it->get()->getInnovNumber()
-                   << " " << neuron->neuron_type << " " << neuron->layer << std::endl;
-    }
     outputFile << "    connection_genes:" << std::endl;
     auto connection_genes = genome->connection_genes;
     for (auto it = connection_genes.begin(); it != connection_genes.end(); it++){
@@ -179,7 +172,7 @@ void Learner::writeGenome(std::string robot_name, GeneticEncodingPtr genome){
         for (auto it2 = it->begin(); it2 != it->end(); it2++) {
             auto neuron = it2->get()->neuron;
             auto neuron_params = neuron->neuron_params;
-            outputFile << "        - " << neuron->neuron_id << " " << neuron->neuron_type << " " << neuron->layer
+            outputFile << "        - " << neuron->neuron_id <<" "<< it2->get()->getInnovNumber() << " " << neuron->neuron_type << " " << neuron->layer
                        << ":" << std::endl;
             for(auto np = neuron_params.begin(); np != neuron_params.end(); np++){
                 outputFile << "          - " << np->first << " " << np->second << std::endl;
