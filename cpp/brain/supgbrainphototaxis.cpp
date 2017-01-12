@@ -47,7 +47,9 @@ void SUPGBrainPhototaxis::update(const std::vector< ActuatorPtr >& actuators,
                                  const std::vector< SensorPtr >& sensors,
                                  double t, double step)
 {
-    SUPGBrain::update(actuators, sensors, t, step);
+    //SUPGBrain::update(actuators, sensors, t, step);
+    this->learner(t);
+    SUPGBrain::controller<const std::vector< ActuatorPtr >, const std::vector< SensorPtr >>(actuators, sensors, t, step);
 }
 
 SUPGBrainPhototaxis::SUPGBrainPhototaxis(EvaluatorPtr evaluator)

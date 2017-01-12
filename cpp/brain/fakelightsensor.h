@@ -36,7 +36,7 @@ public:
         : half_fov(fov/2)
         // TODO noise
     {
-        std::cerr << "revolve::brain::FakeLightSensor()" << std::endl;
+        std::cout << "revolve::brain::FakeLightSensor()" << std::endl;
     }
 
     virtual double read();
