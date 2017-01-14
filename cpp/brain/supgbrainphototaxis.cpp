@@ -25,8 +25,8 @@
 using namespace revolve::brain;
 
 SUPGBrainPhototaxis::SUPGBrainPhototaxis(EvaluatorPtr evaluator,
-                                         std::function<FakeLightSensor *(std::vector<float> coordinates)> _light_constructor_left,
-                                         std::function<FakeLightSensor *(std::vector<float> coordinates)> _light_constructor_right,
+                                         std::function<boost::shared_ptr<FakeLightSensor> (std::vector<float> coordinates)> _light_constructor_left,
+                                         std::function<boost::shared_ptr<FakeLightSensor> (std::vector<float> coordinates)> _light_constructor_right,
                                          double _light_radius_distance,
                                          const std::vector< std::vector< float > >& neuron_coordinates,
                                          const std::vector< ActuatorPtr >& actuators,
@@ -40,13 +40,15 @@ SUPGBrainPhototaxis::SUPGBrainPhototaxis(EvaluatorPtr evaluator,
     , light_radius_distance(_light_radius_distance)
     , partial_fitness(0)
 {
-
+//     sensors.push_back(current_light_left);
+//     std::cout << "SENSORS Size: " << sensors.size() << std::endl;
 }
 
 void SUPGBrainPhototaxis::update(const std::vector< ActuatorPtr >& actuators,
                                  const std::vector< SensorPtr >& sensors,
                                  double t, double step)
 {
+//     std::cout << "SENSORS-Size: " << sensors.size() << std::endl;
     //SUPGBrain::update(actuators, sensors, t, step);
     this->learner(t);
     SUPGBrain::controller<const std::vector< ActuatorPtr >, const std::vector< SensorPtr >>(actuators, sensors, t, step);
@@ -94,7 +96,9 @@ void SUPGBrainPhototaxis::learner(double t)
 
         // FITNESS update
         if (phase != END) {
-            partial_fitness += getPhaseFitness();
+            double phase_fitness = getPhaseFitness();
+            std::cout << "SUPGBrainPhototaxis::learner - partial fitness[" << phase << "]: " << phase_fitness << std::endl;
+            partial_fitness += phase_fitness;
         }
 
         // Advance Phase
@@ -108,19 +112,23 @@ void SUPGBrainPhototaxis::learner(double t)
                 std::cout << "SUPGBrainPhototaxis::learner - INIT!" << std::endl;
         }
 
+        // If phase is `END`, start a new phase
         if (phase == END) {
-            std::cout << "SUPGBrainPhototaxis::learner - NEW BRAIN (generation " << generation_counter << " )" << std::endl;
+            std::cout << "SUPGBrainPhototaxis::learner - finished with fitness: "
+                      << getFitness() << " "
+                      << SUPGBrain::getFitness() << std::endl;
 
             generation_counter++;
             this->nextBrain();
             partial_fitness = 0;
 
+            std::cout << "SUPGBrainPhototaxis::learner - NEW BRAIN (generation " << generation_counter << " )" << std::endl;
             phase = CENTER;
         }
 
         // reposition learner lights
-        delete current_light_left;
-        delete current_light_right;
+//         delete current_light_left;
+//         delete current_light_right;
         std::vector<float> relative_coordinates;
 
         static const double pi = std::acos(-1);

@@ -33,8 +33,8 @@ public:
      * Light sensor constructors are passed the coordinates with already the offset included
      */
     SUPGBrainPhototaxis(EvaluatorPtr evaluator,
-                        std::function<FakeLightSensor *(std::vector<float> coordinates)> _light_constructor_left,
-                        std::function<FakeLightSensor *(std::vector<float> coordinates)> _light_constructor_right,
+                        std::function<boost::shared_ptr<FakeLightSensor> (std::vector<float> coordinates)> _light_constructor_left,
+                        std::function<boost::shared_ptr<FakeLightSensor> (std::vector<float> coordinates)> _light_constructor_right,
                         double light_radius_distance,
                         const std::vector< std::vector< float > >& neuron_coordinates,
                         const std::vector< ActuatorPtr >& actuators,
@@ -62,11 +62,12 @@ protected:
         END = 5,
     } phase;
 
-    std::function<FakeLightSensor *(std::vector<float> coordinates)> light_constructor_left,
-                                                                     light_constructor_right;
+    std::function<boost::shared_ptr<FakeLightSensor> (std::vector<float> coordinates)>
+        light_constructor_left,
+        light_constructor_right;
 
-    FakeLightSensor *current_light_left,
-                    *current_light_right;
+    boost::shared_ptr<FakeLightSensor> current_light_left,
+                                       current_light_right;
 
     double light_radius_distance;
     double partial_fitness;
