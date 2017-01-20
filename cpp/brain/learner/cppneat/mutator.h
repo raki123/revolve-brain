@@ -35,6 +35,8 @@ public:
 	int add_neuron(NeuronPtr neuron, GeneticEncodingPtr genotype, ConnectionGenePtr split);
 	int add_connection(int mark_from, int mark_to, double weight, GeneticEncodingPtr genotype, std::string socket);
 	
+	
+	std::map<Neuron::Ntype, Neuron::NeuronTypeSpec> get_brain_spec() { return brain_spec; };
 
 	
 	

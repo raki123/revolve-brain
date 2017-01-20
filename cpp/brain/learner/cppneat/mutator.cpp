@@ -209,7 +209,7 @@ void Mutator::add_neuron_mutation(GeneticEncodingPtr genotype, double sigma) {
 		
 		std::map<std::string, double> new_neuron_params = get_random_parameters(brain_spec[new_neuron_type], sigma);
 		
-		NeuronPtr neuron_middle(new Neuron("augment " + std::to_string(innovation_number+1), 
+		NeuronPtr neuron_middle(new Neuron("augment" + std::to_string(innovation_number+1), 
 						Neuron::HIDDEN_LAYER,
 						new_neuron_type,
 						new_neuron_params));
@@ -234,7 +234,7 @@ void Mutator::add_neuron_mutation(GeneticEncodingPtr genotype, double sigma) {
 		
 		std::map<std::string, double> new_neuron_params = get_random_parameters(brain_spec[new_neuron_type], sigma);
 		
-		NeuronPtr neuron_middle(new Neuron("augment " + std::to_string(innovation_number+1), 
+		NeuronPtr neuron_middle(new Neuron("augment" + std::to_string(innovation_number+1), 
 						Neuron::HIDDEN_LAYER,
 						new_neuron_type,
 						new_neuron_params));

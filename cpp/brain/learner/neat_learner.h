@@ -36,6 +36,7 @@ public:
 	};
 	Learner(MutatorPtr mutator, LearningConfiguration conf);
 	void initialise(std::vector<GeneticEncodingPtr> init_genotypes);
+	void initialise_from_yaml(std::string yaml_path);
 	
 	void apply_structural_mutation(GeneticEncodingPtr genotype);
 	
