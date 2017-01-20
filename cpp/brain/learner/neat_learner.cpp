@@ -156,26 +156,32 @@ void Learner::writeGenome(std::string robot_name, GeneticEncodingPtr genome){
     std::ofstream outputFile;
     outputFile.open(robot_name + ".policy", std::ios::app | std::ios::out | std::ios::ate);
     outputFile << "- evaluation: " << total_brains_evaluated << std::endl;
-//    outputFile << "  steps: " << source_y_size_ << std::endl;
     outputFile << "  brain:" << std::endl;
     outputFile << "    connection_genes:" << std::endl;
     auto connection_genes = genome->connection_genes;
-    for (auto it = connection_genes.begin(); it != connection_genes.end(); it++){
+    int n_cons = 1;
+    for (auto it = connection_genes.begin(); it != connection_genes.end(); it++) {
         auto connection = it->get();
-        outputFile << "      - " << connection->mark_from << " " << connection->weight << " " << connection->mark_to << std::endl;
+        outputFile << "      - con_" << n_cons << ":" << std::endl;
+        outputFile << "        in_no: " << connection->getInnovNumber() << std::endl;
+        outputFile << "        from: " << connection->mark_from << std::endl;
+        outputFile << "        to: " << connection->mark_to << std::endl;
+        outputFile << "        weight: " << connection->weight << std::endl;
     }
     outputFile << "    layers:" << std::endl;
     auto layers = genome->layers;
     int n_layer = 1;
-    for (auto it = layers.begin(); it != layers.end(); it++){
+    for (auto it = layers.begin(); it != layers.end(); it++) {
         outputFile << "      - layer_" << n_layer << ":" << std::endl;
         for (auto it2 = it->begin(); it2 != it->end(); it2++) {
             auto neuron = it2->get()->neuron;
             auto neuron_params = neuron->neuron_params;
-            outputFile << "        - " << neuron->neuron_id <<" "<< it2->get()->getInnovNumber() << " " << neuron->neuron_type << " " << neuron->layer
-                       << ":" << std::endl;
-            for(auto np = neuron_params.begin(); np != neuron_params.end(); np++){
-                outputFile << "          - " << np->first << " " << np->second << std::endl;
+            outputFile << "          - nid: " << neuron->neuron_id << std::endl;
+            outputFile << "            ntype: " << neuron->neuron_type << std::endl;
+            outputFile << "            nlayer: " << neuron->layer << std::endl;
+            outputFile << "            params:" << std::endl;
+            for (auto np = neuron_params.begin(); np != neuron_params.end(); np++) {
+                outputFile << "              " << np->first << ": " << np->second << std::endl;
             }
         }
         n_layer++;
