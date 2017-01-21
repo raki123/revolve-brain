@@ -36,7 +36,8 @@ public:
 	};
 	Learner(MutatorPtr mutator, LearningConfiguration conf);
 	void initialise(std::vector<GeneticEncodingPtr> init_genotypes);
-	void initialise_from_yaml(std::string yaml_path);
+	std::vector<GeneticEncodingPtr> get_init_brains();
+	std::vector<GeneticEncodingPtr> get_brains_from_yaml(std::string yaml_path, int offset);
 	
 	void apply_structural_mutation(GeneticEncodingPtr genotype);
 	
@@ -59,7 +60,6 @@ public:
 private:
 	virtual void reportFitness(std::string id, GeneticEncodingPtr genotype, double fitness);
 	virtual GeneticEncodingPtr getNewGenome(std::string id);
-	std::vector<GeneticEncodingPtr> get_init_brains();
 	void writeGenome(std::string robot_name, GeneticEncodingPtr genome);
 	void share_fitness();
 	void produce_new_generation();

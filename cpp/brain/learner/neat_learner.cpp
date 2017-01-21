@@ -89,7 +89,14 @@ void Learner::initialise(std::vector< GeneticEncodingPtr > init_genotypes) {
 		brain_population = get_init_brains();
 	} else {
 		std::cout << "initialised with starting population" << std::endl;
+		std::cout << "overwriting current population if present" << std::endl;
 		brain_population = init_genotypes;
+		int max_innov = 0;
+		for(GeneticEncodingPtr genotype : brain_population) 
+		{
+			max_innov = std::max(genotype->min_max_innov_numer().second, max_innov);
+		}
+		mutator->set_current_innovation_number(max_innov + 1);
 	}
 	evaluation_queue.clear();
 	for(GeneticEncodingPtr brain : brain_population) {
@@ -99,18 +106,18 @@ void Learner::initialise(std::vector< GeneticEncodingPtr > init_genotypes) {
 	evaluation_queue.pop_back();	
 }
 
-void Learner::initialise_from_yaml(std::string yaml_path)
+std::vector<GeneticEncodingPtr> Learner::get_brains_from_yaml(std::string yaml_path, int offset)
 {
-	int innovation_counter = 1;
+	int innovation_counter = offset;
 	YAML::Node yaml_file = YAML::LoadFile(yaml_path);
 	if (yaml_file.IsNull()) {
 		std::cout << "Failed to load the yaml file." << std::endl;
-		return;
+		return std::vector<GeneticEncodingPtr>();
 	}
-	std::map<int,int> old_to_new;
-	std::vector<GeneticEncodingPtr> init_genotypes;
+	std::vector<GeneticEncodingPtr> genotypes;
 	for(int first = 0; first < yaml_file.size(); first++) 
 	{
+		std::map<int,int> old_to_new;
 		GeneticEncodingPtr newGenome(new GeneticEncoding(true));
 		for(int counter = 0; counter < yaml_file[first]["brain"]["layers"].size(); counter++)
 		{
@@ -161,8 +168,8 @@ void Learner::initialise_from_yaml(std::string yaml_path)
 		for(int i = 0; i < yaml_file[first]["brain"]["connection_genes"].size(); i++)
 		{
 			YAML::Node connection = yaml_file[first]["brain"]["connection_genes"][i]["con_1"];
-			int mark_to = connection["to"].as<int>();
-			int mark_from = connection["from"].as<int>();
+			int mark_to = old_to_new[connection["to"].as<int>()];
+			int mark_from = old_to_new[connection["from"].as<int>()];
 			double weight = connection["weight"].as<double>();
 			int innov_numb;
 			if(old_to_new.find(connection["in_no"].as<int>()) == old_to_new.end()) 
@@ -180,9 +187,9 @@ void Learner::initialise_from_yaml(std::string yaml_path)
 						""));
 			newGenome->add_connection_gene(newConnection);
 		}
-		init_genotypes.push_back(newGenome);
+		genotypes.push_back(newGenome);
 	}
-	initialise(init_genotypes);
+	return genotypes;
 }
 
 std::vector< GeneticEncodingPtr > Learner::get_init_brains() {

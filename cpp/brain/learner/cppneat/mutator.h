@@ -37,6 +37,7 @@ public:
 	
 	
 	std::map<Neuron::Ntype, Neuron::NeuronTypeSpec> get_brain_spec() { return brain_spec; };
+	void set_current_innovation_number(int innov_numb) { this->innovation_number = innov_numb; };
 
 	
 	
