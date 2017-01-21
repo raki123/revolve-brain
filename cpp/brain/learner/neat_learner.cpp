@@ -82,16 +82,14 @@ Learner::Learner(MutatorPtr mutator, Learner::LearningConfiguration conf)
 	std::cout.width(100);
 	std::cout << std::right << "Probability to mate outside of species while there is more than one member inside the species: " << "\033[1;36m" << interspecies_mate_probability << "\033[0m" << std::endl;
 	std::cout << "\033[1;33m" << "-----------------------------------------------------------------------------------------------------------" << "\033[0m" << std::endl;
-
-		
-	initialise_from_yaml("res/test_yaml.policy");
-	}
+}
 
 void Learner::initialise(std::vector< GeneticEncodingPtr > init_genotypes) {
 	if(init_genotypes.empty()) {
 		brain_population = get_init_brains();
 	} else {
 		std::cout << "initialised with starting population" << std::endl;
+		std::cout << "overwriting current population if present" << std::endl;
 		brain_population = init_genotypes;
 		int max_innov = 0;
 		for(GeneticEncodingPtr genotype : brain_population) 
@@ -108,15 +106,15 @@ void Learner::initialise(std::vector< GeneticEncodingPtr > init_genotypes) {
 	evaluation_queue.pop_back();	
 }
 
-void Learner::initialise_from_yaml(std::string yaml_path)
+std::vector<GeneticEncodingPtr> Learner::get_brains_from_yaml(std::string yaml_path, int offset)
 {
-	int innovation_counter = 1;
+	int innovation_counter = offset;
 	YAML::Node yaml_file = YAML::LoadFile(yaml_path);
 	if (yaml_file.IsNull()) {
 		std::cout << "Failed to load the yaml file." << std::endl;
-		return;
+		return std::vector<GeneticEncodingPtr>();
 	}
-	std::vector<GeneticEncodingPtr> init_genotypes;
+	std::vector<GeneticEncodingPtr> genotypes;
 	for(int first = 0; first < yaml_file.size(); first++) 
 	{
 		std::map<int,int> old_to_new;
@@ -189,9 +187,9 @@ void Learner::initialise_from_yaml(std::string yaml_path)
 						""));
 			newGenome->add_connection_gene(newConnection);
 		}
-		init_genotypes.push_back(newGenome);
+		genotypes.push_back(newGenome);
 	}
-	initialise(init_genotypes);
+	return genotypes;
 }
 
 std::vector< GeneticEncodingPtr > Learner::get_init_brains() {
