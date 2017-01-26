@@ -23,6 +23,8 @@ public:
 	static std::vector<Neuron::Ntype> get_addable_types(std::map<Neuron::Ntype,Neuron::NeuronTypeSpec> brain_spec);
 	
 	void make_starting_genotype_known(GeneticEncodingPtr genotype);
+	void load_known_innovations(std::string yaml_path);
+	void write_known_innovations(std::string yaml_path);
 	
 	void mutate_neuron_params(GeneticEncodingPtr genotype, double probability, double sigma);
 	void mutate_weights(GeneticEncodingPtr genotype, double probability, double sigma);

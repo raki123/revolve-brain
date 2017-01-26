@@ -9,11 +9,12 @@
 #include <yaml-cpp/yaml.h>
 
 namespace CPPNEAT {
-Learner::Learner(MutatorPtr mutator, Learner::LearningConfiguration conf)
+Learner::Learner(MutatorPtr mutator, std::string mutator_path, Learner::LearningConfiguration conf)
 	: active_brain(nullptr)
 	, generation_number(0)
 	, total_brains_evaluated(0)
 	, mutator(mutator)
+	, mutator_path(mutator_path)
 	, asexual(conf.asexual)
 	, pop_size(conf.pop_size)
 	, tournament_size(conf.tournament_size)
@@ -32,22 +33,30 @@ Learner::Learner(MutatorPtr mutator, Learner::LearningConfiguration conf)
 	, interspecies_mate_probability(conf.interspecies_mate_probability) {
 	std::random_device rd;
 	generator.seed(rd());
-	if(pop_size < 2) {
+	if(pop_size < 2) 
+	{
 		pop_size = 2;
 	}
-	if(tournament_size > pop_size) {
+	if(tournament_size > pop_size) 
+	{
 		tournament_size = pop_size;
 	}
-	if(tournament_size < 2) {
+	if(tournament_size < 2) 
+	{
 		tournament_size = 2;
 	}
-	if(start_from != nullptr) {
+	if(mutator_path != "none")
+	{
+		mutator->load_known_innovations(mutator_path);
+	}
+	if(start_from != nullptr) 
+	{
 		std::cout << "generating inital population from starting network" << std::endl;
 		initialise(std::vector<GeneticEncodingPtr>());
-		this->mutator->make_starting_genotype_known(start_from);
 	} else {
 		std::cout << "no starting network given, initialise has to be called" << std::endl;
 	}
+	this->mutator->make_starting_genotype_known(start_from);
 	std::cout << "\033[1;33m" << "-----------------------------------------------------------------------------------------------------------" <<  "\033[0m" <<std::endl;
 	std::cout.width(35);
 	std::cout << std::right << "\033[1;31m" << "Starting NEAT learner with the following parameters" << "\033[0m" << std::endl;
@@ -91,12 +100,6 @@ void Learner::initialise(std::vector< GeneticEncodingPtr > init_genotypes) {
 		std::cout << "initialised with starting population" << std::endl;
 		std::cout << "overwriting current population if present" << std::endl;
 		brain_population = init_genotypes;
-		int max_innov = 0;
-		for(GeneticEncodingPtr genotype : brain_population) 
-		{
-			max_innov = std::max(genotype->min_max_innov_numer().second, max_innov);
-		}
-		mutator->set_current_innovation_number(max_innov + 1);
 	}
 	evaluation_queue.clear();
 	for(GeneticEncodingPtr brain : brain_population) {
@@ -240,6 +243,10 @@ void Learner::reportFitness(std::string id, GeneticEncodingPtr genotype, double 
 		fitness_buffer.clear();
 		if(generation_number >= max_generations) {
 			std::cout << "Maximum number of generations reached" << std::endl;
+			if(mutator_path != "none") 
+			{
+				mutator->write_known_innovations(mutator_path);
+			}
 			std::exit(0);
 		}
 	}

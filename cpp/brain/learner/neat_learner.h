@@ -34,7 +34,7 @@ public:
 		int initial_structural_mutations;
 		double interspecies_mate_probability;
 	};
-	Learner(MutatorPtr mutator, LearningConfiguration conf);
+	Learner(MutatorPtr mutator, std::string mutator_path, LearningConfiguration conf);
 	void initialise(std::vector<GeneticEncodingPtr> init_genotypes);
 	std::vector<GeneticEncodingPtr> get_init_brains();
 	std::vector<GeneticEncodingPtr> get_brains_from_yaml(std::string yaml_path, int offset);
@@ -79,6 +79,7 @@ private:
 	int total_brains_evaluated;
 	
 	MutatorPtr mutator;
+	std::string mutator_path;
 	
 	bool asexual;
 	int pop_size;
