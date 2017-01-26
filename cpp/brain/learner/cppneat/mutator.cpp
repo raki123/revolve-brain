@@ -2,6 +2,8 @@
 
 #include <algorithm>
 #include <iostream>
+#include <fstream>
+#include <yaml-cpp/yaml.h>
 
 namespace CPPNEAT {
 
@@ -41,6 +43,79 @@ void Mutator::make_starting_genotype_known(GeneticEncodingPtr genotype) {
 		connection_innovations[connection_innovation] = connection_gene->getInnovNumber();
 	}
 }
+
+void Mutator::write_known_innovations(std::string yaml_path)
+{
+	std::ofstream outputFile;
+	outputFile.open(yaml_path, std::ios::out | std::ios::trunc);
+	outputFile << "- in_no: " << innovation_number << std::endl;
+	outputFile << "- connection_innovations: " << std::endl;
+	for(std::pair<std::pair<int,int>,int> connection_innovation : connection_innovations)
+	{
+		outputFile << "  - connection_innovation: " << std::endl;
+		outputFile << "      mark_from: " << connection_innovation.first.first << std::endl;
+		outputFile << "      mark_to: " << connection_innovation.first.second << std::endl;
+		outputFile << "      in_no: " << connection_innovation.second << std::endl;
+	}
+	
+	outputFile << "- neuron_innovations: " << std::endl;
+	for(std::pair<std::pair<int, Neuron::Ntype>, std::vector<int>> neuron_innovation : neuron_innovations)
+	{
+		outputFile << "  - neuron_innovation: " << std::endl;
+		outputFile << "      conn_split: " << neuron_innovation.first.first << std::endl;
+		outputFile << "      ntype: " << neuron_innovation.first.second << std::endl;
+		outputFile << "      in_nos: " << std::endl;
+		for(int in_no : neuron_innovation.second)
+		{
+			outputFile << "      - in_no: " << in_no << std::endl;
+		}
+	}
+	outputFile.close();
+}
+
+void Mutator::load_known_innovations(std::string yaml_path)
+{
+	std::ifstream outputFile(yaml_path);
+	if(!outputFile.good())
+	{
+		return;
+	}
+	outputFile.close();
+	YAML::Node yaml_file = YAML::LoadFile(yaml_path);
+	if (yaml_file.IsNull()) {
+		std::cout << "Failed to load the yaml file. If this is the first run do not worry." << std::endl;
+		return;
+	}
+	innovation_number = yaml_file[0]["in_no"].as<int>();
+	connection_innovations.clear();
+	for(int i = 0; i < yaml_file[1]["connection_innovations"].size(); i++)
+	{
+		YAML::Node connection_innovation = yaml_file[1]["connection_innovations"][i]["connection_innovation"];
+		int mark_from = connection_innovation["mark_from"].as<int>();
+		int mark_to = connection_innovation["mark_to"].as<int>();
+		int in_no = connection_innovation["in_no"].as<int>();
+		connection_innovations.insert(std::pair<std::pair<int,int>,int>(
+							std::pair<int,int>(mark_from,mark_to),
+							in_no));
+	}
+	neuron_innovations.clear();
+	for(int i = 0; i < yaml_file[2]["neuron_innovations"].size(); i++)
+	{
+		YAML::Node neuron_innovation = yaml_file[2]["neuron_innovations"][i]["neuron_innovation"];
+		int conn_split = neuron_innovation["conn_split"].as<int>();
+		Neuron::Ntype ntype = static_cast<Neuron::Ntype>(neuron_innovation["ntype"].as<int>());
+		std::vector<int> in_nos;
+		for(int j = 0; j < neuron_innovation["in_nos"].size(); j++)
+		{
+			in_nos.push_back(neuron_innovation["in_nos"][j]["in_no"].as<int>());
+		}
+		neuron_innovations.insert(std::pair<std::pair<int,Neuron::Ntype>, std::vector<int>>(
+						    std::pair<int,Neuron::Ntype>(conn_split, ntype),
+						    in_nos));
+	}
+}
+
+
 
 void Mutator::mutate_neuron_params(GeneticEncodingPtr genotype, double probability, double sigma) {
 	std::uniform_real_distribution<double> uniform(0,1);
@@ -305,7 +380,7 @@ int Mutator::add_neuron(NeuronPtr neuron, GeneticEncodingPtr genotype, Connectio
 		//some previous innovation is not are already present in the genome-> add a it
 		if(i < neuron_innovations[neuron_pair].size())
 		{
-			NeuronGenePtr new_neuron_gene(new NeuronGene(neuron, neuron_innovations[neuron_pair][i], true));
+			NeuronGenePtr new_neuron_gene(new NeuronGene(neuron, neuron_innovations[neuron_pair][i], true, "none", -1));
 			if(!genotype->layered) {
 				genotype->add_neuron_gene(new_neuron_gene);
 			} else {
@@ -323,7 +398,7 @@ int Mutator::add_neuron(NeuronPtr neuron, GeneticEncodingPtr genotype, Connectio
 		} 
 	}
 	//new innovation -> add new neuron with new innovation number
-	NeuronGenePtr new_neuron_gene(new NeuronGene(neuron, ++innovation_number, true));
+	NeuronGenePtr new_neuron_gene(new NeuronGene(neuron, ++innovation_number, true, "none", -1));
 	//in base case a new vector is constructed here
 	neuron_innovations[neuron_pair].push_back(innovation_number);
 	if(!genotype->layered) {
@@ -355,6 +430,8 @@ int Mutator::add_connection(int mark_from, int mark_to, double weight, GeneticEn
 									   weight,
 									   connection_innovations[innovation_pair],
 									   true,
+									   "none",
+									   -1,
 									   socket));
 			genotype->add_connection_gene(new_conn_gene);
 			return new_conn_gene->getInnovNumber();
@@ -365,6 +442,8 @@ int Mutator::add_connection(int mark_from, int mark_to, double weight, GeneticEn
 							   weight,
 							   ++innovation_number,
 							   true,
+							   "none",
+							   -1,
 						           socket));
 	connection_innovations[innovation_pair] = innovation_number;
 	genotype->add_connection_gene(new_conn_gene);

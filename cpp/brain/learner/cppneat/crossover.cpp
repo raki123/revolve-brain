@@ -11,7 +11,7 @@ namespace CPPNEAT {
 
 GeneticEncodingPtr Crossover::crossover(GeneticEncodingPtr genotype_more_fit, GeneticEncodingPtr genotype_less_fit) {
 	assert(genotype_less_fit->layered == genotype_more_fit->layered);
-    std::random_device rd;
+	std::random_device rd;
 	std::mt19937 mt(rd());
 	std::uniform_real_distribution<double> uniform(0,1);
 	genotype_more_fit = genotype_more_fit->copy();
@@ -50,8 +50,6 @@ GeneticEncodingPtr Crossover::crossover(GeneticEncodingPtr genotype_more_fit, Ge
 		for(GenePtr gene : child_genes) {
 			if(gene->gene_type == Gene::NEURON_GENE) {
 				std::pair<unsigned int, unsigned int> index = genotype_more_fit->convert_in_to_layer_index(gene->getInnovNumber());
-				//ALERT::while i am certain that this works this is imo bad coding style ¯\_(ツ)_/¯
-				//the worst part is if this fails it fails probably silently
 				genotype_more_fit->layers[index.first][index.second] = boost::dynamic_pointer_cast<NeuronGene>(gene); 
 			} else if(gene->gene_type == Gene::CONNECTION_GENE) {
 				genotype_more_fit->add_connection_gene(boost::dynamic_pointer_cast<ConnectionGene>(gene));
