@@ -111,88 +111,160 @@ void Learner::initialise(std::vector< GeneticEncodingPtr > init_genotypes) {
 
 std::vector<GeneticEncodingPtr> Learner::get_brains_from_yaml(std::string yaml_path, int offset)
 {
-	int innovation_counter = offset;
-	YAML::Node yaml_file = YAML::LoadFile(yaml_path);
-	if (yaml_file.IsNull()) {
-		std::cout << "Failed to load the yaml file." << std::endl;
-		return std::vector<GeneticEncodingPtr>();
-	}
-	std::vector<GeneticEncodingPtr> genotypes;
-	for(int first = 0; first < yaml_file.size(); first++) 
+	if(offset != -1) 
 	{
-		std::map<int,int> old_to_new;
-		GeneticEncodingPtr newGenome(new GeneticEncoding(true));
-		for(int counter = 0; counter < yaml_file[first]["brain"]["layers"].size(); counter++)
+		int innovation_counter = offset;
+		YAML::Node yaml_file = YAML::LoadFile(yaml_path);
+		if (yaml_file.IsNull()) {
+			std::cout << "Failed to load the yaml file." << std::endl;
+			return std::vector<GeneticEncodingPtr>();
+		}
+		std::vector<GeneticEncodingPtr> genotypes;
+		for(int first = 0; first < yaml_file.size(); first++) 
 		{
-			YAML::Node layer = yaml_file[first]["brain"]["layers"][counter];
-			layer = layer["layer_"+std::to_string(counter+1)];
-			bool is_new_layer = true;
-			for(int i = 0; i < layer.size(); i++)
+			std::map<int,int> old_to_new;
+			GeneticEncodingPtr newGenome(new GeneticEncoding(true));
+			for(int counter = 0; counter < yaml_file[first]["brain"]["layers"].size(); counter++)
 			{
-				YAML::Node neuron_node = layer[i];
-				std::string neuron_id = neuron_node["nid"].as<std::string>();
-				Neuron::Ntype neuron_type = static_cast<Neuron::Ntype>(neuron_node["ntype"].as<int>());
-				Neuron::Layer neuron_layer = static_cast<Neuron::Layer>(neuron_node["nlayer"].as<int>());
-				int innov_numb;
-				if(old_to_new.find(neuron_node["in_no"].as<int>()) == old_to_new.end()) 
+				YAML::Node layer = yaml_file[first]["brain"]["layers"][counter];
+				layer = layer["layer_"+std::to_string(counter+1)];
+				bool is_new_layer = true;
+				for(int i = 0; i < layer.size(); i++)
 				{
-					innov_numb = innovation_counter++;
-					old_to_new[neuron_node["in_no"].as<int>()] = innov_numb;
-				} else {
-					innov_numb = old_to_new[neuron_node["in_no"].as<int>()];
-				}
-				std::map<std::string, double> neuron_params;
-				std::vector<std::string> params;
-				for(std::pair<Neuron::Ntype, Neuron::NeuronTypeSpec> spec_pair : mutator->get_brain_spec())
-				{
-					for(Neuron::ParamSpec param_spec : spec_pair.second.param_specs) 
+					YAML::Node neuron_node = layer[i];
+					std::string neuron_id = neuron_node["nid"].as<std::string>();
+					Neuron::Ntype neuron_type = static_cast<Neuron::Ntype>(neuron_node["ntype"].as<int>());
+					Neuron::Layer neuron_layer = static_cast<Neuron::Layer>(neuron_node["nlayer"].as<int>());
+					int innov_numb;
+					if(old_to_new.find(neuron_node["in_no"].as<int>()) == old_to_new.end()) 
 					{
-						if(std::find(params.begin(), params.end(), param_spec.name) == params.end())
+						innov_numb = innovation_counter++;
+						old_to_new[neuron_node["in_no"].as<int>()] = innov_numb;
+					} else {
+						innov_numb = old_to_new[neuron_node["in_no"].as<int>()];
+					}
+					std::map<std::string, double> neuron_params;
+					std::vector<std::string> params;
+					for(std::pair<Neuron::Ntype, Neuron::NeuronTypeSpec> spec_pair : mutator->get_brain_spec())
+					{
+						for(Neuron::ParamSpec param_spec : spec_pair.second.param_specs) 
 						{
-							params.push_back(param_spec.name);
+							if(std::find(params.begin(), params.end(), param_spec.name) == params.end())
+							{
+								params.push_back(param_spec.name);
+							}
 						}
 					}
-				}
-				YAML::Node params_node = neuron_node["params"];
-				for(std::string param_name : params) 
-				{
-					YAML::Node param_node = params_node[param_name];
-					if(param_node.IsDefined()) 
+					YAML::Node params_node = neuron_node["params"];
+					for(std::string param_name : params) 
 					{
-						neuron_params[param_name] = param_node.as<double>();
+						YAML::Node param_node = params_node[param_name];
+						if(param_node.IsDefined()) 
+						{
+							neuron_params[param_name] = param_node.as<double>();
+						}
 					}
+					NeuronPtr new_neuron(new Neuron(neuron_id, neuron_layer, neuron_type, neuron_params));
+					NeuronGenePtr new_neuron_gene(new NeuronGene(new_neuron, innov_numb,true));
+					newGenome->add_neuron_gene(new_neuron_gene,counter,is_new_layer);
+					is_new_layer = false;
 				}
-				NeuronPtr new_neuron(new Neuron(neuron_id, neuron_layer, neuron_type, neuron_params));
-				NeuronGenePtr new_neuron_gene(new NeuronGene(new_neuron, innov_numb,true));
-				newGenome->add_neuron_gene(new_neuron_gene,counter,is_new_layer);
-				is_new_layer = false;
 			}
-		}
-		for(int i = 0; i < yaml_file[first]["brain"]["connection_genes"].size(); i++)
-		{
-			YAML::Node connection = yaml_file[first]["brain"]["connection_genes"][i]["con_1"];
-			int mark_to = old_to_new[connection["to"].as<int>()];
-			int mark_from = old_to_new[connection["from"].as<int>()];
-			double weight = connection["weight"].as<double>();
-			int innov_numb;
-			if(old_to_new.find(connection["in_no"].as<int>()) == old_to_new.end()) 
+			for(int i = 0; i < yaml_file[first]["brain"]["connection_genes"].size(); i++)
 			{
-				innov_numb = innovation_counter++;
-				old_to_new[connection["in_no"].as<int>()] = innov_numb;
-			} else {
-				innov_numb = old_to_new[connection["in_no"].as<int>()];
+				YAML::Node connection = yaml_file[first]["brain"]["connection_genes"][i]["con_1"];
+				int mark_to = old_to_new[connection["to"].as<int>()];
+				int mark_from = old_to_new[connection["from"].as<int>()];
+				double weight = connection["weight"].as<double>();
+				int innov_numb;
+				if(old_to_new.find(connection["in_no"].as<int>()) == old_to_new.end()) 
+				{
+					innov_numb = innovation_counter++;
+					old_to_new[connection["in_no"].as<int>()] = innov_numb;
+				} else {
+					innov_numb = old_to_new[connection["in_no"].as<int>()];
+				}
+				ConnectionGenePtr newConnection(new ConnectionGene(mark_to,
+							mark_from,
+							weight,
+							innov_numb,
+							true,
+							""));
+				newGenome->add_connection_gene(newConnection);
 			}
-			ConnectionGenePtr newConnection(new ConnectionGene(mark_to,
-						mark_from,
-						weight,
-						innov_numb,
-						true,
-						""));
-			newGenome->add_connection_gene(newConnection);
+			genotypes.push_back(newGenome);
 		}
-		genotypes.push_back(newGenome);
+		return genotypes;
+	} else {
+		YAML::Node yaml_file = YAML::LoadFile(yaml_path);
+		if (yaml_file.IsNull()) {
+			std::cout << "Failed to load the yaml file." << std::endl;
+			return std::vector<GeneticEncodingPtr>();
+		}
+		std::vector<GeneticEncodingPtr> genotypes;
+		for(int first = 0; first < yaml_file.size(); first++) 
+		{
+			GeneticEncodingPtr newGenome(new GeneticEncoding(true));
+			for(int counter = 0; counter < yaml_file[first]["brain"]["layers"].size(); counter++)
+			{
+				YAML::Node layer = yaml_file[first]["brain"]["layers"][counter];
+				layer = layer["layer_"+std::to_string(counter+1)];
+				bool is_new_layer = true;
+				for(int i = 0; i < layer.size(); i++)
+				{
+					YAML::Node neuron_node = layer[i];
+					std::string neuron_id = neuron_node["nid"].as<std::string>();
+					Neuron::Ntype neuron_type = static_cast<Neuron::Ntype>(neuron_node["ntype"].as<int>());
+					Neuron::Layer neuron_layer = static_cast<Neuron::Layer>(neuron_node["nlayer"].as<int>());
+					int innov_numb = neuron_node["in_no"].as<int>();
+					std::map<std::string, double> neuron_params;
+					std::vector<std::string> params;
+					for(std::pair<Neuron::Ntype, Neuron::NeuronTypeSpec> spec_pair : mutator->get_brain_spec())
+					{
+						for(Neuron::ParamSpec param_spec : spec_pair.second.param_specs) 
+						{
+							if(std::find(params.begin(), params.end(), param_spec.name) == params.end())
+							{
+								params.push_back(param_spec.name);
+							}
+						}
+					}
+					YAML::Node params_node = neuron_node["params"];
+					for(std::string param_name : params) 
+					{
+						YAML::Node param_node = params_node[param_name];
+						if(param_node.IsDefined()) 
+						{
+							neuron_params[param_name] = param_node.as<double>();
+						}
+					}
+					NeuronPtr new_neuron(new Neuron(neuron_id, neuron_layer, neuron_type, neuron_params));
+					NeuronGenePtr new_neuron_gene(new NeuronGene(new_neuron, innov_numb,true, yaml_path, first));
+					newGenome->add_neuron_gene(new_neuron_gene,counter,is_new_layer);
+					is_new_layer = false;
+				}
+			}
+			for(int i = 0; i < yaml_file[first]["brain"]["connection_genes"].size(); i++)
+			{
+				YAML::Node connection = yaml_file[first]["brain"]["connection_genes"][i]["con_1"];
+				int mark_to = connection["to"].as<int>();
+				int mark_from = connection["from"].as<int>();
+				double weight = connection["weight"].as<double>();
+				int innov_numb = connection["in_no"].as<int>();
+				ConnectionGenePtr newConnection(new ConnectionGene(mark_to,
+							mark_from,
+							weight,
+							innov_numb,
+							true,
+							yaml_path,
+							first,
+							""));
+				newGenome->add_connection_gene(newConnection);
+			}
+			genotypes.push_back(newGenome);
+		}
+		return genotypes;
 	}
-	return genotypes;
 }
 
 std::vector< GeneticEncodingPtr > Learner::get_init_brains() {
@@ -270,6 +342,8 @@ void Learner::writeGenome(std::string robot_name, GeneticEncodingPtr genome){
         outputFile << "            from: " << connection->mark_from << std::endl;
         outputFile << "            to: " << connection->mark_to << std::endl;
         outputFile << "            weight: " << connection->weight << std::endl;
+	outputFile << "            parent_name: " << connection->get_parent_name() << std::endl;
+	outputFile << "            parent_index: " << connection->get_parent_index() << std::endl;
     }
     outputFile << "    layers:" << std::endl;
     auto layers = genome->layers;
@@ -283,6 +357,8 @@ void Learner::writeGenome(std::string robot_name, GeneticEncodingPtr genome){
             outputFile << "            ntype: " << neuron->neuron_type << std::endl;
             outputFile << "            nlayer: " << neuron->layer << std::endl;
 	    outputFile << "            in_no: " << it2->get()->getInnovNumber() << std::endl;
+	    outputFile << "            parent_name: " << it2->get()->get_parent_name() << std::endl;
+	    outputFile << "            parent_index: " << it2->get()->get_parent_index() << std::endl;
             outputFile << "            params:" << std::endl;
             for (auto np = neuron_params.begin(); np != neuron_params.end(); np++) {
                 outputFile << "              " << np->first << ": " << np->second << std::endl;

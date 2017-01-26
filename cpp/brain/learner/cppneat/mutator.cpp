@@ -380,7 +380,7 @@ int Mutator::add_neuron(NeuronPtr neuron, GeneticEncodingPtr genotype, Connectio
 		//some previous innovation is not are already present in the genome-> add a it
 		if(i < neuron_innovations[neuron_pair].size())
 		{
-			NeuronGenePtr new_neuron_gene(new NeuronGene(neuron, neuron_innovations[neuron_pair][i], true));
+			NeuronGenePtr new_neuron_gene(new NeuronGene(neuron, neuron_innovations[neuron_pair][i], true, "none", -1));
 			if(!genotype->layered) {
 				genotype->add_neuron_gene(new_neuron_gene);
 			} else {
@@ -398,7 +398,7 @@ int Mutator::add_neuron(NeuronPtr neuron, GeneticEncodingPtr genotype, Connectio
 		} 
 	}
 	//new innovation -> add new neuron with new innovation number
-	NeuronGenePtr new_neuron_gene(new NeuronGene(neuron, ++innovation_number, true));
+	NeuronGenePtr new_neuron_gene(new NeuronGene(neuron, ++innovation_number, true, "none", -1));
 	//in base case a new vector is constructed here
 	neuron_innovations[neuron_pair].push_back(innovation_number);
 	if(!genotype->layered) {
@@ -430,6 +430,8 @@ int Mutator::add_connection(int mark_from, int mark_to, double weight, GeneticEn
 									   weight,
 									   connection_innovations[innovation_pair],
 									   true,
+									   "none",
+									   -1,
 									   socket));
 			genotype->add_connection_gene(new_conn_gene);
 			return new_conn_gene->getInnovNumber();
@@ -440,6 +442,8 @@ int Mutator::add_connection(int mark_from, int mark_to, double weight, GeneticEn
 							   weight,
 							   ++innovation_number,
 							   true,
+							   "none",
+							   -1,
 						           socket));
 	connection_innovations[innovation_pair] = innovation_number;
 	genotype->add_connection_gene(new_conn_gene);
