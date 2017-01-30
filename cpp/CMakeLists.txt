@@ -30,9 +30,10 @@ add_subdirectory("neat/accneat")
 include_directories("neat/accneat/src")
 
 ### RLPOWER DEPENDENCIES ###
-# GSL
-# Gnu mathematical library
+# GSL - Gnu mathematical library
+# yaml cpp
 find_package(GSL REQUIRED)
+find_package(yaml-cpp REQUIRED)
 
 # add CPG
 add_subdirectory("brain/cpg")
@@ -59,7 +60,7 @@ add_library(revolve-brain-static STATIC ${BRAIN_SRCS})
 add_library(revolve-brain SHARED)
 
 # Linking ######################################################################
-target_link_libraries(revolve-brain-static accneat cpg ${Boost_LIBRARIES} ${PYTHON_LIBRARIES} ${GSL_LIBRARIES} yaml-cpp)
+target_link_libraries(revolve-brain-static accneat cpg ${Boost_LIBRARIES} ${PYTHON_LIBRARIES} ${GSL_LIBRARIES} ${YAML_CPP_LIBRARIES})
 target_link_libraries(revolve-brain revolve-brain-static)
 
 
