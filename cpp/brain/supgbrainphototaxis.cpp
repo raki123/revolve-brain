@@ -66,19 +66,26 @@ double SUPGBrainPhototaxis::getFitness()
 }
 
 
+#define MAX_PHASE_FITNESS 100
 double SUPGBrainPhototaxis::getPhaseFitness()
 {
-    double left_eye = current_light_left == nullptr ? std::numeric_limits<double>::max() :
+    double left_eye = current_light_left == nullptr ? std::numeric_limits<double>::min() :
                       current_light_left->read();
-    double right_eye = current_light_right == nullptr ? std::numeric_limits<double>::max() :
+    double right_eye = current_light_right == nullptr ? std::numeric_limits<double>::min() :
                        current_light_right->read();
 
-    return (left_eye + right_eye)
+    double value = (left_eye + right_eye)
          - ((left_eye - right_eye) * (left_eye - right_eye));
 
-//     return (left_eye + right_eye)
+//     double value = (left_eye + right_eye)
 //          - std::fabs(left_eye - right_eye);
+
+    if (value > MAX_PHASE_FITNESS)
+        return MAX_PHASE_FITNESS;
+
+    return value;
 }
+#undef MAX_PHASE_FITNESS
 
 void SUPGBrainPhototaxis::learner(double t)
 {

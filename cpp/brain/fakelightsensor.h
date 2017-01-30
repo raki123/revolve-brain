@@ -44,8 +44,8 @@ public:
     virtual unsigned int inputs() const override;
 
 protected:
-    virtual float light_distance() = 0;
-    virtual float light_angle() = 0;
+    virtual double light_distance() = 0;
+    virtual double light_angle() = 0;
 
     virtual float light_attenuation(float distance, float angle);
 
