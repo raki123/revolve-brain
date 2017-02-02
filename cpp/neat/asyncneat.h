@@ -72,6 +72,16 @@ public:
         NEAT::env->population_type = type;
     }
 
+    // default is 0.01
+    static void SetMutateAddNodeProb(NEAT::real_t value) {
+        NEAT::env->mutate_add_node_prob = value;
+    }
+
+    // default is 0.3
+    static void SetMutateAddLinkProb(NEAT::real_t value) {
+        NEAT::env->mutate_add_link_prob = value;
+    }
+
     std::shared_ptr<NeatEvaluation> getFittest() const {
         return fittest;
     }
