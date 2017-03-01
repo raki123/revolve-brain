@@ -1,5 +1,5 @@
-#include "supgbrain.h"
-#include "neat/asyncneat.h"
+#include "SUPGBrain.h"
+#include "neat/AsyncNEAT.h"
 #include <sstream>
 #include <stdexcept>
 #include <limits>

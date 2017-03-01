@@ -1,4 +1,4 @@
-#include "neuron.h"
+#include "Neuron.h"
 
 namespace CPPNEAT {
 	

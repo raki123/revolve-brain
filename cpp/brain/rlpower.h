@@ -5,8 +5,8 @@
 #ifndef REVOLVE_BRAIN_RLPOWER_H
 #define REVOLVE_BRAIN_RLPOWER_H
 
-#include "brain.h"
-#include "evaluator.h"
+#include "Brain.h"
+#include "Evaluator.h"
 
 #include <cmath>
 #include <string>

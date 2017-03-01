@@ -1,7 +1,7 @@
 add_library(revolve-brain-learner
-    base_learner.cpp
-    neat_learner.cpp
-    rlpower_learner.cpp
+            BaseLearner.cpp
+						NEATLearner.cpp
+						RLPowerLearner.cpp
 )
 
 add_subdirectory("cppneat")

@@ -39,17 +39,17 @@ include_directories(${Boost_INCLUDE_DIRS} ${PROJECT_SOURCE_DIR} ${GSL_INCLUDE_DI
 
 
 file(GLOB_RECURSE BRAIN_SRCS
-        brain/fakelightsensor.cpp
-        brain/phototaxisevaluator.cpp
-        brain/rlpower.cpp
-        brain/neural_network.cpp
-        brain/supgbrain.cpp
-        brain/supgbrainphototaxis.cpp
-        brain/supg/supgneuron.cpp
-        brain/supg/supggenomemanager.cpp
-        neat/asyncneat.cpp
-        neat/neatevaluation.cpp
-        brain/conversion.cpp)
+     brain/fakelightsensor.cpp
+     brain/phototaxisevaluator.cpp
+     brain/RLPower.cpp
+     brain/NeuralNetwork.cpp
+     brain/SUPGBrain.cpp
+     brain/supgbrainphototaxis.cpp
+     brain/supg/SUPGNeuron.cpp
+     brain/supg/SUPGGenomeManager.cpp
+     neat/AsyncNEAT.cpp
+     neat/NEATEvaluation.cpp
+     brain/Conversion.cpp)
 
 # Compiling ####################################################################
 add_subdirectory("brain/learner/")
@@ -80,7 +80,7 @@ enable_testing()
 add_executable(testAsyncNeat neat/test/testasyncneat.cpp)
 add_executable(testCustomGenomeManager neat/test/testcustomgenomemanager.cpp)
 add_executable(testMultiNNSpecies neat/test/testmultinnspeciesneat.cpp)
-add_executable(testSUPGBrain test/testsupgbrain.cpp)
+add_executable(testSUPGBrain test/test_SUPGBrain.cpp)
 target_link_libraries(testAsyncNeat revolve-brain)
 target_link_libraries(testCustomGenomeManager revolve-brain)
 target_link_libraries(testMultiNNSpecies revolve-brain)

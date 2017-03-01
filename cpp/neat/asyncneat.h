@@ -1,7 +1,7 @@
 #ifndef NEAT_H
 #define NEAT_H
 
-#include "neatevaluation.h"
+#include "NEATEvaluation.h"
 #include "organism.h"
 #include "population.h"
 #include <list>

@@ -1,6 +1,6 @@
-#include "crossover.h"
-#include "neuron_gene.h"
-#include "connection_gene.h"
+#include "Crossover.h"
+#include "NeuronGenome.h"
+#include "ConnectionGenome.h"
 
 #include <map>
 #include <string>

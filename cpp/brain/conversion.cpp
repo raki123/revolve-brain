@@ -1,6 +1,6 @@
-#include "conversion.h"
-#include "learner/cppneat/neuron_gene.h"
-#include "learner/cppneat/connection_gene.h"
+#include "Conversion.h"
+#include "brain/learner/cppneat/NeuronGenome.h"
+#include "brain/learner/cppneat/ConnectionGenome.h"
 
 #include <map>
 #include <iostream>

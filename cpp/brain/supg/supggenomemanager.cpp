@@ -17,8 +17,8 @@
  *
  */
 
-#include "supggenomemanager.h"
-#include "supgneuron.h"
+#include "SUPGGenomeManager.h"
+#include "SUPGNeuron.h"
 #include "innovgenome/innovgenome.h"
 
 #include <iostream>

@@ -1,4 +1,4 @@
-#include "../supg/supgneuron.h"
+#include "SUPGNeuron.h"
 
 #include <cmath>
 #include <iostream>

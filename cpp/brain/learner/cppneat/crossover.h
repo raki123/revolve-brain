@@ -1,7 +1,7 @@
 #ifndef NEAT_GENETIC_ENCODING_CROSSOVER_H_
 #define NEAT_GENETIC_ENCODING_CROSSOVER_H_
 
-#include "genetic_encoding.h"
+#include "GeneticEncoding.h"
 
 //crossover between genotypes
 namespace CPPNEAT {

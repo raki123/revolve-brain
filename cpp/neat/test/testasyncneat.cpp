@@ -1,6 +1,6 @@
 #include "testasyncneat.h"
 
-#include "../asyncneat.h"
+#include "neat/AsyncNEAT.h"
 #include <limits>
 #include "network/cpu/cpunetwork.h"
 #include <vector>

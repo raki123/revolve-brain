@@ -1,4 +1,4 @@
-#include "neatevaluation.h"
+#include "NEATEvaluation.h"
 
 NeatEvaluation::NeatEvaluation(NEAT::Organism *organism)
     : organism(organism)

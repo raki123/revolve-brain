@@ -1,6 +1,6 @@
-#include "rlpower_python.h"
+#include "RLPower_python.h"
 
-#include "python_list_wrap.h"
+#include "PythonListWrap.h"
 #include "object.h"
 #include <boost/python/import.hpp>
 

@@ -5,8 +5,8 @@
 #ifndef REVOLVE_BRAIN_SPLIT_BRAIN_CONTROLLER_H_
 #define REVOLVE_BRAIN_SPLIT_BRAIN_CONTROLLER_H_
 
-#include "../actuator.h"
-#include "../sensor.h"
+#include "brain/Actuator.h"
+#include "brain/Sensor.h"
 #include <vector>
 
 

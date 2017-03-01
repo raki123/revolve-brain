@@ -47,9 +47,9 @@ include_directories(${Boost_INCLUDE_DIRS} ${PYTHON_INCLUDE_DIRS})
 
 # add python wrapper target
 python_add_module(revolve_brain_python
-    brain.cpp
-    rlpower_python.cpp
-    supgbrain_python.cpp
+                  Brain.cpp
+                  RLPower_python.cpp
+                  SUGPBrain_python.cpp
 )
 
 # link libraries

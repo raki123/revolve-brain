@@ -1,7 +1,7 @@
 #ifndef NEAT_MUTATOR_H_
 #define NEAT_MUTATOR_H_
 
-#include "genetic_encoding.h"
+#include "GeneticEncoding.h"
 
 #include <map>
 #include <string>

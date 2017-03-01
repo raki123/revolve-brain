@@ -1,10 +1,10 @@
 #ifndef REVOLVE_BRAIN_SUPGBRAIN_H
 #define REVOLVE_BRAIN_SUPGBRAIN_H
 
-#include "brain.h"
-#include "supg/supgneuron.h"
-#include "neat/asyncneat.h"
-#include "evaluator.h"
+#include "Brain.h"
+#include "brain/supg/SUPGNeuron.h"
+#include "neat/AsyncNEAT.h"
+#include "Evaluator.h"
 
 #include <vector>
 #include <memory>

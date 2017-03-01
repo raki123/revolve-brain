@@ -1,4 +1,4 @@
-#include "asyncneat.h"
+#include "AsyncNEAT.h"
 
 #include "neat.h"
 #include "genomemanager.h"

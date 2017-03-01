@@ -2,7 +2,7 @@
 // Created by Milan Jelisavcic on 28/03/16.
 //
 
-#include "rlpower.h"
+#include "RLPower.h"
 
 #include <random>
 #include <fstream>
