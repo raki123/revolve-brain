@@ -26,20 +26,26 @@
 class AsyncNeat
 {
 public:
-    AsyncNeat(unsigned int n_inputs, unsigned int n_outputs, int rng_seed);
+    AsyncNeat(unsigned int n_inputs,
+              unsigned int n_outputs,
+              int rng_seed);
+
     virtual ~AsyncNeat();
 
     /**
      * If it returns nullptr, wait until all evaluations are finished to get
      * the next generation
      */
-    std::shared_ptr<NeatEvaluation> getEvaluation();
+    std::shared_ptr<NeatEvaluation>
+    getEvaluation();
 
     /**
      * to be called before any AsyncNeat object can be used
      */
-    static void Init() {
-        NEAT::env->genome_manager = NEAT::GenomeManager::create();
+    static void
+    Init()
+    {
+      NEAT::env->genome_manager = NEAT::GenomeManager::create();
     };
 
     /**
@@ -48,32 +54,44 @@ public:
      * It initializes the environment with a personalized genome manager instead of the standard one.
      * The delete of this object will be handled by AsyncNeat::CleanUp()
      */
-    static void Init(std::unique_ptr<NEAT::GenomeManager> genome_manager) {
-        NEAT::env->genome_manager = genome_manager.release();
+    static void
+    Init(std::unique_ptr<NEAT::GenomeManager> genome_manager)
+    {
+      NEAT::env->genome_manager = genome_manager.release();
     };
 
     /**
      * to be called after all AsyncNeat object are not in use anymore
      */
-    static void CleanUp() {
-        delete NEAT::env->genome_manager;
-        NEAT::env->genome_manager = nullptr;
+    static void
+    CleanUp()
+    {
+      delete NEAT::env->genome_manager;
+      NEAT::env->genome_manager = nullptr;
     };
 
-    static void SetSearchType(NEAT::GeneticSearchType type) {
-        NEAT::env->search_type = type;
+    static void
+    SetSearchType(NEAT::GeneticSearchType type)
+    {
+      NEAT::env->search_type = type;
     }
 
-    static void SetPopulationSize(unsigned int n) {
-        NEAT::env->pop_size = n;
+    static void
+    SetPopulationSize(unsigned int n)
+    {
+      NEAT::env->pop_size = n;
     }
 
-    static void SetPopulationType(NEAT::PopulationType type) {
-        NEAT::env->population_type = type;
+    static void
+    SetPopulationType(NEAT::PopulationType type)
+    {
+      NEAT::env->population_type = type;
     }
 
-    std::shared_ptr<NeatEvaluation> getFittest() const {
-        return fittest;
+    std::shared_ptr<NeatEvaluation>
+    getFittest() const
+    {
+      return fittest;
     }
 
 private:
@@ -89,9 +107,15 @@ private:
     std::shared_ptr<NeatEvaluation> fittest;
     float fittest_fitness;
 
-    void singleEvalutionFinished(std::shared_ptr<NeatEvaluation> evaluation, float fitness);
-    void next_generation();
-    void refill_evaluation_queue();
+    void
+    singleEvalutionFinished(std::shared_ptr<NeatEvaluation> evaluation,
+                            float fitness);
+
+    void
+    next_generation();
+
+    void
+    refill_evaluation_queue();
 };
 
 #endif // NEAT_H

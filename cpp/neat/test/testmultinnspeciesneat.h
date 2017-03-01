@@ -5,18 +5,22 @@ class TestMultiNNSpeciesNeat
 {
 public:
     TestMultiNNSpeciesNeat();
+
     ~TestMultiNNSpeciesNeat();
 
     /**
      * Runs all tests. Returns false if one of the tests fails.
      */
-    bool test();
+    bool
+    test();
 
 private:
     /**
      * test if the algorithm is able to resolve the XOR problem
      */
-    bool testXOR();
+    bool
+    testXOR();
+
     const int MAX_EVALUATIONS = 9999;
 };
 

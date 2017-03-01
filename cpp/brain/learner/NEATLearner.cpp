@@ -120,16 +120,16 @@ std::vector<GeneticEncodingPtr> Learner::get_brains_from_yaml(std::string yaml_p
 			return std::vector<GeneticEncodingPtr>();
 		}
 		std::vector<GeneticEncodingPtr> genotypes;
-		for(int first = 0; first < yaml_file.size(); first++) 
+		for(unsigned int first = 0; first < yaml_file.size(); first++)
 		{
 			std::map<int,int> old_to_new;
 			GeneticEncodingPtr newGenome(new GeneticEncoding(true));
-			for(int counter = 0; counter < yaml_file[first]["brain"]["layers"].size(); counter++)
+			for(unsigned int counter = 0; counter < yaml_file[first]["brain"]["layers"].size(); counter++)
 			{
 				YAML::Node layer = yaml_file[first]["brain"]["layers"][counter];
 				layer = layer["layer_"+std::to_string(counter+1)];
 				bool is_new_layer = true;
-				for(int i = 0; i < layer.size(); i++)
+				for(unsigned int i = 0; i < layer.size(); i++)
 				{
 					YAML::Node neuron_node = layer[i];
 					std::string neuron_id = neuron_node["nid"].as<std::string>();
@@ -170,7 +170,7 @@ std::vector<GeneticEncodingPtr> Learner::get_brains_from_yaml(std::string yaml_p
 					is_new_layer = false;
 				}
 			}
-			for(int i = 0; i < yaml_file[first]["brain"]["connection_genes"].size(); i++)
+			for(unsigned int i = 0; i < yaml_file[first]["brain"]["connection_genes"].size(); i++)
 			{
 				YAML::Node connection = yaml_file[first]["brain"]["connection_genes"][i]["con_1"];
 				int mark_to = old_to_new[connection["to"].as<int>()];
@@ -202,15 +202,15 @@ std::vector<GeneticEncodingPtr> Learner::get_brains_from_yaml(std::string yaml_p
 			return std::vector<GeneticEncodingPtr>();
 		}
 		std::vector<GeneticEncodingPtr> genotypes;
-		for(int first = 0; first < yaml_file.size(); first++) 
+		for(unsigned int first = 0; first < yaml_file.size(); first++)
 		{
 			GeneticEncodingPtr newGenome(new GeneticEncoding(true));
-			for(int counter = 0; counter < yaml_file[first]["brain"]["layers"].size(); counter++)
+			for(unsigned int counter = 0; counter < yaml_file[first]["brain"]["layers"].size(); counter++)
 			{
 				YAML::Node layer = yaml_file[first]["brain"]["layers"][counter];
 				layer = layer["layer_"+std::to_string(counter+1)];
 				bool is_new_layer = true;
-				for(int i = 0; i < layer.size(); i++)
+				for(unsigned int i = 0; i < layer.size(); i++)
 				{
 					YAML::Node neuron_node = layer[i];
 					std::string neuron_id = neuron_node["nid"].as<std::string>();
@@ -244,7 +244,7 @@ std::vector<GeneticEncodingPtr> Learner::get_brains_from_yaml(std::string yaml_p
 					is_new_layer = false;
 				}
 			}
-			for(int i = 0; i < yaml_file[first]["brain"]["connection_genes"].size(); i++)
+			for(unsigned int i = 0; i < yaml_file[first]["brain"]["connection_genes"].size(); i++)
 			{
 				YAML::Node connection = yaml_file[first]["brain"]["connection_genes"][i]["con_1"];
 				int mark_to = connection["to"].as<int>();

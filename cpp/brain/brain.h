@@ -11,13 +11,20 @@
 #include "Sensor.h"
 #include "Actuator.h"
 
-namespace revolve {
-namespace brain {
+namespace revolve
+{
+namespace brain
+{
 
-class Brain {
+class Brain
+{
 public:
-    Brain() : offline(false) {};
-    virtual ~Brain() {};
+    Brain() :
+            offline(false)
+    {};
+
+    virtual ~Brain()
+    {};
 
     /**
      * Update step called for the brain.
@@ -27,18 +34,21 @@ public:
      * @param t Current simulation time
      * @param step Actuation step size in seconds
      */
-    virtual void update(const std::vector< ActuatorPtr > & actuators,
-                        const std::vector< SensorPtr > & sensors,
-                        double t,
-                        double step) = 0;
+    virtual void
+    update(const std::vector<ActuatorPtr> &actuators,
+           const std::vector<SensorPtr> &sensors,
+           double t,
+           double step) = 0;
 
     /**
      * If offline, the robot won't update his controller. This is delegated to
      * a supervisor.
      * @return true if the brain is offline
      */
-    bool isOffline() const {
-        return this->offline;
+    bool
+    isOffline() const
+    {
+      return this->offline;
     }
 
     /**
@@ -46,8 +56,10 @@ public:
      * a supervisor
      * @param offline set offline mode on or off
      */
-    virtual void setOffline(bool offline) {
-        this->offline = offline;
+    virtual void
+    setOffline(bool offline)
+    {
+      this->offline = offline;
     }
 
 protected:

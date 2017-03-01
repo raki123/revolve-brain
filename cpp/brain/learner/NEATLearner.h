@@ -93,7 +93,7 @@ private:
 	double structural_removal_probability;
 	int max_generations;
 	double speciation_threshold;
-	int repeat_evaluations;
+	unsigned int repeat_evaluations;
 	GeneticEncodingPtr start_from;
 	int initial_structural_mutations;
 	double interspecies_mate_probability;

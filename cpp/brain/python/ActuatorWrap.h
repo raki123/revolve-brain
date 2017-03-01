@@ -8,21 +8,31 @@
 
 #include <iostream>
 
-namespace revolve {
-namespace brain {
+namespace revolve
+{
+namespace brain
+{
 
 /**
  * Class needed to enable calling virtual methods implemented child python classes
  */
-class ActuatorWrap : public revolve::brain::Actuator, public boost::python::wrapper<Actuator>
+class ActuatorWrap
+        : public revolve::brain::Actuator
+          , public boost::python::wrapper<Actuator>
 {
 public:
-    virtual void update(double *output_vector, double step) {
-        this->get_override("update")(python_array<double>(output_vector), step);
+    virtual void
+    update(double *output_vector,
+           double step)
+    {
+      this->get_override("update")(python_array<double>(output_vector),
+                                   step);
     }
 
-    virtual unsigned int outputs() const {
-        return this->get_override("outputs")();
+    virtual unsigned int
+    outputs() const
+    {
+      return this->get_override("outputs")();
     };
 
 };

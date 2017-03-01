@@ -4,7 +4,7 @@
 class TestSUPGBrain
 {
 public:
-TestSUPGBrain();
+    TestSUPGBrain();
 };
 
 

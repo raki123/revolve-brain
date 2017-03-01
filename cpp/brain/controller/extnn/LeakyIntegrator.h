@@ -5,44 +5,52 @@
 #include "NeuralConnection.h"
 
 
-namespace revolve {
-namespace brain {
+namespace revolve
+{
+namespace brain
+{
 
-class LeakyIntegrator : public Neuron
+class LeakyIntegrator
+        : public Neuron
 {
 public:
-  	/**
-	* Constructor for a leaky integrator neuron
-	* @param id: string to identify the neuron
-	* @param params: parameters that specify the behavior of the neuron
-	* @return pointer to the leaky integrator neuron
-	*/
-	LeakyIntegrator(const std::string &id,
-			const std::map<std::string, double> &params);
-	
-	/**
-	* Method to calculate the output of the neuron
-	* @param t: current time
-	* @return the output of the neuron at time t
-	*/
-	virtual double CalculateOutput(double t);
+    /**
+  * Constructor for a leaky integrator neuron
+  * @param id: string to identify the neuron
+  * @param params: parameters that specify the behavior of the neuron
+  * @return pointer to the leaky integrator neuron
+  */
+    LeakyIntegrator(const std::string &id,
+                    const std::map<std::string, double> &params);
 
-	virtual std::map<std::string, double> getNeuronParameters();
-	
-	virtual void setNeuronParameters(std::map<std::string, double> params);
-	
-	virtual std::string getType();
-	
-	virtual void reset() override;
+    /**
+    * Method to calculate the output of the neuron
+    * @param t: current time
+    * @return the output of the neuron at time t
+    */
+    virtual double
+    CalculateOutput(double t) override;
+
+    virtual std::map<std::string, double>
+    getNeuronParameters() override;
+
+    virtual void
+    setNeuronParameters(std::map<std::string, double> params) override;
+
+    virtual std::string
+    getType() override;
+
+    virtual void
+    reset() override;
 
 protected:
-	double bias_; //bias of the neuron
-	double tau_; //tau of the neuron
+    double bias_; //bias of the neuron
+    double tau_; //tau of the neuron
 
-	double lastTime_; //last time the output was calculated
+    double lastTime_; //last time the output was calculated
 
-	double stateDeriv_; //current value of the derivation of the state
-	double state_; //current state value
+    double stateDeriv_; //current value of the derivation of the state
+    double state_; //current state value
 };
 
 }

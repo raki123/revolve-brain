@@ -6,8 +6,10 @@
 #include <iostream>
 #include <fstream>
 
-namespace revolve {
-namespace brain {
+namespace revolve
+{
+namespace brain
+{
 
 
 template <typename Phenotype, typename Genome>
@@ -18,11 +20,12 @@ public:
     ConvSplitBrain(Phenotype (*convertForController)(Genome),
                    Genome (*convertForLearner)(Phenotype),
                    std::string model_name)
-            : model_name(model_name)
-              , first_run(true)
-              , run_count(0)
-              , convertForController_(convertForController)
-              , convertForLearner_(convertForLearner)
+            :
+            model_name(model_name)
+            , first_run(true)
+            , run_count(0)
+            , convertForController_(convertForController)
+            , convertForLearner_(convertForLearner)
     {};
 
     virtual
@@ -42,34 +45,47 @@ public:
            double t,
            double step)
     {
-        if (first_run) {
-            this->controller->setGenome(convertForController_(this->learner->getNewGenome("test")));
-            start_eval_time_ = t;
-            evaluator_->start();
-            first_run = false;
-        }
-        if ((t - start_eval_time_) > evaluation_rate_) { //&& generation_counter_ < max_evaluations_) {
-            double fitness = evaluator_->fitness();
-            writeCurrent(fitness);
-            this->learner->reportFitness(model_name, convertForLearner_(this->controller->getGenome()), fitness);
-            Phenotype controllerGenome = convertForController_(this->learner->getNewGenome("test"));
-            this->controller->setGenome(controllerGenome);
-            start_eval_time_ = t;
-            generation_counter_++;
-            evaluator_->start();
-        }
-        this->controller->update(actuators, sensors, t, step);
+      if (first_run) {
+        this->controller
+                ->setGenome(convertForController_(this->learner
+                                                          ->getNewGenome("test")));
+        start_eval_time_ = t;
+        evaluator_->start();
+        first_run = false;
+      }
+      if ((t - start_eval_time_) > evaluation_rate_) { //&& generation_counter_ < max_evaluations_) {
+        double fitness = evaluator_->fitness();
+        writeCurrent(fitness);
+        this->learner
+                ->reportFitness(model_name,
+                                convertForLearner_(this->controller
+                                                           ->getGenome()),
+                                fitness);
+        Phenotype controllerGenome = convertForController_(this->learner
+                                                                   ->getNewGenome("test"));
+        this->controller
+                ->setGenome(controllerGenome);
+        start_eval_time_ = t;
+        generation_counter_++;
+        evaluator_->start();
+      }
+      this->controller
+              ->update(actuators,
+                       sensors,
+                       t,
+                       step);
     }
 
     void
     writeCurrent(double fitness)
     {
-        std::ofstream outputFile;
-        outputFile.open(model_name + ".log", std::ios::app | std::ios::out | std::ios::ate);
-        outputFile << "- generation: " << generation_counter_ << std::endl;
-        outputFile << "  velocity: " << fitness << std::endl;
-        // TODO: Should we record an entire generation?
-        outputFile.close();
+      std::ofstream outputFile;
+      outputFile.open(model_name + ".log",
+                      std::ios::app | std::ios::out | std::ios::ate);
+      outputFile << "- generation: " << generation_counter_ << std::endl;
+      outputFile << "  velocity: " << fitness << std::endl;
+      // TODO: Should we record an entire generation?
+      outputFile.close();
     }
 
 protected:
@@ -77,9 +93,11 @@ protected:
     bool first_run;
     int run_count;
 
-    Phenotype (*convertForController_)(Genome);
+    Phenotype
+    (*convertForController_)(Genome);
 
-    Genome (*convertForLearner_)(Phenotype);
+    Genome
+    (*convertForLearner_)(Phenotype);
 
     EvaluatorPtr evaluator_;
     double start_eval_time_ = 0;

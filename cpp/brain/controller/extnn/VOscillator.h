@@ -24,13 +24,13 @@ public:
 	* @param t: current time
 	* @return the output of the neuron at time t
 	*/
-	virtual double CalculateOutput(double t);
+	virtual double CalculateOutput(double t) override;
 
-	virtual std::map<std::string, double> getNeuronParameters();
+	virtual std::map<std::string, double> getNeuronParameters() override;
 	
-	virtual void setNeuronParameters(std::map<std::string, double> params);
+	virtual void setNeuronParameters(std::map<std::string, double> params) override;
 	
-	virtual std::string getType();
+	virtual std::string getType() override;
 
 	virtual void reset() override;
 

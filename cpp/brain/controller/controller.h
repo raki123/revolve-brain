@@ -10,26 +10,32 @@
 #include <vector>
 
 
-namespace revolve {
-namespace brain {
+namespace revolve
+{
+namespace brain
+{
 
 template <typename Phenotype>
-class Controller {
+class Controller
+{
 public:
-    virtual ~Controller() {};
-    
+    virtual ~Controller()
+    {};
+
     /**
      * Get method for the genome
      * @return current genome
      */
-    virtual Phenotype getGenome() = 0;
-    
+    virtual Phenotype
+    getGenome() = 0;
+
     /**
      * Set method for the genome
      * @param newGenome: new genome to use instead of the old one
      */
-    virtual void setGenome(Phenotype newGenome) = 0;
-    
+    virtual void
+    setGenome(Phenotype newGenome) = 0;
+
     /**
      * Update step called for the controller.
      *
@@ -38,12 +44,13 @@ public:
      * @param t Current simulation time
      * @param step Actuation step size in seconds
      */
-    virtual void update(const std::vector< ActuatorPtr > & actuators,
-                        const std::vector< SensorPtr > & sensors,
-                        double t,
-                        double step) = 0;
-    
-    
+    virtual void
+    update(const std::vector<ActuatorPtr> &actuators,
+           const std::vector<SensorPtr> &sensors,
+           double t,
+           double step) = 0;
+
+
 };
 
 }

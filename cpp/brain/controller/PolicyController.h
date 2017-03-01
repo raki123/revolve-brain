@@ -3,11 +3,15 @@
 
 #include "Controller.h"
 
-namespace revolve {
-namespace brain {
+namespace revolve
+{
+namespace brain
+{
 
 typedef std::vector<double> Spline;
+
 typedef std::vector<Spline> Policy;
+
 typedef std::shared_ptr<Policy> PolicyPtr;
 
 class PolicyController
@@ -25,7 +29,7 @@ public:
     PolicyController(unsigned int n_actuators);
 
     virtual
-    ~PolicyController();
+    ~PolicyController() override;
 
     void
     update(const std::vector<ActuatorPtr> &actuators,
@@ -38,10 +42,10 @@ public:
                    double *output_vector);
 
     PolicyPtr
-    getGenome();
+    getGenome() override;
 
     void
-    setGenome(PolicyPtr policy);
+    setGenome(PolicyPtr policy) override;
 
     /**
      * Generate cache policy
@@ -66,10 +70,10 @@ public:
                              unsigned int n_actuators,
                              unsigned int n_spline_points)
     {
-        return GenerateRandomController(noise_sigma,
-                                        n_actuators,
-                                        n_spline_points,
-                                        INTERPOLATION_CACHE_SIZE);
+      return GenerateRandomController(noise_sigma,
+                                      n_actuators,
+                                      n_spline_points,
+                                      INTERPOLATION_CACHE_SIZE);
     }
 
 protected:
