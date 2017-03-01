@@ -1,14 +1,16 @@
-#include "testcustomgenomemanager.h"
+#include "test_CustomGenomeManager.h"
 
-#include "neat/AsyncNEAT.h"
 #include <limits>
-#include "network/cpu/cpunetwork.h"
-#include "innovgenome/innovgenomemanager.h"
-#include "innovgenome/innovgenome.h"
 #include <vector>
 #include <cmath>
 #include <iostream>
 #include <memory>
+
+#include "innovgenome/innovgenomemanager.h"
+#include "innovgenome/innovgenome.h"
+#include "neat/AsyncNEAT.h"
+#include "network/cpu/cpunetwork.h"
+
 
 TestCustomGenomeManager::TestCustomGenomeManager()
 {

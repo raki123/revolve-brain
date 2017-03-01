@@ -1,12 +1,13 @@
 #ifndef NEAT_H
 #define NEAT_H
 
-#include "NEATEvaluation.h"
-#include "organism.h"
-#include "population.h"
 #include <list>
 #include <memory>
 
+#include "organism.h"
+#include "population.h"
+
+#include "NEATEvaluation.h"
 
 /**
  * This is an asynchronous NEAT implemetation, it could be hard to understand

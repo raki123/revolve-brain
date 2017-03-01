@@ -4,16 +4,7 @@
 
 #include "NeuralNetwork.h"
 
-#include <iostream>
-#include <algorithm>
-#include <stdexcept>
-#include <cstdlib>
-#include <map>
 #include <set>
-#include <string>
-#include <sstream>
-#include <cmath>
-#include <cstring>
 
 using namespace revolve::brain;
 

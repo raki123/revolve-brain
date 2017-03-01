@@ -1,16 +1,18 @@
 #include "Conversion.h"
-#include "brain/learner/cppneat/NeuronGenome.h"
-#include "brain/learner/cppneat/ConnectionGenome.h"
 
 #include <map>
 #include <iostream>
 #include <fstream>
 #include <vector>
 
+#include "brain/learner/cppneat/NeuronGenome.h"
+#include "brain/learner/cppneat/ConnectionGenome.h"
+
 //dbg_plot
+#include <sstream>
+
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/graphviz.hpp>
-#include <sstream>
 
 namespace revolve
 {

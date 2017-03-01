@@ -1,7 +1,8 @@
 #include "test_SUPGBrain.h"
 
-#include "brain/SUPGBrain.h"
 #include <iostream>
+
+#include "brain/SUPGBrain.h"
 
 int
 main(int argc,

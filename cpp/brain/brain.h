@@ -8,8 +8,9 @@
 #define REVOLVE_BRAIN_BRAIN_H_
 
 #include <vector>
-#include "Sensor.h"
+
 #include "Actuator.h"
+#include "Sensor.h"
 
 namespace revolve
 {

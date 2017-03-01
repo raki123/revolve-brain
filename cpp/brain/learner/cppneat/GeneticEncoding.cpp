@@ -149,17 +149,13 @@ GeneticEncoding::get_excess_disjoint(GeneticEncodingPtr genotype1,
 
   for (std::pair<GenePtr, GenePtr> pair : pairs) {
     if (pair.first != nullptr && pair.second == nullptr) {
-      if (pair.first
-                  ->getInnovNumber() > (min_mark2 - 1) && pair.first
-                                                                  ->getInnovNumber() < (max_mark2 + 1)) {
+      if (pair.first->getInnovNumber() > (min_mark2 - 1) && pair.first->getInnovNumber() < (max_mark2 + 1)) {
         disjoint_num++;
       } else {
         excess_num++;
       }
     } else if (pair.first == nullptr && pair.second != nullptr) {
-      if (pair.second
-                  ->getInnovNumber() > (min_mark1 - 1) && pair.second
-                                                                  ->getInnovNumber() < (max_mark1 + 1)) {
+      if (pair.second->getInnovNumber() > (min_mark1 - 1) && pair.second->getInnovNumber() < (max_mark1 + 1)) {
         disjoint_num++;
       } else {
         excess_num++;
@@ -172,8 +168,8 @@ std::vector<std::pair<GenePtr, GenePtr> >
 GeneticEncoding::get_pairs(std::vector<GenePtr> genes_sorted1,
                            std::vector<GenePtr> genes_sorted2)
 {
-  int num_genes1 = genes_sorted1.size();
-  int num_genes2 = genes_sorted2.size();
+  unsigned int num_genes1 = genes_sorted1.size();
+  unsigned int num_genes2 = genes_sorted2.size();
 
   int min_mark1 = genes_sorted1[0]->getInnovNumber();
   int max_mark1 = genes_sorted1[genes_sorted1.size() - 1]->getInnovNumber();
@@ -198,7 +194,7 @@ GeneticEncoding::get_pairs(std::vector<GenePtr> genes_sorted1,
     //jump1 and jump2 are here to skip long sequences of empty historical marks
     GenePtr gene1 = nullptr;
     int jump1 = mark + 1;
-    for (int i = start_from1; i < num_genes1; i++) {
+    for (unsigned int i = start_from1; i < num_genes1; i++) {
       if (genes_sorted1[i]->getInnovNumber() == mark) {
         gene1 = genes_sorted1[i];
         start_from1 = i;

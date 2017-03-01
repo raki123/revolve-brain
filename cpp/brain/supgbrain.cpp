@@ -1,11 +1,13 @@
 #include "SUPGBrain.h"
-#include "neat/AsyncNEAT.h"
+
+#include <ctime>
+#include <iomanip>
+#include <limits>
 #include <sstream>
 #include <stdexcept>
-#include <limits>
-#include <iomanip>
 #include <string>
-#include <ctime>
+
+#include "neat/AsyncNEAT.h"
 
 using namespace revolve::brain;
 

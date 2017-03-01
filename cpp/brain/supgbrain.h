@@ -1,14 +1,14 @@
 #ifndef REVOLVE_BRAIN_SUPGBRAIN_H
 #define REVOLVE_BRAIN_SUPGBRAIN_H
 
-#include "Brain.h"
-#include "brain/supg/SUPGNeuron.h"
-#include "neat/AsyncNEAT.h"
-#include "Evaluator.h"
-
 #include <vector>
 #include <memory>
 #include <iostream>
+
+#include "Brain.h"
+#include "Evaluator.h"
+#include "brain/supg/SUPGNeuron.h"
+#include "neat/AsyncNEAT.h"
 
 namespace revolve {
 namespace brain {

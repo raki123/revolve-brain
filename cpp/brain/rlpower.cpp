@@ -4,10 +4,11 @@
 
 #include "RLPower.h"
 
-#include <random>
 #include <fstream>
+#include <random>
 
 #include <gsl/gsl_spline.h>
+
 #include <yaml-cpp/yaml.h>
 
 using namespace revolve::brain;

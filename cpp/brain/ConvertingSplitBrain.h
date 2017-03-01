@@ -1,10 +1,11 @@
 #ifndef REVOLVE_BRAIN_CONVERTING_SPLIT_BRAIN_H_
 #define REVOLVE_BRAIN_CONVERTING_SPLIT_BRAIN_H_
 
-#include "SplitBrain.h"
-#include "Evaluator.h"
 #include <iostream>
 #include <fstream>
+
+#include "Evaluator.h"
+#include "SplitBrain.h"
 
 namespace revolve
 {

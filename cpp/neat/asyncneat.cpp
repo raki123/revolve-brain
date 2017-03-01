@@ -1,11 +1,6 @@
 #include "AsyncNEAT.h"
 
-#include "neat.h"
-#include "genomemanager.h"
 #include "species/speciesorganism.h"
-#include <iostream>
-#include <limits>
-#include <stdexcept>
 
 #define DEFAULT_RNG_SEED 1
 
@@ -30,13 +25,12 @@ AsyncNeat::AsyncNeat(unsigned int n_inputs,
   NEAT::rng_t rng{rng_seed};
   NEAT::rng_t rng_exp(rng.integer());
   std::vector<std::unique_ptr<NEAT::Genome>> genomes =
-          NEAT::env->genome_manager
-                  ->create_seed_generation(NEAT::env->pop_size,
-                                           rng_exp,
-                                           1,
-                                           n_inputs,
-                                           n_outputs,
-                                           n_inputs);
+          NEAT::env->genome_manager->create_seed_generation(NEAT::env->pop_size,
+                                                            rng_exp,
+                                                            1,
+                                                            n_inputs,
+                                                            n_outputs,
+                                                            n_inputs);
   //Spawn the Population
   population = NEAT::Population::create(rng_exp,
                                         genomes);
@@ -57,19 +51,15 @@ AsyncNeat::getEvaluation()
     return nullptr;
   }
 
-  std::shared_ptr<NeatEvaluation> new_evaluation = this->evaluatingQueue
-          .front();
+  std::shared_ptr<NeatEvaluation> new_evaluation = this->evaluatingQueue.front();
   new_evaluation->add_finished_callback([this, new_evaluation](float fitness) {
-      this->evaluatingList
-              .remove(new_evaluation);
+      this->evaluatingList.remove(new_evaluation);
       this->singleEvalutionFinished(new_evaluation,
                                     fitness);
   });
 
-  this->evaluatingQueue
-          .pop_front();
-  this->evaluatingList
-          .push_back(new_evaluation);
+  this->evaluatingQueue.pop_front();
+  this->evaluatingList.push_back(new_evaluation);
 
   return new_evaluation;
 }

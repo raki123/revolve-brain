@@ -1,25 +1,20 @@
-#include "testmultinnspeciesneat.h"
+#include "test_AsyncNEAT.h"
 
 #include "neat/AsyncNEAT.h"
-#include <limits>
 #include "network/cpu/cpunetwork.h"
-#include <vector>
-#include <cmath>
-#include <iostream>
 
-TestMultiNNSpeciesNeat::TestMultiNNSpeciesNeat()
+TestAsyncNeat::TestAsyncNeat()
 {
 
 }
 
-TestMultiNNSpeciesNeat::~TestMultiNNSpeciesNeat()
+TestAsyncNeat::~TestAsyncNeat()
 {
 
 }
-
 
 bool
-TestMultiNNSpeciesNeat::test()
+TestAsyncNeat::test()
 {
   if (!testXOR())
     return false;
@@ -32,11 +27,10 @@ TestMultiNNSpeciesNeat::test()
 // 1 0 -> 1
 // 1 1 -> 0
 bool
-TestMultiNNSpeciesNeat::testXOR()
+TestAsyncNeat::testXOR()
 {
   AsyncNeat::Init();
   AsyncNeat::SetSearchType(NEAT::GeneticSearchType::BLENDED);
-  AsyncNeat::SetPopulationType(NEAT::PopulationType::MULTI_NN_SPECIES);
   AsyncNeat::SetPopulationSize(10);
   AsyncNeat neat(2,
                  1,
@@ -98,6 +92,6 @@ int
 main(int argc,
      char *argv[])
 {
-  TestMultiNNSpeciesNeat t;
+  TestAsyncNeat t;
   return t.test() ? 0 : 1;
 }

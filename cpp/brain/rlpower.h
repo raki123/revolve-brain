@@ -5,14 +5,13 @@
 #ifndef REVOLVE_BRAIN_RLPOWER_H
 #define REVOLVE_BRAIN_RLPOWER_H
 
-#include "Brain.h"
-#include "Evaluator.h"
-
 #include <cmath>
 #include <string>
 
 #include <boost/thread/mutex.hpp>
 
+#include "Brain.h"
+#include "Evaluator.h"
 
 namespace revolve
 {

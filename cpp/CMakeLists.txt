@@ -77,9 +77,9 @@ install(TARGETS revolve-brain DESTINATION lib)
 #if tests are enabled
 enable_testing()
 
-add_executable(testAsyncNeat neat/test/testasyncneat.cpp)
-add_executable(testCustomGenomeManager neat/test/testcustomgenomemanager.cpp)
-add_executable(testMultiNNSpecies neat/test/testmultinnspeciesneat.cpp)
+add_executable(testAsyncNeat neat/test/test_AsyncNEAT.cpp)
+add_executable(testCustomGenomeManager neat/test/test_CustomGenomeManager.cpp)
+add_executable(testMultiNNSpecies neat/test/test_MultiANNSpeciesNEAT.cpp)
 add_executable(testSUPGBrain test/test_SUPGBrain.cpp)
 target_link_libraries(testAsyncNeat revolve-brain)
 target_link_libraries(testCustomGenomeManager revolve-brain)

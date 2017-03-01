@@ -1,11 +1,11 @@
 #ifndef REVOLVE_BRAIN_CONVERSION_H_
 #define REVOLVE_BRAIN_CONVERSION_H_
 
-#include "brain/learner/cppneat/GeneticEncoding.h"
 #include "brain/controller/ExtendedANN.h"
 #include "brain/controller/LayeredExtendedANN.h"
 #include "brain/learner/NEATLearner.h"
 #include "brain/learner/RLPowerLearner.h"
+#include "brain/learner/cppneat/GeneticEncoding.h"
 
 namespace revolve
 {

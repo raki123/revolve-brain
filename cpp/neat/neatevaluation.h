@@ -1,9 +1,10 @@
 #ifndef NEATEVALUATION_H
 #define NEATEVALUATION_H
 
-#include "organism.h"
 #include <functional>
 #include <iostream>
+
+#include "organism.h"
 
 class NeatEvaluation
 {
