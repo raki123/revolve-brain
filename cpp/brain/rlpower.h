@@ -2,8 +2,8 @@
 // Created by Milan Jelisavcic on 28/03/16.
 //
 
-#ifndef REVOLVE_BRAIN_RLPOWER_H
-#define REVOLVE_BRAIN_RLPOWER_H
+#ifndef REVOLVEBRAIN_BRAIN_RLPOWER_H_
+#define REVOLVEBRAIN_BRAIN_RLPOWER_H_
 
 #include <cmath>
 #include <string>
@@ -271,4 +271,4 @@ private:
 }
 }
 
-#endif //REVOLVE_BRAIN_RLPOWER_H
+#endif // REVOLVEBRAIN_BRAIN_RLPOWER_H_

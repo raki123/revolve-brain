@@ -17,8 +17,8 @@
  *
  */
 
-#ifndef SUPGGENOMEMANAGER_H
-#define SUPGGENOMEMANAGER_H
+#ifndef REVOLVEBRAIN_BRAIN_SUPGG_SUPGGENOMEMANAGER_H_
+#define REVOLVEBRAIN_BRAIN_SUPGG_SUPGGENOMEMANAGER_H_
 
 #include "innovgenome/innovgenomemanager.h"
 
@@ -37,4 +37,4 @@ public:
                            size_t nhidden) override;
 };
 
-#endif // SUPGGENOMEMANAGER_H
+#endif // REVOLVEBRAIN_BRAIN_SUPGG_SUPGGENOMEMANAGER_H_

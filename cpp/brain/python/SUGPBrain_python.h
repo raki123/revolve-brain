@@ -17,8 +17,8 @@
  *
  */
 
-#ifndef SUPGBRAIN_PYTHON_H
-#define SUPGBRAIN_PYTHON_H
+#ifndef REVOLVEBRAIN_BRAIN_PYTHON_SUPGBRAIN_H_
+#define REVOLVEBRAIN_BRAIN_PYTHON_SUPGBRAIN_H_
 
 #include "brain/supgbrain.h"
 #include <boost/python/list.hpp>
@@ -45,4 +45,4 @@ public:
 }
 }
 
-#endif // SUPGBRAIN_PYTHON_H
+#endif // REVOLVEBRAIN_BRAIN_PYTHON_SUPGBRAIN_H_

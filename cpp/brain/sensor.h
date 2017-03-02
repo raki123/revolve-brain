@@ -1,5 +1,5 @@
-#ifndef REVOLVE_BRAIN_SENSOR_H
-#define REVOLVE_BRAIN_SENSOR_H
+#ifndef REVOLVEBRAIN_BRAIN_SENSOR_H_
+#define REVOLVEBRAIN_BRAIN_SENSOR_H_
 
 #include <string>
 
@@ -24,4 +24,4 @@ typedef boost::shared_ptr< Sensor > SensorPtr;
 }
 
 
-#endif // REVOLVE_BRAIN_SENSOR_H
+#endif // REVOLVEBRAIN_BRAIN_SENSOR_H_

@@ -2,8 +2,8 @@
  * Specifies a utility `Learner` base class, which is supposed to change the genome of the robot.
  */
 
-#ifndef REVOLVE_BRAIN_SPLIT_BRAIN_LEARNER_H_
-#define REVOLVE_BRAIN_SPLIT_BRAIN_LEARNER_H_
+#ifndef REVOLVEBRAIN_BRAIN_LEARNER_BRAINLEARNER_H_
+#define REVOLVEBRAIN_BRAIN_LEARNER_BRAINLEARNER_H_
 
 #include <string>
 
@@ -38,4 +38,4 @@ public:
 }
 }
 
-#endif /* REVOLVE_BRAIN_SPLIT_BRAIN_LEARNER_H_ */
+#endif // REVOLVEBRAIN_BRAIN_LEARNER_BRAINLEARNER_H_

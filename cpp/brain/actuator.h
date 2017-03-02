@@ -1,5 +1,5 @@
-#ifndef REVOLVE_BRAIN_ACTUATOR_H
-#define REVOLVE_BRAIN_ACTUATOR_H
+#ifndef REVOLVEBRAIN_BRAIN_ACTUATOR_H_
+#define REVOLVEBRAIN_BRAIN_ACTUATOR_H_
 
 #include <boost/shared_ptr.hpp>
 
@@ -28,4 +28,4 @@ typedef boost::shared_ptr<Actuator> ActuatorPtr;
 }
 
 
-#endif // REVOLVE_BRAIN_ACTUATOR_H
+#endif // REVOLVEBRAIN_BRAIN_ACTUATOR_H_

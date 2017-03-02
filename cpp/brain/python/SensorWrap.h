@@ -1,5 +1,5 @@
-#ifndef REVOLVE_BRAIN_SENSOR_WRAP_H
-#define REVOLVE_BRAIN_SENSOR_WRAP_H
+#ifndef REVOLVEBRAIN_BRAIN_PYTHON_SENSORWRAP_H_
+#define REVOLVEBRAIN_BRAIN_PYTHON_SENSORWRAP_H_
 
 #include <boost/python/wrapper.hpp>
 #include <boost/python/object.hpp>
@@ -34,4 +34,4 @@ public:
 }
 }
 
-#endif // REVOLVE_BRAIN_SENSOR_WRAP_H
+#endif // REVOLVEBRAIN_BRAIN_PYTHON_SENSORWRAP_H_

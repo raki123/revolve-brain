@@ -1,5 +1,5 @@
-#ifndef PYTHON_ARRAY_H
-#define PYTHON_ARRAY_H
+#ifndef REVOLVEBRAIN_BRAIN_PYTHON_ARRAY_H_
+#define REVOLVEBRAIN_BRAIN_PYTHON_ARRAY_H_
 
 template <typename ValueType>
 class python_array
@@ -39,4 +39,4 @@ public:
 
 };
 
-#endif // PYTHON_ARRAY_H
+#endif // REVOLVEBRAIN_BRAIN_PYTHON_ARRAY_H_

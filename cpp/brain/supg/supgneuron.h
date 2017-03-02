@@ -1,5 +1,5 @@
-#ifndef SUPGNEURON_H
-#define SUPGNEURON_H
+#ifndef REVOLVEBRAIN_BRAIN_SUPGG_SUPGNEURON_H_
+#define REVOLVEBRAIN_BRAIN_SUPGG_SUPGNEURON_H_
 
 #include <vector>
 #include <chrono>
@@ -81,4 +81,4 @@ public:
     const unsigned int supg_internal_outputs; // 2
 };
 
-#endif // SUPGNEURON_H
+#endif // REVOLVEBRAIN_BRAIN_SUPGG_SUPGNEURON_H_

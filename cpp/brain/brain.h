@@ -4,8 +4,8 @@
  * ignoring the default brain behavior in the `RobotController`.
  */
 
-#ifndef REVOLVE_BRAIN_BRAIN_H_
-#define REVOLVE_BRAIN_BRAIN_H_
+#ifndef REVOLVEBRAIN_BRAIN_BRAIN_H_
+#define REVOLVEBRAIN_BRAIN_BRAIN_H_
 
 #include <vector>
 
@@ -70,4 +70,4 @@ protected:
 }
 }
 
-#endif /* REVOLVE_BRAIN_BRAIN_H_ */
+#endif // REVOLVEBRAIN_BRAIN_BRAIN_H_

@@ -2,8 +2,8 @@
  * Specifies a utility `SplitBrain` base class. Here the learner and controller are separeted explicitly.
  */
 
-#ifndef REVOLVE_BRAIN_SPLIT_BRAIN_H_
-#define REVOLVE_BRAIN_SPLIT_BRAIN_H_
+#ifndef REVOLVEBRAIN_BRAIN_SPLITBRAIN_H_
+#define REVOLVEBRAIN_BRAIN_SPLITBRAIN_H_
 
 #include "Brain.h"
 #include "brain/controller/Controller.h"
@@ -26,4 +26,4 @@ protected:
 }
 }
 
-#endif /* REVOLVE_BRAIN_SPLIT_BRAIN_H_ */
+#endif // REVOLVEBRAIN_BRAIN_SPLITBRAIN_H_

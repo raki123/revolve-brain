@@ -1,5 +1,6 @@
-#ifndef CPPNEAT_TYPES_H_
-#define CPPNEAT_TYPES_H_
+#ifndef REVOLVEBRAIN_BRAIN_LEARNER_CPPNNEAT_TYPES_H_
+#define REVOLVEBRAIN_BRAIN_LEARNER_CPPNNEAT_TYPES_H_
+
 #include <boost/shared_ptr.hpp>
 
 namespace CPPNEAT {
@@ -18,4 +19,4 @@ namespace CPPNEAT {
 	typedef boost::shared_ptr<Mutator> MutatorPtr;
 } 
 
-#endif //CPPNEAT_TYPES_H_
+#endif // REVOLVEBRAIN_BRAIN_LEARNER_CPPNNEAT_TYPES_H_

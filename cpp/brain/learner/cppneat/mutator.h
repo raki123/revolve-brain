@@ -1,12 +1,12 @@
-#ifndef NEAT_MUTATOR_H_
-#define NEAT_MUTATOR_H_
-
-#include "GeneticEncoding.h"
+#ifndef REVOLVEBRAIN_BRAIN_LEARNER_CPPNNEAT_MUTATOR_H_
+#define REVOLVEBRAIN_BRAIN_LEARNER_CPPNNEAT_MUTATOR_H_
 
 #include <map>
 #include <string>
 #include <vector>
 #include <random>
+
+#include "GeneticEncoding.h"
 
 //class responsible for mutation
 namespace CPPNEAT

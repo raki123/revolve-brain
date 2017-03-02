@@ -1,8 +1,8 @@
-#ifndef NEAT_NEURON_H_
-#define NEAT_NEURON_H_
+#ifndef REVOLVEBRAIN_BRAIN_LEARNER_CPPNNEAT_NEURON_H_
+#define REVOLVEBRAIN_BRAIN_LEARNER_CPPNNEAT_NEURON_H_
 
-#include <string>
 #include <map>
+#include <string>
 #include <vector>
 
 //class containg all information that is evolved for neurons
@@ -68,4 +68,4 @@ public:
 };
 }
 
-#endif  //NEAT_NEURON_H_
+#endif  // REVOLVEBRAIN_BRAIN_LEARNER_CPPNNEAT_NEURON_H_

@@ -1,5 +1,5 @@
-#ifndef REVOLVE_BRAIN_CONVERSION_H_
-#define REVOLVE_BRAIN_CONVERSION_H_
+#ifndef REVOLVEBRAIN_BRAIN_CONVERSION_H_
+#define REVOLVEBRAIN_BRAIN_CONVERSION_H_
 
 #include "brain/controller/ExtendedANN.h"
 #include "brain/controller/LayeredExtendedANN.h"
@@ -79,4 +79,4 @@ convertForHyperFromSplines(PolicyPtr policy);
 }
 
 
-#endif /* REVOLVE_BRAIN_CONVERSION_H_ */
+#endif // REVOLVEBRAIN_BRAIN_CONVERSION_H_

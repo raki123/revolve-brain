@@ -1,5 +1,5 @@
-﻿#ifndef BASE_LEARNER_H
-#define BASE_LEARNER_H
+﻿#ifndef REVOLVEBRAIN_BRAIN_LEARNER_BASELEARNER_H_
+#define REVOLVEBRAIN_BRAIN_LEARNER_BASELEARNER_H_
 
 #include <vector>
 #include <memory>
@@ -72,4 +72,4 @@ protected:
 }
 }
 
-#endif // BASE_LEARNER_H
+#endif // REVOLVEBRAIN_BRAIN_LEARNER_BASELEARNER_H_

@@ -1,5 +1,5 @@
-#ifndef REVOLVE_BRAIN_EVALUATOR_H
-#define REVOLVE_BRAIN_EVALUATOR_H
+#ifndef REVOLVEBRAIN_BRAIN_EVALUATOR_H
+#define REVOLVEBRAIN_BRAIN_EVALUATOR_H
 
 #include <boost/shared_ptr.hpp>
 
@@ -26,4 +26,4 @@ typedef boost::shared_ptr<revolve::brain::Evaluator> EvaluatorPtr;
 }
 }
 
-#endif // REVOLVE_BRAIN_EVALUATOR_H
+#endif // REVOLVEBRAIN_BRAIN_EVALUATOR_H

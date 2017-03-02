@@ -1,5 +1,5 @@
-#ifndef REVOLVE_BRAIN_PYTHON_LIST_WRAP_H
-#define REVOLVE_BRAIN_PYTHON_LIST_WRAP_H
+#ifndef REVOLVEBRAIN_BRAIN_PYTHON_LISTWRAP_H_
+#define REVOLVEBRAIN_BRAIN_PYTHON_LISTWRAP_H_
 
 #include <boost/python/object.hpp>
 #include <boost/python/list.hpp>
@@ -92,4 +92,4 @@ public:
     }
 };
 
-#endif // REVOLVE_BRAIN_PYTHON_LIST_WRAP_H
+#endif // REVOLVEBRAIN_BRAIN_PYTHON_LISTWRAP_H_

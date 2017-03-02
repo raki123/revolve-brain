@@ -1,13 +1,14 @@
-#ifndef NEAT_GENETIC_ENCODING_H_
-#define NEAT_GENETIC_ENCODING_H_
+#ifndef REVOLVEBRAIN_BRAIN_LEARNER_CPPNNEAT_GENETICENCODING_H_
+#define REVOLVEBRAIN_BRAIN_LEARNER_CPPNNEAT_GENETICENCODING_H_
+
+#include <vector>
+#include <utility>
 
 #include "Types.h"
 #include "Neuron.h"
 #include "ConnectionGenome.h"
 #include "NeuronGenome.h"
 
-#include <vector>
-#include <utility>
 //class for the encoding of one genotype
 namespace CPPNEAT
 {
@@ -142,4 +143,4 @@ public:
 };
 }
 
-#endif //NEAT_GENETIC_ENCODING_H_
+#endif // REVOLVEBRAIN_BRAIN_LEARNER_CPPNNEAT_GENETICENCODING_H_

@@ -2,8 +2,8 @@
  * Specifies a utility `Contoller` base class, which is supposed to control the robot according to a given genome.
  */
 
-#ifndef REVOLVE_BRAIN_SPLIT_BRAIN_CONTROLLER_H_
-#define REVOLVE_BRAIN_SPLIT_BRAIN_CONTROLLER_H_
+#ifndef REVOLVEBRAIN_BRAIN_CONTROLLER_CONTROLLER_H_
+#define REVOLVEBRAIN_BRAIN_CONTROLLER_CONTROLLER_H_
 
 #include "brain/Actuator.h"
 #include "brain/Sensor.h"
@@ -56,4 +56,4 @@ public:
 }
 }
 
-#endif /* REVOLVE_BRAIN_SPLIT_BRAIN_CONTROLLER_H_ */
+#endif // REVOLVEBRAIN_BRAIN_CONTROLLER_CONTROLLER_H_
