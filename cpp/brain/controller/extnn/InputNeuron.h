@@ -3,10 +3,8 @@
 
 #include "Neuron.h"
 
-namespace revolve
-{
-namespace brain
-{
+namespace revolve {
+namespace brain {
 
 class InputNeuron
         : public Neuron

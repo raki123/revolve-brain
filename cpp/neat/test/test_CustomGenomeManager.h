@@ -1,5 +1,5 @@
-#ifndef TESTASYNCNEAT_H
-#define TESTASYNCNEAT_H
+#ifndef REVOLVE_NEAT_TEST_CUSTOMGENOMEMANAGER_H_
+#define REVOLVE_NEAT_TEST_CUSTOMGENOMEMANAGER_H_
 
 /**
  * Test class for AsyncNeat class
@@ -27,4 +27,4 @@ private:
     const int MAX_EVALUATIONS = 9999;
 };
 
-#endif // TESTASYNCNEAT_H
+#endif // REVOLVE_NEAT_TEST_CUSTOMGENOMEMANAGER_H_

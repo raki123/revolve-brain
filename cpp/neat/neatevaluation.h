@@ -1,5 +1,5 @@
-#ifndef NEATEVALUATION_H
-#define NEATEVALUATION_H
+#ifndef REVOLVE_NEAT_NEATEVALUATION_H_
+#define REVOLVE_NEAT_NEATEVALUATION_H_
 
 #include <functional>
 #include <iostream>
@@ -40,4 +40,4 @@ private:
     NEAT::Organism *organism;
 };
 
-#endif // NEATEVALUATION_H
+#endif // REVOLVE_NEAT_NEATEVALUATION_H_

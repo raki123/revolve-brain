@@ -5,10 +5,8 @@
 #include "NeuralConnection.h"
 
 
-namespace revolve
-{
-namespace brain
-{
+namespace revolve {
+namespace brain {
 
 class LeakyIntegrator
         : public Neuron

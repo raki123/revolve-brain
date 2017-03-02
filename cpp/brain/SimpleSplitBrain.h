@@ -9,14 +9,24 @@
 namespace revolve {
 namespace brain {
 
-template <typename Genome> 
-Genome idem(Genome g) { return g;}
+template <typename Genome>
+Genome
+idem(Genome g)
+{ return g; }
 
 template <typename Genome>
-class SimpleSplitBrain : public ConvSplitBrain<Genome,Genome> {
+class SimpleSplitBrain
+        : public ConvSplitBrain<Genome, Genome>
+{
 public:
-    SimpleSplitBrain(std::string modelName) : ConvSplitBrain<Genome,Genome>(&idem, &idem, modelName) { };
-    virtual ~SimpleSplitBrain() {};
+    SimpleSplitBrain(std::string modelName) :
+            ConvSplitBrain<Genome, Genome>(&idem,
+                                           &idem,
+                                           modelName)
+    {};
+
+    virtual ~SimpleSplitBrain()
+    {};
 };
 
 }

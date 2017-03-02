@@ -9,8 +9,7 @@
 #include "GeneticEncoding.h"
 
 //class responsible for mutation
-namespace CPPNEAT
-{
+namespace CPPNEAT {
 class Mutator
 {
 public:

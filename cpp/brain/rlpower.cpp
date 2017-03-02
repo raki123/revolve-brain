@@ -99,8 +99,8 @@ RLPower::generateInitPolicy()
 
   for (unsigned int i = 0; i < n_actuators_; i++) {
     interpolation_cache_->at(i)
-            .resize(interpolation_spline_size_,
-                    0);
+                        .resize(interpolation_spline_size_,
+                                0);
   }
 
   this->generateCache();
@@ -146,8 +146,8 @@ RLPower::loadPolicy(std::string const policy_path)
 
   for (unsigned int i = 0; i < n_actuators_; i++) {
     interpolation_cache_->at(i)
-            .resize(interpolation_spline_size_,
-                    0);
+                        .resize(interpolation_spline_size_,
+                                0);
   }
 
   this->generateCache();

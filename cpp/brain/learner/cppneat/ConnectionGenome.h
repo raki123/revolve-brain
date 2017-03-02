@@ -3,8 +3,7 @@
 
 #include "Genome.h"
 //class for connection genes
-namespace CPPNEAT
-{
+namespace CPPNEAT {
 class ConnectionGene
         : public Gene
 {

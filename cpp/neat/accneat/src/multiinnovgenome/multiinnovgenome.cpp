@@ -2,59 +2,65 @@
 
 using namespace NEAT;
 
-MultiInnovGenome::MultiInnovGenome(std::list< std::unique_ptr< InnovGenome > >& genome_list)
+MultiInnovGenome::MultiInnovGenome(std::list<std::unique_ptr<InnovGenome> > &genome_list)
 {
-    innov_genome_list = new std::vector<std::unique_ptr<InnovGenome>>();
+  innov_genome_list = new std::vector<std::unique_ptr<InnovGenome>>();
 
-     for (auto g = genome_list.begin(); g != genome_list.end(); g++) {
-         innov_genome_list->push_back(std::move(*g));
-     }
-     innov_genome_list->shrink_to_fit();
+  for (auto g = genome_list.begin(); g != genome_list.end(); g++) {
+    innov_genome_list->push_back(std::move(*g));
+  }
+  innov_genome_list->shrink_to_fit();
 }
 
 MultiInnovGenome::~MultiInnovGenome()
 {
-    delete innov_genome_list;
+  delete innov_genome_list;
 }
 
 
-Genome& MultiInnovGenome::operator=(const Genome& other)
+Genome &
+MultiInnovGenome::operator=(const Genome &other)
 {
-    return *this = dynamic_cast<const MultiInnovGenome &>(other);
+  return *this = dynamic_cast<const MultiInnovGenome &>(other);
 }
 
-void MultiInnovGenome::verify()
+void
+MultiInnovGenome::verify()
 {
 #ifdef NDEBUG
-    return;
+  return;
 #else
-    for (auto g = innov_genome_list->begin(); g != innov_genome_list->end(); g++) {
-        (*g)->verify();
-    }
+  for (auto g = innov_genome_list->begin(); g != innov_genome_list->end(); g++) {
+    (*g)->verify();
+  }
 #endif
 }
 
-Genome::Stats MultiInnovGenome::get_stats() {
-    size_t nodes_size = 0,
-           links_size = 0;
-    for (auto g = innov_genome_list->begin(); g != innov_genome_list->end(); g++) {
-        nodes_size += (*g)->nodes.size();
-        links_size += (*g)->links.size();
-    }
+Genome::Stats
+MultiInnovGenome::get_stats()
+{
+  size_t nodes_size = 0,
+          links_size = 0;
+  for (auto g = innov_genome_list->begin(); g != innov_genome_list->end(); g++) {
+    nodes_size += (*g)->nodes.size();
+    links_size += (*g)->links.size();
+  }
 
-    return {nodes_size, links_size};
+  return {nodes_size, links_size};
 }
 
-void MultiInnovGenome::print(std::ostream& out)
+void
+MultiInnovGenome::print(std::ostream &out)
 {
-    for (auto g = innov_genome_list->begin(); g != innov_genome_list->end(); g++) {
-        (*g)->print(out);
-    }
+  for (auto g = innov_genome_list->begin(); g != innov_genome_list->end(); g++) {
+    (*g)->print(out);
+  }
 }
 
-void MultiInnovGenome::init_phenotype(Network& net)
+void
+MultiInnovGenome::init_phenotype(Network &net)
 {
-    throw std::invalid_argument("init_phenotype not supported like this");
+  throw std::invalid_argument("init_phenotype not supported like this");
 }
 
 

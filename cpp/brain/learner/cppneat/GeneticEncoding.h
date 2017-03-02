@@ -10,8 +10,7 @@
 #include "NeuronGenome.h"
 
 //class for the encoding of one genotype
-namespace CPPNEAT
-{
+namespace CPPNEAT {
 class GeneticEncoding
 {
 

@@ -3,10 +3,8 @@
 
 #include "Controller.h"
 
-namespace revolve
-{
-namespace brain
-{
+namespace revolve {
+namespace brain {
 
 typedef std::vector<double> Spline;
 

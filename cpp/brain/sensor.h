@@ -11,14 +11,20 @@ namespace brain {
 class Sensor
 {
 public:
-    virtual ~Sensor() {}
+    virtual ~Sensor()
+    {}
 
-    virtual void read(double *input_vector) = 0;
-    virtual unsigned int inputs() const = 0;
-    virtual std::string sensorId() const = 0;
+    virtual void
+    read(double *input_vector) = 0;
+
+    virtual unsigned int
+    inputs() const = 0;
+
+    virtual std::string
+    sensorId() const = 0;
 };
 
-typedef boost::shared_ptr< Sensor > SensorPtr;
+typedef boost::shared_ptr<Sensor> SensorPtr;
 
 }
 }

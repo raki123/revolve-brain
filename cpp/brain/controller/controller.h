@@ -10,10 +10,8 @@
 #include <vector>
 
 
-namespace revolve
-{
-namespace brain
-{
+namespace revolve {
+namespace brain {
 
 template <typename Phenotype>
 class Controller

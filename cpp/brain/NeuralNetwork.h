@@ -33,10 +33,8 @@
 // (bias, tau, gain) or (phase offset, period, gain)
 #define MAX_NEURON_PARAMS 3
 
-namespace revolve
-{
-namespace brain
-{
+namespace revolve {
+namespace brain {
 
 /**
  * Copied from NeuronRepresentation.h

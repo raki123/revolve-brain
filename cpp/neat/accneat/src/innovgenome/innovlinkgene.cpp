@@ -23,17 +23,18 @@ InnovLinkGene::InnovLinkGene(real_t w,
                              int onode_id,
                              bool recur,
                              int innov,
-                             real_t mnum) {
-    _weight = w;
-    _in_node_id = inode_id;
-    _out_node_id = onode_id;
-    _is_recurrent = recur;
-    _trait_id = 1;
+                             real_t mnum)
+{
+  _weight = w;
+  _in_node_id = inode_id;
+  _out_node_id = onode_id;
+  _is_recurrent = recur;
+  _trait_id = 1;
 
-    innovation_num = innov;
-    mutation_num = mnum;
-    enable = true;
-    frozen = false;
+  innovation_num = innov;
+  mutation_num = mnum;
+  enable = true;
+  frozen = false;
 }
 
 
@@ -44,86 +45,92 @@ InnovLinkGene::InnovLinkGene(int trait_id,
                              int onode_id,
                              bool recur,
                              int innov,
-                             real_t mnum) {
-    _weight = w;
-    _in_node_id = inode_id;
-    _out_node_id = onode_id;
-    _is_recurrent = recur;
-    _trait_id = trait_id;
+                             real_t mnum)
+{
+  _weight = w;
+  _in_node_id = inode_id;
+  _out_node_id = onode_id;
+  _is_recurrent = recur;
+  _trait_id = trait_id;
 
-    innovation_num=innov;
-    mutation_num=mnum;
-    enable=true;
-    frozen=false;
+  innovation_num = innov;
+  mutation_num = mnum;
+  enable = true;
+  frozen = false;
 }
 
 InnovLinkGene::InnovLinkGene(InnovLinkGene *g,
                              int trait_id,
                              int inode_id,
-                             int onode_id) {
-    _weight = g->_weight;
-    _in_node_id = inode_id;
-    _out_node_id = onode_id;
-    _is_recurrent = g->_is_recurrent;
-    _trait_id = trait_id;
+                             int onode_id)
+{
+  _weight = g->_weight;
+  _in_node_id = inode_id;
+  _out_node_id = onode_id;
+  _is_recurrent = g->_is_recurrent;
+  _trait_id = trait_id;
 
-    innovation_num=g->innovation_num;
-    mutation_num=g->mutation_num;
-    enable=g->enable;
+  innovation_num = g->innovation_num;
+  mutation_num = g->mutation_num;
+  enable = g->enable;
 
-    frozen=g->frozen;
+  frozen = g->frozen;
 }
 
 //todo: use NodeLookup
-InnovLinkGene::InnovLinkGene(const char *argline) {
-    //InnovLinkGene parameter holders
-    int trait_id;
-    int inodenum;
-    int onodenum;
-    real_t weight;
-    int recur;
-
-    //Get the gene parameters
-    std::stringstream ss(argline);
-    ss >> trait_id >> inodenum >> onodenum >> weight >> recur >> innovation_num >> mutation_num >> enable;
-
-    frozen=false; //TODO: MAYBE CHANGE
-
-    _weight = weight;
-    _in_node_id = inodenum;
-    _out_node_id = onodenum;
-    _is_recurrent = recur;
-    _trait_id = trait_id;
-}
-
-InnovLinkGene::InnovLinkGene(const InnovLinkGene& gene)
+InnovLinkGene::InnovLinkGene(const char *argline)
 {
-    innovation_num = gene.innovation_num;
-    mutation_num = gene.mutation_num;
-    enable = gene.enable;
-    frozen = gene.frozen;
+  //InnovLinkGene parameter holders
+  int trait_id;
+  int inodenum;
+  int onodenum;
+  real_t weight;
+  int recur;
 
-    _weight = gene._weight;
-    _in_node_id = gene._in_node_id;
-    _out_node_id = gene._out_node_id;
-    _is_recurrent = gene._is_recurrent;
-    _trait_id = gene._trait_id;
+  //Get the gene parameters
+  std::stringstream ss(argline);
+  ss >> trait_id >> inodenum >> onodenum >> weight >> recur >> innovation_num >> mutation_num >> enable;
+
+  frozen = false; //TODO: MAYBE CHANGE
+
+  _weight = weight;
+  _in_node_id = inodenum;
+  _out_node_id = onodenum;
+  _is_recurrent = recur;
+  _trait_id = trait_id;
 }
 
-InnovLinkGene::~InnovLinkGene() {
+InnovLinkGene::InnovLinkGene(const InnovLinkGene &gene)
+{
+  innovation_num = gene.innovation_num;
+  mutation_num = gene.mutation_num;
+  enable = gene.enable;
+  frozen = gene.frozen;
+
+  _weight = gene._weight;
+  _in_node_id = gene._in_node_id;
+  _out_node_id = gene._out_node_id;
+  _is_recurrent = gene._is_recurrent;
+  _trait_id = gene._trait_id;
+}
+
+InnovLinkGene::~InnovLinkGene()
+{
 }
 
 
-void InnovLinkGene::print_to_file(std::ostream &outFile) {
-    outFile<<"gene ";
+void
+InnovLinkGene::print_to_file(std::ostream &outFile)
+{
+  outFile << "gene ";
 
-    //Start off with the trait number for this gene
-    outFile << _trait_id << " ";
-    outFile << _in_node_id << " ";
-    outFile << _out_node_id << " ";
-    outFile << _weight << " ";
-    outFile << _is_recurrent << " ";
-    outFile << innovation_num << " ";
-    outFile << mutation_num << " ";
-    outFile << enable << std::endl;
+  //Start off with the trait number for this gene
+  outFile << _trait_id << " ";
+  outFile << _in_node_id << " ";
+  outFile << _out_node_id << " ";
+  outFile << _weight << " ";
+  outFile << _is_recurrent << " ";
+  outFile << innovation_num << " ";
+  outFile << mutation_num << " ";
+  outFile << enable << std::endl;
 }

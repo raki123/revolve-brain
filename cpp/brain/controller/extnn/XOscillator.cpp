@@ -6,83 +6,85 @@ namespace brain {
 
 
 XOscillator::XOscillator(const std::string &id,
-			 const std::map<std::string, double> &params):
-Neuron(id)
+                         const std::map<std::string, double> &params) :
+        Neuron(id)
 {
-	if (!params.count("rv:tau")) {
-		std::cerr << "A `" << "X-Oscillator" << 
-		"` neuron requires an `rv:tau` element." << std::endl;
-		throw std::runtime_error("Robot brain error");
-	}
-	
-	this->tau_ = params.find("rv:tau")->second;
+  if (!params.count("rv:tau")) {
+    std::cerr << "A `" << "X-Oscillator" <<
+              "` neuron requires an `rv:tau` element." << std::endl;
+    throw std::runtime_error("Robot brain error");
+  }
 
-	this->lastTime_ = 0;
-	this->stateDeriv_ = 0;
+  this->tau_ = params.find("rv:tau")->second;
+
+  this->lastTime_ = 0;
+  this->stateDeriv_ = 0;
 }
 
 
-double XOscillator::CalculateOutput(double t)
+double
+XOscillator::CalculateOutput(double t)
 {
-	double deltaT = t - lastTime_;
-	lastTime_ = t;
+  double deltaT = t - lastTime_;
+  lastTime_ = t;
 
-	if (deltaT > 0.1) {
-		deltaT = 0.1;
-	}
+  if (deltaT > 0.1) {
+    deltaT = 0.1;
+  }
 
-	double vInput = 0;  // input from V-neuron of the same oscillator
-	double xInput = this->output_; // input from X-neuron of the same oscillator (this neuron)
+  double vInput = 0;  // input from V-neuron of the same oscillator
+  double xInput = this->output_; // input from X-neuron of the same oscillator (this neuron)
 
-	for (auto it = this->incomingConnections_.begin(); it != this->incomingConnections_.end(); ++it)
-	{
-		auto socketId = it->first;
-		auto inConnection = it->second;
+  for (auto it = this->incomingConnections_.begin(); it != this->incomingConnections_.end(); ++it) {
+    auto socketId = it->first;
+    auto inConnection = it->second;
 
-		if (socketId == "from_v") {
-			vInput += inConnection->GetInputNeuron()->GetOutput() * inConnection->GetWeight();
-		}
-	}
+    if (socketId == "from_v") {
+      vInput += inConnection->GetInputNeuron()->GetOutput() * inConnection->GetWeight();
+    }
+  }
 
-	stateDeriv_ = vInput / tau_;
-
+  stateDeriv_ = vInput / tau_;
 
 
-	double result = xInput + deltaT * stateDeriv_;
-	if (result > 1000.0) {
-		result = 1000.0;
-	}
-	if (result < -1000.0) {
-		result = -1000.0;
-	}
+  double result = xInput + deltaT * stateDeriv_;
+  if (result > 1000.0) {
+    result = 1000.0;
+  }
+  if (result < -1000.0) {
+    result = -1000.0;
+  }
 
-	return result;
+  return result;
 }
 
-std::map< std::string, double > XOscillator::getNeuronParameters()
+std::map<std::string, double>
+XOscillator::getNeuronParameters()
 {
-	std::map<std::string, double> ret;
-	ret["rv:tau"] = tau_;
-	return ret;
+  std::map<std::string, double> ret;
+  ret["rv:tau"] = tau_;
+  return ret;
 }
 
-void XOscillator::setNeuronParameters(std::map< std::string, double > params)
+void
+XOscillator::setNeuronParameters(std::map<std::string, double> params)
 {
-	if (!params.count("rv:tau")) {
-		std::cerr << "A `" << "X-Oscillator" << 
-		"` neuron requires an `rv:tau` element." << std::endl;
-		throw std::runtime_error("Robot brain error");
-	}
-	
-	this->tau_ = params.find("rv:tau")->second;
+  if (!params.count("rv:tau")) {
+    std::cerr << "A `" << "X-Oscillator" <<
+              "` neuron requires an `rv:tau` element." << std::endl;
+    throw std::runtime_error("Robot brain error");
+  }
 
-	this->stateDeriv_ = 0;
+  this->tau_ = params.find("rv:tau")->second;
+
+  this->stateDeriv_ = 0;
 }
 
 
-std::string XOscillator::getType()
+std::string
+XOscillator::getType()
 {
-	return "XOscillator";
+  return "XOscillator";
 }
 
 

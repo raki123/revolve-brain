@@ -21,8 +21,8 @@ PolicyController::PolicyController(unsigned int n_actuators,
 
   for (unsigned int i = 0; i < n_actuators; i++) {
     interpolation_cache_->at(i)
-            .resize(interpolation_cache_size_,
-                    0);
+                        .resize(interpolation_cache_size_,
+                                0);
   }
 }
 
@@ -198,7 +198,7 @@ PolicyController::GenerateRandomController(double noise_sigma,
       spline[j] = dist(mt);
     }
     controller->policy_
-            ->at(i) = spline;
+              ->at(i) = spline;
   }
 
   // Init of empty cache
@@ -207,9 +207,9 @@ PolicyController::GenerateRandomController(double noise_sigma,
 
   for (unsigned int i = 0; i < n_actuators; i++) {
     controller->interpolation_cache_
-            ->at(i)
-            .resize(controller->interpolation_cache_size_,
-                    0);
+              ->at(i)
+              .resize(controller->interpolation_cache_size_,
+                      0);
   }
 
   controller->update_cache();

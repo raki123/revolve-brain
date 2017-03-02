@@ -5,10 +5,8 @@
 #include "brain/Actuator.h"
 #include "brain/Sensor.h"
 
-namespace revolve
-{
-namespace brain
-{
+namespace revolve {
+namespace brain {
 
 class base_controller
 {

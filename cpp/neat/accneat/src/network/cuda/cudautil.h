@@ -19,52 +19,97 @@ using namespace NEAT;
 
 #define p(msg) std::cout << "[cuda]: " << msg << std::endl
 
-#define errif( STMT, MSG... ) if( STMT ) { fprintf(stderr, "[%s:%d] '%s' ", __FILE__, __LINE__, #STMT); fprintf(stderr, MSG); fprintf(stderr, "\n"); abort(); }
+#define errif(STMT, MSG...) if( STMT ) { fprintf(stderr, "[%s:%d] '%s' ", __FILE__, __LINE__, #STMT); fprintf(stderr, MSG); fprintf(stderr, "\n"); abort(); }
 
-#define require( STMT ) if( !(STMT) ) { fprintf(stderr, "ASSERTION ERROR! [%s:%d] '%s'\n", __FILE__, __LINE__, #STMT); abort(); }
+#define require(STMT) if( !(STMT) ) { fprintf(stderr, "ASSERTION ERROR! [%s:%d] '%s'\n", __FILE__, __LINE__, #STMT); abort(); }
 
-    static uchar *alloc_host(uint size) {
-        uchar *result;
-        xcuda( cudaMallocHost((void **)&result, size) );
-        return result;
-    }
-    static uchar *alloc_dev(uint size) {
-        uchar *result;
-        xcuda( cudaMalloc((void **)&result, size) );
-        return result;
-    }
+static uchar *
+alloc_host(uint size)
+{
+  uchar *result;
+  xcuda(cudaMallocHost((void **)&result,
+                       size));
+  return result;
+}
 
-    template<typename T>
-    static void free_host(accneat_inout T *&buf, bool tolerate_shutdown = false) {
-        if(buf) {
-            cudaError_t err = cudaFreeHost(buf);
-            if( (err == cudaSuccess)
-                || (tolerate_shutdown && (err == cudaErrorCudartUnloading)) ) {
-                buf = 0;
-            } else {
-                std::cerr << "Failed freeing cuda host buffer" << std::endl;
-                abort();
-            }
-        }
-    }
+static uchar *
+alloc_dev(uint size)
+{
+  uchar *result;
+  xcuda(cudaMalloc((void **)&result,
+                   size));
+  return result;
+}
 
-    template<typename T>
-    static void free_dev(T *&buf) {
-        if(buf) {
-            xcuda( cudaFree(buf) );
-            buf = 0;
-        }
-    }
+template <typename T>
+static void
+free_host(accneat_inout T
 
-    template<typename T>
-    static void grow_buffers(accneat_inout T *&h_buf, accneat_inout T *&d_buf,
-                             accneat_inout uint &capacity, accneat_in uint newlen) {
-        if(newlen > capacity) {
-            free_host(h_buf);
-            free_dev(d_buf);
-            capacity = newlen;
-            h_buf = alloc_host(newlen);
-            d_buf = alloc_dev(newlen);
-        }
-    }
+*&buf,
+
+bool tolerate_shutdown = false
+
+) {
+if(buf) {
+cudaError_t err = cudaFreeHost(buf);
+
+if((err == cudaSuccess)
+|| (
+
+tolerate_shutdown &&(err
+
+== cudaErrorCudartUnloading))) {
+buf = 0;
+
+} else {
+std::cerr << "Failed freeing cuda host buffer" <<
+
+std::endl;
+
+abort();
+
+}
+}
+}
+
+template <typename T>
+static void
+free_dev(T *&buf)
+{
+  if (buf) {
+    xcuda(cudaFree(buf));
+    buf = 0;
+  }
+}
+
+template <typename T>
+static void
+grow_buffers(accneat_inout T
+
+*&h_buf,
+
+accneat_inout T
+
+*&d_buf,
+
+accneat_inout uint
+
+&capacity,
+
+accneat_in uint
+
+newlen) {
+if(newlen > capacity) {
+free_host(h_buf);
+
+free_dev(d_buf);
+
+capacity = newlen;
+
+h_buf = alloc_host(newlen);
+
+d_buf = alloc_dev(newlen);
+
+}
+}
 

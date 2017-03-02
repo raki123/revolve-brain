@@ -7,10 +7,8 @@
 #include "brain/learner/RLPowerLearner.h"
 #include "brain/learner/cppneat/GeneticEncoding.h"
 
-namespace revolve
-{
-namespace brain
-{
+namespace revolve {
+namespace brain {
 
 //used for communication between cppneat learner and ext nn net controller
 //the conversion methods work only when using standard neat

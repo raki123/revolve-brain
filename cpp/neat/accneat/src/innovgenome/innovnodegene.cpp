@@ -15,34 +15,41 @@
 */
 #include "innovnodegene.h"
 #include <sstream>
+
 using namespace NEAT;
 
-InnovNodeGene::InnovNodeGene(nodetype ntype,int nodeid) {
-    type=ntype; //NEURON or SENSOR type
-    node_id=nodeid;
-    frozen=false;
-    trait_id=1;
+InnovNodeGene::InnovNodeGene(nodetype ntype,
+                             int nodeid)
+{
+  type = ntype; //NEURON or SENSOR type
+  node_id = nodeid;
+  frozen = false;
+  trait_id = 1;
 }
 
-InnovNodeGene::InnovNodeGene (const char *argline) {
-    std::stringstream ss(argline);
-    int nodety, nodepl;
-    ss >> node_id >> trait_id >> nodety >> nodepl;
-    type = (nodetype)nodety;
+InnovNodeGene::InnovNodeGene(const char *argline)
+{
+  std::stringstream ss(argline);
+  int nodety, nodepl;
+  ss >> node_id >> trait_id >> nodety >> nodepl;
+  type = (nodetype)nodety;
 
-    if(trait_id == 0)
-        trait_id = 1;
+  if (trait_id == 0)
+    trait_id = 1;
 
-    // Get the Sensor Identifier and Parameter String
-    // mySensor = SensorRegistry::getSensor(id, param);
-    frozen=false;  //TODO: Maybe change
+  // Get the Sensor Identifier and Parameter String
+  // mySensor = SensorRegistry::getSensor(id, param);
+  frozen = false;  //TODO: Maybe change
 }
 
-InnovNodeGene::~InnovNodeGene() {
+InnovNodeGene::~InnovNodeGene()
+{
 }
 
-void InnovNodeGene::print_to_file(std::ostream &outFile) {
-    outFile<<"node "<<node_id<<" ";
-    outFile<<trait_id<<" ";
-    outFile<<(int)type<<std::endl;
+void
+InnovNodeGene::print_to_file(std::ostream &outFile)
+{
+  outFile << "node " << node_id << " ";
+  outFile << trait_id << " ";
+  outFile << (int)type << std::endl;
 }

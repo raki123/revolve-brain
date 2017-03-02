@@ -12,10 +12,8 @@
 #include "Actuator.h"
 #include "Sensor.h"
 
-namespace revolve
-{
-namespace brain
-{
+namespace revolve {
+namespace brain {
 
 class Brain
 {

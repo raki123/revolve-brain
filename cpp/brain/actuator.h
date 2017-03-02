@@ -3,10 +3,8 @@
 
 #include <boost/shared_ptr.hpp>
 
-namespace revolve
-{
-namespace brain
-{
+namespace revolve {
+namespace brain {
 
 class Actuator
 {

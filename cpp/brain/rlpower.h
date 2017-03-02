@@ -13,10 +13,8 @@
 #include "Brain.h"
 #include "Evaluator.h"
 
-namespace revolve
-{
-namespace brain
-{
+namespace revolve {
+namespace brain {
 
 //    typedef std::vector<double> Spline;
 //    typedef std::vector<Spline *> Policy;

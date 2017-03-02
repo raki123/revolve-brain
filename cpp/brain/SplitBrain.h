@@ -13,14 +13,17 @@ namespace revolve {
 namespace brain {
 
 template <typename G, typename H>
-class SplitBrain : public Brain {
+class SplitBrain
+        : public Brain
+{
 public:
-    virtual ~SplitBrain() {};
+    virtual ~SplitBrain()
+    {};
 
-    
+
 protected:
-    boost::shared_ptr<Controller<G>> controller;	//control unit responsible for the movement of the robot
-    boost::shared_ptr<Learner<H>> learner; 		//learner used to get new genomes
+    boost::shared_ptr<Controller<G>> controller;    //control unit responsible for the movement of the robot
+    boost::shared_ptr<Learner<H>> learner;        //learner used to get new genomes
 };
 
 }

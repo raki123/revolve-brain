@@ -52,11 +52,12 @@ AsyncNeat::getEvaluation()
   }
 
   std::shared_ptr<NeatEvaluation> new_evaluation = this->evaluatingQueue.front();
-  new_evaluation->add_finished_callback([this, new_evaluation](float fitness) {
-      this->evaluatingList.remove(new_evaluation);
-      this->singleEvalutionFinished(new_evaluation,
-                                    fitness);
-  });
+  new_evaluation->add_finished_callback([this, new_evaluation](float fitness)
+                                        {
+                                            this->evaluatingList.remove(new_evaluation);
+                                            this->singleEvalutionFinished(new_evaluation,
+                                                                          fitness);
+                                        });
 
   this->evaluatingQueue.pop_front();
   this->evaluatingList.push_back(new_evaluation);

@@ -13,5 +13,4 @@ main(int argc,
 
 TestSUPGBrain::TestSUPGBrain()
 {
-
 }

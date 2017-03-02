@@ -7,10 +7,8 @@
 
 #include <iostream>
 
-namespace revolve
-{
-namespace brain
-{
+namespace revolve {
+namespace brain {
 
 /**
  * Class needed to enable calling virtual methods implemented child python classes

@@ -1,10 +1,8 @@
 #include "BiasNeuron.h"
 #include <iostream>
 
-namespace revolve
-{
-namespace brain
-{
+namespace revolve {
+namespace brain {
 
 
 BiasNeuron::BiasNeuron(const std::string &id,
@@ -16,7 +14,7 @@ BiasNeuron::BiasNeuron(const std::string &id,
     throw std::runtime_error("Robot brain error");
   }
   this->bias_ = params.find("rv:bias")
-          ->second;
+                      ->second;
 }
 
 
@@ -42,7 +40,7 @@ BiasNeuron::setNeuronParameters(std::map<std::string, double> params)
     throw std::runtime_error("Robot brain error");
   }
   this->bias_ = params.find("rv:bias")
-          ->second;
+                      ->second;
 }
 
 std::string

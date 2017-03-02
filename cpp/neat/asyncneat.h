@@ -1,5 +1,5 @@
-#ifndef NEAT_H
-#define NEAT_H
+#ifndef REVOLVE_NEAT_NEAT_H_
+#define REVOLVE_NEAT_NEAT_H_
 
 #include <list>
 #include <memory>
@@ -119,4 +119,4 @@ private:
     refill_evaluation_queue();
 };
 
-#endif // NEAT_H
+#endif // REVOLVE_NEAT_NEAT_H_

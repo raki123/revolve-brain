@@ -1,14 +1,8 @@
 #include "Crossover.h"
-#include "NeuronGenome.h"
-#include "ConnectionGenome.h"
 
-#include <map>
-#include <string>
-#include <vector>
 #include <random>
 
-namespace CPPNEAT
-{
+namespace CPPNEAT {
 
 GeneticEncodingPtr
 Crossover::crossover(GeneticEncodingPtr genotype_more_fit,
@@ -53,7 +47,7 @@ Crossover::crossover(GeneticEncodingPtr genotype_more_fit,
     //what helps us tremendously here is the fact that a gene is only in the child if it is in the more fit parent
     //therefore we can use the same layer structure as in the more fit parent here
     genotype_more_fit->connection_genes
-            .clear();
+                     .clear();
     for (GenePtr gene : child_genes) {
       if (gene->gene_type == Gene::NEURON_GENE) {
         std::pair<unsigned int, unsigned int> index = genotype_more_fit->convert_in_to_layer_index(gene->getInnovNumber());

@@ -6,8 +6,7 @@
 #include <vector>
 
 //class containg all information that is evolved for neurons
-namespace CPPNEAT
-{
+namespace CPPNEAT {
 class Neuron
 {
 

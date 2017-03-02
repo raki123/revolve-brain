@@ -1,23 +1,14 @@
 #include "Conversion.h"
 
-#include <map>
-#include <iostream>
 #include <fstream>
-#include <vector>
-
-#include "brain/learner/cppneat/NeuronGenome.h"
-#include "brain/learner/cppneat/ConnectionGenome.h"
 
 //dbg_plot
-#include <sstream>
 
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/graphviz.hpp>
 
-namespace revolve
-{
-namespace brain
-{
+namespace revolve {
+namespace brain {
 
 std::map<boost::shared_ptr<ExtNNConfig>, CPPNEAT::GeneticEncodingPtr> known;
 
@@ -53,7 +44,7 @@ set_brain_spec(bool hyperneat)
   bool min_inclusive = false;
   CPPNEAT::Neuron::NeuronTypeSpec input;
   input.possible_layers
-          .push_back(CPPNEAT::Neuron::INPUT_LAYER);
+       .push_back(CPPNEAT::Neuron::INPUT_LAYER);
 
   brain_spec[CPPNEAT::Neuron::INPUT] = input;
 
@@ -76,35 +67,35 @@ set_brain_spec(bool hyperneat)
                  max_inclusive,
                  min_inclusive);
   sigmoid.param_specs
-          .push_back(bias_spec);
+         .push_back(bias_spec);
   sigmoid.param_specs
-          .push_back(gain_spec);
+         .push_back(gain_spec);
   sigmoid.possible_layers
-          .push_back(CPPNEAT::Neuron::HIDDEN_LAYER);
+         .push_back(CPPNEAT::Neuron::HIDDEN_LAYER);
   sigmoid.possible_layers
-          .push_back(CPPNEAT::Neuron::OUTPUT_LAYER);
+         .push_back(CPPNEAT::Neuron::OUTPUT_LAYER);
 
   brain_spec[CPPNEAT::Neuron::SIGMOID] = sigmoid;
 
 
   CPPNEAT::Neuron::NeuronTypeSpec simple;
   simple.param_specs
-          .push_back(bias_spec);
+        .push_back(bias_spec);
   simple.param_specs
-          .push_back(gain_spec);
+        .push_back(gain_spec);
   simple.possible_layers
-          .push_back(CPPNEAT::Neuron::HIDDEN_LAYER);
+        .push_back(CPPNEAT::Neuron::HIDDEN_LAYER);
   simple.possible_layers
-          .push_back(CPPNEAT::Neuron::OUTPUT_LAYER);
+        .push_back(CPPNEAT::Neuron::OUTPUT_LAYER);
 
   brain_spec[CPPNEAT::Neuron::SIMPLE] = simple;
 
 
   CPPNEAT::Neuron::NeuronTypeSpec bias;
   bias.param_specs
-          .push_back(bias_spec);
+      .push_back(bias_spec);
   bias.possible_layers
-          .push_back(CPPNEAT::Neuron::INPUT_LAYER);
+      .push_back(CPPNEAT::Neuron::INPUT_LAYER);
 
 
   brain_spec[CPPNEAT::Neuron::BIAS] = bias;
@@ -136,13 +127,13 @@ set_brain_spec(bool hyperneat)
                    max_inclusive,
                    min_inclusive);
     oscillator.param_specs
-            .push_back(period_spec);
+              .push_back(period_spec);
     oscillator.param_specs
-            .push_back(phase_offset_spec);
+              .push_back(phase_offset_spec);
     oscillator.param_specs
-            .push_back(amplitude_spec);
+              .push_back(amplitude_spec);
     oscillator.possible_layers
-            .push_back(CPPNEAT::Neuron::INPUT_LAYER);
+              .push_back(CPPNEAT::Neuron::INPUT_LAYER);
 
     brain_spec[CPPNEAT::Neuron::OSCILLATOR] = oscillator;
   } else {
@@ -172,15 +163,15 @@ set_brain_spec(bool hyperneat)
                    max_inclusive,
                    min_inclusive);
     input_oscillator.param_specs
-            .push_back(period_spec);
+                    .push_back(period_spec);
     input_oscillator.param_specs
-            .push_back(phase_offset_spec);
+                    .push_back(phase_offset_spec);
     input_oscillator.param_specs
-            .push_back(amplitude_spec);
+                    .push_back(amplitude_spec);
     input_oscillator.possible_layers
-            .push_back(CPPNEAT::Neuron::HIDDEN_LAYER);
+                    .push_back(CPPNEAT::Neuron::HIDDEN_LAYER);
     input_oscillator.possible_layers
-            .push_back(CPPNEAT::Neuron::OUTPUT_LAYER);
+                    .push_back(CPPNEAT::Neuron::OUTPUT_LAYER);
 
 
     brain_spec[CPPNEAT::Neuron::INPUT_OSCILLATOR] = input_oscillator;
@@ -207,11 +198,11 @@ set_brain_spec(bool hyperneat)
   if (!hyperneat) {
     CPPNEAT::Neuron::NeuronTypeSpec diff;
     diff.param_specs
-            .push_back(bias_spec);
+        .push_back(bias_spec);
     diff.possible_layers
-            .push_back(CPPNEAT::Neuron::HIDDEN_LAYER);
+        .push_back(CPPNEAT::Neuron::HIDDEN_LAYER);
     diff.possible_layers
-            .push_back(CPPNEAT::Neuron::OUTPUT_LAYER);
+        .push_back(CPPNEAT::Neuron::OUTPUT_LAYER);
 
 
     brain_spec[CPPNEAT::Neuron::DIFFERENTIAL_CPG] = diff;
@@ -232,23 +223,23 @@ convertForController(CPPNEAT::GeneticEncodingPtr genotype)
   for (CPPNEAT::NeuronGenePtr neuron_gene : neuron_genes) {
     NeuronPtr newNeuron;
     std::string neuronId = neuron_gene->neuron
-            ->neuron_id;
+                                      ->neuron_id;
     std::map<std::string, double> neuron_params = neuron_gene->neuron
-            ->neuron_params;
+                                                             ->neuron_params;
 
     switch (neuron_gene->neuron
-            ->layer) {
+                       ->layer) {
       case CPPNEAT::Neuron::INPUT_LAYER: {
         newNeuron.reset(new InputNeuron(neuronId,
                                         neuron_params));
         config->inputNeurons_
-                .push_back(newNeuron);
+              .push_back(newNeuron);
         config->inputPositionMap_[newNeuron] = input_map[neuron_gene->getInnovNumber()];
         break;
       }
       case CPPNEAT::Neuron::HIDDEN_LAYER: {
         switch (neuron_gene->neuron
-                ->neuron_type) {
+                           ->neuron_type) {
           case CPPNEAT::Neuron::SIMPLE: {
             newNeuron.reset(new LinearNeuron(neuronId,
                                              neuron_params));
@@ -286,12 +277,12 @@ convertForController(CPPNEAT::GeneticEncodingPtr genotype)
 
         }
         config->hiddenNeurons_
-                .push_back(newNeuron);
+              .push_back(newNeuron);
         break;
       }
       case CPPNEAT::Neuron::OUTPUT_LAYER: {
         switch (neuron_gene->neuron
-                ->neuron_type) {
+                           ->neuron_type) {
           case CPPNEAT::Neuron::SIMPLE: {
             newNeuron.reset(new LinearNeuron(neuronId,
                                              neuron_params));
@@ -329,7 +320,7 @@ convertForController(CPPNEAT::GeneticEncodingPtr genotype)
 
         }
         config->outputNeurons_
-                .push_back(newNeuron);
+              .push_back(newNeuron);
         config->outputPositionMap_[newNeuron] = output_map[neuron_gene->getInnovNumber()];
         break;
       }
@@ -339,7 +330,7 @@ convertForController(CPPNEAT::GeneticEncodingPtr genotype)
       }
     }
     config->allNeurons_
-            .push_back(newNeuron);
+          .push_back(newNeuron);
     config->idToNeuron_[neuronId] = newNeuron;
     innov_number_to_neuron[neuron_gene->getInnovNumber()] = newNeuron;
   }
@@ -351,7 +342,7 @@ convertForController(CPPNEAT::GeneticEncodingPtr genotype)
     dst->AddIncomingConnection(dst->GetSocketId(),
                                newConnection);
     config->connections_
-            .push_back(newConnection);
+          .push_back(newConnection);
   }
   known[config] = genotype;
   return config;
@@ -399,12 +390,12 @@ convertForLayeredExtNN(CPPNEAT::GeneticEncodingPtr genotype)
     for (CPPNEAT::NeuronGenePtr neuron_gene : layers[i]) {
       NeuronPtr newNeuron;
       std::string neuronId = neuron_gene->neuron
-              ->neuron_id;
+                                        ->neuron_id;
       std::map<std::string, double> neuron_params = neuron_gene->neuron
-              ->neuron_params;
+                                                               ->neuron_params;
 
       switch (neuron_gene->neuron
-              ->layer) {
+                         ->layer) {
         case CPPNEAT::Neuron::INPUT_LAYER: {
           newNeuron.reset(new InputNeuron(neuronId,
                                           neuron_params));
@@ -414,7 +405,7 @@ convertForLayeredExtNN(CPPNEAT::GeneticEncodingPtr genotype)
         }
         case CPPNEAT::Neuron::HIDDEN_LAYER: {
           switch (neuron_gene->neuron
-                  ->neuron_type) {
+                             ->neuron_type) {
             case CPPNEAT::Neuron::SIMPLE: {
               newNeuron.reset(new LinearNeuron(neuronId,
                                                neuron_params));
@@ -456,7 +447,7 @@ convertForLayeredExtNN(CPPNEAT::GeneticEncodingPtr genotype)
         }
         case CPPNEAT::Neuron::OUTPUT_LAYER: {
           switch (neuron_gene->neuron
-                  ->neuron_type) {
+                             ->neuron_type) {
             case CPPNEAT::Neuron::SIMPLE: {
               newNeuron.reset(new LinearNeuron(neuronId,
                                                neuron_params));
@@ -514,7 +505,7 @@ convertForLayeredExtNN(CPPNEAT::GeneticEncodingPtr genotype)
     dst->AddIncomingConnection(dst->GetSocketId(),
                                newConnection);
     config->connections_
-            .push_back(newConnection);
+          .push_back(newConnection);
   }
   return config;
 }
@@ -525,28 +516,28 @@ dbg_plot(boost::shared_ptr<ExtNNConfig> conf,
 {
   std::ofstream write_to("debug_plot_extnn.dot");
   boost::adjacency_list<> graph(conf->allNeurons_
-                                        .size());
+                                    .size());
   for (unsigned int i = 0; i < conf->allNeurons_
-          .size(); i++) {
+                                   .size(); i++) {
     std::vector<std::pair<std::string, NeuralConnectionPtr>> connectionsToAdd = conf->allNeurons_[i]->getIncomingConnections();
     for (std::pair<std::string, NeuralConnectionPtr> connectionToAdd : connectionsToAdd) {
       NeuronPtr input = connectionToAdd.second
-              ->GetInputNeuron();
+                                       ->GetInputNeuron();
       int indexInput = std::find(conf->allNeurons_
-                                         .begin(),
+                                     .begin(),
                                  conf->allNeurons_
-                                         .end(),
+                                     .end(),
                                  input) - conf->allNeurons_
-                               .begin();
+                                              .begin();
       boost::add_edge(indexInput,
                       i,
                       graph);
     }
   }
   std::string *names = new std::string[conf->allNeurons_
-          .size()];
+                                           .size()];
   for (unsigned int i = 0; i < conf->allNeurons_
-          .size(); i++) {
+                                   .size(); i++) {
     std::stringstream nodeName;
     nodeName << conf->allNeurons_[i]->Id() + " of type: " + conf->allNeurons_[i]->getType() << std::endl;
     for (std::pair<std::string, double> param : conf->allNeurons_[i]->getNeuronParameters()) {
@@ -602,9 +593,10 @@ convertForExtNNFromHyper(CPPNEAT::GeneticEncodingPtr genotype)
     }
 
     for (auto it = hyper_config->layers_[hyper_config->layers_
-                                                 .size() - 1].begin(); it != hyper_config->layers_[hyper_config->layers_
-                                                                                                           .size() -
-                                                                                                   1].end(); ++it) {
+                                                     .size() - 1].begin();
+         it != hyper_config->layers_[hyper_config->layers_
+                                                 .size() -
+                                     1].end(); ++it) {
       auto outNeuron = *it;
       if (outNeuron->Id() == "weight") {
         connection->SetWeight(outNeuron->GetOutput());
@@ -646,9 +638,10 @@ convertForExtNNFromHyper(CPPNEAT::GeneticEncodingPtr genotype)
 
     std::map<std::string, double> params;
     for (auto it = hyper_config->layers_[hyper_config->layers_
-                                                 .size() - 1].begin(); it != hyper_config->layers_[hyper_config->layers_
-                                                                                                           .size() -
-                                                                                                   1].end(); ++it) {
+                                                     .size() - 1].begin();
+         it != hyper_config->layers_[hyper_config->layers_
+                                                 .size() -
+                                     1].end(); ++it) {
       auto outNeuron = *it;
       params[outNeuron->Id()] = outNeuron->GetOutput();
     }
@@ -771,9 +764,9 @@ convertForSplinesFromHyper(CPPNEAT::GeneticEncodingPtr genotype)
       }
 
       for (auto it = hyper_config->layers_[hyper_config->layers_
-                                                   .size() - 1].begin(); it != hyper_config->layers_[
+                                                       .size() - 1].begin(); it != hyper_config->layers_[
               hyper_config->layers_
-                      .size() - 1].end(); ++it) {
+                          .size() - 1].end(); ++it) {
         auto outNeuron = *it;
         if (outNeuron->Id() == "weight") {
           (*policy)[j][i] = outNeuron->GetOutput();

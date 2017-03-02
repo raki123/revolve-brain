@@ -2,7 +2,6 @@
 
 #include <cmath>
 #include <iostream>
-#include <limits>
 #include <vector>
 
 #include "neat/AsyncNEAT.h"
@@ -55,7 +54,7 @@ TestMultiNNSpeciesNeat::testXOR()
     std::shared_ptr<NeatEvaluation> eval = neat.getEvaluation();
     const NEAT::Organism *organism = eval->getOrganism();
     NEAT::CpuNetwork *net = reinterpret_cast< NEAT::CpuNetwork *> (organism->net
-            .get());
+                                                                           .get());
 
     float error = 0;
 //         std::cout << std::endl;
@@ -82,9 +81,9 @@ TestMultiNNSpeciesNeat::testXOR()
       std::cout << "\nAfter " << gen << " tries, a successful organism was found with an error of " << min_error
                 << std::endl;
       std::cout << "The organism fitness is " << neat.getFittest()
-              ->getOrganism()
-              ->eval
-              .fitness << std::endl;
+                                                     ->getOrganism()
+                                                     ->eval
+                                                     .fitness << std::endl;
       success = true;
       break;
     }

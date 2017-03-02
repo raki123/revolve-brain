@@ -2,10 +2,8 @@
 #include <cmath>
 #include <iostream>
 
-namespace revolve
-{
-namespace brain
-{
+namespace revolve {
+namespace brain {
 
 
 InputDependentOscillatorNeuron::InputDependentOscillatorNeuron(const std::string &id,
@@ -19,11 +17,11 @@ InputDependentOscillatorNeuron::InputDependentOscillatorNeuron(const std::string
   }
 
   this->period_ = params.find("rv:period")
-          ->second;
+                        ->second;
   this->phaseOffset_ = params.find("rv:phase_offset")
-          ->second;
+                             ->second;
   this->gain_ = params.find("rv:amplitude")
-          ->second;
+                      ->second;
 }
 
 
@@ -33,11 +31,11 @@ InputDependentOscillatorNeuron::CalculateOutput(double /*t*/)
   double inputValue = 0;
 
   for (auto it = this->incomingConnections_
-          .begin(); it != this->incomingConnections_
-          .end(); ++it) {
+                     .begin(); it != this->incomingConnections_
+                                         .end(); ++it) {
     auto inConnection = it->second;
     inputValue += inConnection->GetInputNeuron()
-                          ->GetOutput() * inConnection->GetWeight();
+                              ->GetOutput() * inConnection->GetWeight();
   }
   return 0.5 * (1.0 + this->gain_ *
                       sin(2.0 * M_PI / (this->period_) * (inputValue - this->period_ * this->phaseOffset_)));
@@ -63,11 +61,11 @@ InputDependentOscillatorNeuron::setNeuronParameters(std::map<std::string, double
   }
 
   this->period_ = params.find("rv:period")
-          ->second;
+                        ->second;
   this->phaseOffset_ = params.find("rv:phase_offset")
-          ->second;
+                             ->second;
   this->gain_ = params.find("rv:amplitude")
-          ->second;
+                      ->second;
 }
 
 

@@ -7,10 +7,8 @@
 #include "Evaluator.h"
 #include "SplitBrain.h"
 
-namespace revolve
-{
-namespace brain
-{
+namespace revolve {
+namespace brain {
 
 
 template <typename Phenotype, typename Genome>
@@ -48,8 +46,8 @@ public:
     {
       if (first_run) {
         this->controller
-                ->setGenome(convertForController_(this->learner
-                                                          ->getNewGenome("test")));
+            ->setGenome(convertForController_(this->learner
+                                                  ->getNewGenome("test")));
         start_eval_time_ = t;
         evaluator_->start();
         first_run = false;
@@ -58,23 +56,23 @@ public:
         double fitness = evaluator_->fitness();
         writeCurrent(fitness);
         this->learner
-                ->reportFitness(model_name,
-                                convertForLearner_(this->controller
-                                                           ->getGenome()),
-                                fitness);
+            ->reportFitness(model_name,
+                            convertForLearner_(this->controller
+                                                   ->getGenome()),
+                            fitness);
         Phenotype controllerGenome = convertForController_(this->learner
-                                                                   ->getNewGenome("test"));
+                                                               ->getNewGenome("test"));
         this->controller
-                ->setGenome(controllerGenome);
+            ->setGenome(controllerGenome);
         start_eval_time_ = t;
         generation_counter_++;
         evaluator_->start();
       }
       this->controller
-              ->update(actuators,
-                       sensors,
-                       t,
-                       step);
+          ->update(actuators,
+                   sensors,
+                   t,
+                   step);
     }
 
     void

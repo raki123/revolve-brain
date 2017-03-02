@@ -1,7 +1,6 @@
 #include "Neuron.h"
 
-namespace CPPNEAT
-{
+namespace CPPNEAT {
 
 Neuron::Neuron(Neuron &copy_of)
         :

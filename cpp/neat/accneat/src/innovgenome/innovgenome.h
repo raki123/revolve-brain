@@ -23,150 +23,204 @@
 
 namespace NEAT {
 
-    class InnovGenome : public Genome {
-    public:
-        std::vector<Trait> traits;
-        std::vector<InnovNodeGene> nodes;
-        std::vector<InnovLinkGene> links;
+class InnovGenome
+        : public Genome
+{
+public:
+    std::vector<Trait> traits;
+    std::vector<InnovNodeGene> nodes;
+    std::vector<InnovLinkGene> links;
 
-        int get_last_node_id(); //Return id of final InnovNodeGene in InnovGenome
-        real_t get_last_gene_innovnum(); //Return last innovation number in InnovGenome
+    int
+    get_last_node_id(); //Return id of final InnovNodeGene in InnovGenome
+    real_t
+    get_last_gene_innovnum(); //Return last innovation number in InnovGenome
 
-        InnovGenome();
-        InnovGenome(rng_t rng,
-                    size_t ntraits,
-                    size_t ninputs,
-                    size_t noutputs,
-                    size_t nhidden);
+    InnovGenome();
 
-        virtual Genome &operator=(const Genome &other) override;
+    InnovGenome(rng_t rng,
+                size_t ntraits,
+                size_t ninputs,
+                size_t noutputs,
+                size_t nhidden);
 
-        //Destructor kills off all lists (including the trait vector)
-        virtual ~InnovGenome();
+    virtual Genome &
+    operator=(const Genome &other) override;
 
-        // Dump this genome to specified file
-        virtual void print(std::ostream &out) override;
+    //Destructor kills off all lists (including the trait vector)
+    virtual ~InnovGenome();
 
-        void duplicate_into(InnovGenome *offspring) const;
-        InnovGenome &operator=(const InnovGenome &other);
+    // Dump this genome to specified file
+    virtual void
+    print(std::ostream &out) override;
 
-        // For debugging: A number of tests can be run on a genome to check its
-        // integrity
-        // Note: Some of these tests do not indicate a bug, but rather are meant
-        // to be used to detect specific system states
-        virtual void verify() override;
-        virtual Stats get_stats() override;
+    void
+    duplicate_into(InnovGenome *offspring) const;
 
-        // ******* MUTATORS *******
+    InnovGenome &
+    operator=(const InnovGenome &other);
 
-        // Perturb params in one trait
-        void mutate_random_trait();
+    // For debugging: A number of tests can be run on a genome to check its
+    // integrity
+    // Note: Some of these tests do not indicate a bug, but rather are meant
+    // to be used to detect specific system states
+    virtual void
+    verify() override;
 
-        // Change random link's trait. Repeat times times
-        void mutate_link_trait(int times);
+    virtual Stats
+    get_stats() override;
 
-        // Change random node's trait times times
-        void mutate_node_trait(int times);
+    // ******* MUTATORS *******
 
-        // Add Gaussian noise to linkweights either GAUSSIAN or COLDGAUSSIAN (from zero)
-        void mutate_link_weights(real_t power,real_t rate,mutator mut_type);
+    // Perturb params in one trait
+    void
+    mutate_random_trait();
 
-        // toggle links on or off
-        void mutate_toggle_enable(int times);
+    // Change random link's trait. Repeat times times
+    void
+    mutate_link_trait(int times);
 
-        // Find first disabled gene and enable it
-        void mutate_gene_reenable();
+    // Change random node's trait times times
+    void
+    mutate_node_trait(int times);
 
-        // These last kinds of mutations return false if they fail
-        //   They can fail under certain conditions,  being unable
-        //   to find a suitable place to make the mutation.
-        //   Generally, if they fail, they can be called again if desired.
+    // Add Gaussian noise to linkweights either GAUSSIAN or COLDGAUSSIAN (from zero)
+    void
+    mutate_link_weights(real_t power,
+                        real_t rate,
+                        mutator mut_type);
 
-        // Mutate genome by adding a node respresentation
-        bool mutate_add_node(CreateInnovationFunc create_innov,
-                             bool delete_split_link);
+    // toggle links on or off
+    void
+    mutate_toggle_enable(int times);
 
-        void mutate_delete_node();
+    // Find first disabled gene and enable it
+    void
+    mutate_gene_reenable();
 
-        void mutate_delete_link();
+    // These last kinds of mutations return false if they fail
+    //   They can fail under certain conditions,  being unable
+    //   to find a suitable place to make the mutation.
+    //   Generally, if they fail, they can be called again if desired.
 
-        // Mutate the genome by adding a new link between 2 random InnovNodeGenes
-        bool mutate_add_link(CreateInnovationFunc create_innov,
-                             int tries);
+    // Mutate genome by adding a node respresentation
+    bool
+    mutate_add_node(CreateInnovationFunc create_innov,
+                    bool delete_split_link);
 
-        // ****** MATING METHODS *****
-        static void mate(InnovGenome *genome1,
-                         InnovGenome *genome2,
-                         InnovGenome *offspring,
-                         real_t fitness1,
-                         real_t fitness2);
+    void
+    mutate_delete_node();
 
-        //   For every point in each InnovGenome, where each InnovGenome shares
-        //   the innovation number, the InnovLinkGene is chosen randomly from
-        //   either parent.  If one parent has an innovation absent in
-        //   the other, the baby will inherit the innovation
-        //   Interspecies mating leads to all genes being inherited.
-        //   Otherwise, excess genes come from most fit parent.
-        static void mate_multipoint(InnovGenome *genome1,
-                                    InnovGenome *genome2,
-                                    InnovGenome *offspring,
-                                    real_t fitness1,
-                                    real_t fitness2);
+    void
+    mutate_delete_link();
 
-        //This method mates like multipoint but instead of selecting one
-        //   or the other when the innovation numbers match, it averages their
-        //   weights
-        static void mate_multipoint_avg(InnovGenome *genome1,
-                                        InnovGenome *genome2,
-                                        InnovGenome *offspring,
-                                        real_t fitness1,
-                                        real_t fitness2);
+    // Mutate the genome by adding a new link between 2 random InnovNodeGenes
+    bool
+    mutate_add_link(CreateInnovationFunc create_innov,
+                    int tries);
 
-        // ******** COMPATIBILITY CHECKING METHODS ********
+    // ****** MATING METHODS *****
+    static void
+    mate(InnovGenome *genome1,
+         InnovGenome *genome2,
+         InnovGenome *offspring,
+         real_t fitness1,
+         real_t fitness2);
 
-        // This function gives a measure of compatibility between
-        //   two InnovGenomes by computing a linear combination of 3
-        //   characterizing variables of their compatibilty.
-        //   The 3 variables represent PERCENT DISJOINT GENES,
-        //   PERCENT EXCESS GENES, MUTATIONAL DIFFERENCE WITHIN
-        //   MATCHING GENES.  So the formula for compatibility
-        //   is:  disjoint_coeff*pdg+excess_coeff*peg+mutdiff_coeff*mdmg.
-        //   The 3 coefficients are global system parameters
-        real_t compatibility(InnovGenome *g);
+    //   For every point in each InnovGenome, where each InnovGenome shares
+    //   the innovation number, the InnovLinkGene is chosen randomly from
+    //   either parent.  If one parent has an innovation absent in
+    //   the other, the baby will inherit the innovation
+    //   Interspecies mating leads to all genes being inherited.
+    //   Otherwise, excess genes come from most fit parent.
+    static void
+    mate_multipoint(InnovGenome *genome1,
+                    InnovGenome *genome2,
+                    InnovGenome *offspring,
+                    real_t fitness1,
+                    real_t fitness2);
 
-        real_t trait_compare(Trait *t1,Trait *t2);
+    //This method mates like multipoint but instead of selecting one
+    //   or the other when the innovation numbers match, it averages their
+    //   weights
+    static void
+    mate_multipoint_avg(InnovGenome *genome1,
+                        InnovGenome *genome2,
+                        InnovGenome *offspring,
+                        real_t fitness1,
+                        real_t fitness2);
 
-        // Randomize the trait pointers of all the node and connection genes
-        void randomize_traits();
+    // ******** COMPATIBILITY CHECKING METHODS ********
 
-        Trait &get_trait(const InnovNodeGene &node);
-        Trait &get_trait(const InnovLinkGene &gene);
+    // This function gives a measure of compatibility between
+    //   two InnovGenomes by computing a linear combination of 3
+    //   characterizing variables of their compatibilty.
+    //   The 3 variables represent PERCENT DISJOINT GENES,
+    //   PERCENT EXCESS GENES, MUTATIONAL DIFFERENCE WITHIN
+    //   MATCHING GENES.  So the formula for compatibility
+    //   is:  disjoint_coeff*pdg+excess_coeff*peg+mutdiff_coeff*mdmg.
+    //   The 3 coefficients are global system parameters
+    real_t
+    compatibility(InnovGenome *g);
 
-        InnovNodeGene *get_node(int id);
-        node_size_t get_node_index(int id);
+    real_t
+    trait_compare(Trait *t1,
+                  Trait *t2);
 
-        virtual void init_phenotype(class Network &net) override;
+    // Randomize the trait pointers of all the node and connection genes
+    void
+    randomize_traits();
 
-    public:
-        void reset();
+    Trait &
+    get_trait(const InnovNodeGene &node);
 
-        static bool linklist_cmp(const InnovLinkGene &a, const InnovLinkGene &b) {
-            return a.innovation_num < b.innovation_num;
-        }
+    Trait &
+    get_trait(const InnovLinkGene &gene);
 
-        //Inserts a InnovNodeGene into a given ordered list of InnovNodeGenes in order
-        static void add_node(std::vector<InnovNodeGene> &nlist, const InnovNodeGene &n);
+    InnovNodeGene *
+    get_node(int id);
 
-        //Adds a new gene that has been created through a mutation in the
-        //*correct order* into the list of links in the genome
-        static void add_link(std::vector<InnovLinkGene> &glist, const InnovLinkGene &g);
+    node_size_t
+    get_node_index(int id);
 
-    private:
-        InnovLinkGene *find_link(int in_node_id, int out_node_id, bool is_recurrent);
-        void delete_if_orphaned_hidden_node(int node_id);
-        void delete_link(InnovLinkGene *link);
+    virtual void
+    init_phenotype(class Network &net) override;
 
-        InnovNodeLookup node_lookup;
-    };
+public:
+    void
+    reset();
+
+    static bool
+    linklist_cmp(const InnovLinkGene &a,
+                 const InnovLinkGene &b)
+    {
+      return a.innovation_num < b.innovation_num;
+    }
+
+    //Inserts a InnovNodeGene into a given ordered list of InnovNodeGenes in order
+    static void
+    add_node(std::vector<InnovNodeGene> &nlist,
+             const InnovNodeGene &n);
+
+    //Adds a new gene that has been created through a mutation in the
+    //*correct order* into the list of links in the genome
+    static void
+    add_link(std::vector<InnovLinkGene> &glist,
+             const InnovLinkGene &g);
+
+private:
+    InnovLinkGene *
+    find_link(int in_node_id,
+              int out_node_id,
+              bool is_recurrent);
+
+    void
+    delete_if_orphaned_hidden_node(int node_id);
+
+    void
+    delete_link(InnovLinkGene *link);
+
+    InnovNodeLookup node_lookup;
+};
 }
 

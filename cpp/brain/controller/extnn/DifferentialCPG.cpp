@@ -4,11 +4,8 @@
 #include <iostream>
 #include <sstream>
 
-namespace revolve
-{
-namespace brain
-{
-
+namespace revolve {
+namespace brain {
 
 DifferentialCPG::DifferentialCPG(const std::string &id,
                                  const std::map<std::string, double> &params) :
@@ -19,7 +16,7 @@ DifferentialCPG::DifferentialCPG(const std::string &id,
     throw std::runtime_error("Robot brain error");
   }
   this->bias_ = params.find("rv:bias")
-          ->second;
+                      ->second;
   lastTime_ = 0;
 }
 
@@ -37,11 +34,11 @@ DifferentialCPG::CalculateOutput(double t)
   double inputValue = 0;
 
   for (auto it = this->incomingConnections_
-          .begin(); it != this->incomingConnections_
-          .end(); ++it) {
+                     .begin(); it != this->incomingConnections_
+                                         .end(); ++it) {
     auto inConnection = it->second;
     inputValue += inConnection->GetInputNeuron()
-                          ->GetOutput() * inConnection->GetWeight();
+                              ->GetOutput() * inConnection->GetWeight();
   }
 
   double state_deriv = inputValue - this->bias_;
@@ -80,7 +77,7 @@ DifferentialCPG::setNeuronParameters(std::map<std::string, double> params)
     throw std::runtime_error("Robot brain error");
   }
   this->bias_ = params.find("rv:bias")
-          ->second;
+                      ->second;
 }
 
 

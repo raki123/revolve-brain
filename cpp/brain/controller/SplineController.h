@@ -8,7 +8,8 @@ namespace brain {
 
 class base_learner;
 
-class SplineController : public base_controller
+class SplineController
+        : public base_controller
 {
 public: // typedefs
     typedef std::vector<double> Spline;
@@ -24,46 +25,52 @@ public: // STATIC METHODS
     * @param source_y: set of control points over which interpolation is generated
     * @param destination_y: set of interpolated control points (default 100 points)
     */
-    static void Interpolate_cubic(Policy *const source_y,
-                                  Policy *destination_y);
+    static void
+    Interpolate_cubic(Policy *const source_y,
+                      Policy *destination_y);
 
-    static SplineController* GenerateRandomController(double noise_sigma,
-            unsigned int n_actuators,
-            unsigned int n_spline_points,
-            unsigned int interpolation_cache_size);
+    static SplineController *
+    GenerateRandomController(double noise_sigma,
+                             unsigned int n_actuators,
+                             unsigned int n_spline_points,
+                             unsigned int interpolation_cache_size);
 
-    static SplineController* GenerateRandomController(double noise_sigma,
-            unsigned int n_actuators,
-            unsigned int n_spline_points)
+    static SplineController *
+    GenerateRandomController(double noise_sigma,
+                             unsigned int n_actuators,
+                             unsigned int n_spline_points)
     {
-        return GenerateRandomController(noise_sigma,
-                                        n_actuators,
-                                        n_spline_points,
-                                        INTERPOLATION_CACHE_SIZE);
+      return GenerateRandomController(noise_sigma,
+                                      n_actuators,
+                                      n_spline_points,
+                                      INTERPOLATION_CACHE_SIZE);
     }
 
 public: // methods
     explicit SplineController(unsigned int n_actuators,
-                               unsigned int n_spline_points,
-                               unsigned int interpolation_cache_size);
+                              unsigned int n_spline_points,
+                              unsigned int interpolation_cache_size);
 
     explicit SplineController(unsigned int n_actuators,
-                               unsigned int n_spline_points);
+                              unsigned int n_spline_points);
 
     virtual ~SplineController();
 
-    virtual void update(const std::vector<ActuatorPtr> &actuators,
-                        const std::vector<SensorPtr> &sensors,
-                        double t,
-                        double step) override;
+    virtual void
+    update(const std::vector<ActuatorPtr> &actuators,
+           const std::vector<SensorPtr> &sensors,
+           double t,
+           double step) override;
 
-    virtual void generateOutput(const double time,
-                                double *output_vector);
+    virtual void
+    generateOutput(const double time,
+                   double *output_vector);
 
     /**
      * Generate cache policy
      */
-    void update_cache();
+    void
+    update_cache();
 
 // VARIABLES-CONSTANTS --------------------------------------------------------
 public: // STATIC CONSTANTS

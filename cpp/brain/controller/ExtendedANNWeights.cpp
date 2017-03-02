@@ -5,10 +5,8 @@
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/graphviz.hpp>
 
-namespace revolve
-{
-namespace brain
-{
+namespace revolve {
+namespace brain {
 
 
 ExtNNController::ExtNNController(std::string modelName,
@@ -156,7 +154,7 @@ ExtNNController::writeNetwork(std::ofstream &write_to)
     std::vector<std::pair<std::string, NeuralConnectionPtr>> connectionsToAdd = allNeurons_[i]->getIncomingConnections();
     for (std::pair<std::string, NeuralConnectionPtr> connectionToAdd : connectionsToAdd) {
       NeuronPtr input = connectionToAdd.second
-              ->GetInputNeuron();
+                                       ->GetInputNeuron();
       int indexInput = std::find(allNeurons_.begin(),
                                  allNeurons_.end(),
                                  input) - allNeurons_.begin();

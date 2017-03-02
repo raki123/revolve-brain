@@ -6,61 +6,71 @@ namespace brain {
 
 Neuron::Neuron(const std::string &id)
 {
-	this->output_ = 0;
-	this->newOutput_ = 0;
-	this->id_ = id;
+  this->output_ = 0;
+  this->newOutput_ = 0;
+  this->id_ = id;
 }
 
-void Neuron::AddIncomingConnection(const std::string &socketName,
-				   NeuralConnectionPtr connection)
+void
+Neuron::AddIncomingConnection(const std::string &socketName,
+                              NeuralConnectionPtr connection)
 {
-	this->incomingConnections_.push_back(std::pair<std::string, NeuralConnectionPtr>(socketName, connection));
-}
-
-
-void Neuron::DeleteIncomingConections()
-{
-	incomingConnections_.clear();
+  this->incomingConnections_.push_back(std::pair<std::string, NeuralConnectionPtr>(socketName,
+                                                                                   connection));
 }
 
 
-void Neuron::Update(double t)
+void
+Neuron::DeleteIncomingConections()
 {
-	this->newOutput_ = this->CalculateOutput(t);
+  incomingConnections_.clear();
 }
 
 
-void Neuron::FlipState()
+void
+Neuron::Update(double t)
 {
-	this->output_ = this->newOutput_;
+  this->newOutput_ = this->CalculateOutput(t);
 }
 
 
-double Neuron::GetOutput() const
+void
+Neuron::FlipState()
 {
-	return this->output_;
+  this->output_ = this->newOutput_;
 }
 
 
-std::string Neuron::GetSocketId() const
+double
+Neuron::GetOutput() const
 {
-	return std::to_string( this->incomingConnections_.size() );
+  return this->output_;
 }
 
 
-const std::string & Neuron::Id() const
+std::string
+Neuron::GetSocketId() const
 {
-	return this->id_;
+  return std::to_string(this->incomingConnections_.size());
 }
 
-std::vector< std::pair< std::string, NeuralConnectionPtr > > Neuron::getIncomingConnections()
+
+const std::string &
+Neuron::Id() const
 {
-	return this->incomingConnections_;
+  return this->id_;
 }
 
-void Neuron::reset()
+std::vector<std::pair<std::string, NeuralConnectionPtr> >
+Neuron::getIncomingConnections()
 {
-	this->output_ = 0;
+  return this->incomingConnections_;
+}
+
+void
+Neuron::reset()
+{
+  this->output_ = 0;
 }
 
 

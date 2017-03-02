@@ -20,69 +20,81 @@
 
 namespace NEAT {
 
-    //---
-    //--- CLASS NetDims
-    //---
-    struct NetDims {
-        struct {
-            node_size_t bias;
-            node_size_t sensor;
-            node_size_t output;
-            node_size_t hidden;
+//---
+//--- CLASS NetDims
+//---
+struct NetDims
+{
+    struct
+    {
+        node_size_t bias;
+        node_size_t sensor;
+        node_size_t output;
+        node_size_t hidden;
 
-            node_size_t all;
-            node_size_t input;
-            node_size_t noninput;
-        } nnodes;
+        node_size_t all;
+        node_size_t input;
+        node_size_t noninput;
+    } nnodes;
 
-        link_size_t nlinks;
-    };
+    link_size_t nlinks;
+};
 
-    //---
-    //--- CLASS NetLink
-    //---
-    struct NetLink {
-        real_t weight; // Weight of connection
-        node_size_t in_node_index; // NetNode inputting into the link
-        node_size_t out_node_index; // NetNode gaining energy from the link
-    };
+//---
+//--- CLASS NetLink
+//---
+struct NetLink
+{
+    real_t weight; // Weight of connection
+    node_size_t in_node_index; // NetNode inputting into the link
+    node_size_t out_node_index; // NetNode gaining energy from the link
+};
 
-    //---
-    //--- CLASS NetNode
-    //---
-    struct NetNode {
-        link_size_t incoming_start;
-        link_size_t incoming_end;
-    };
+//---
+//--- CLASS NetNode
+//---
+struct NetNode
+{
+    link_size_t incoming_start;
+    link_size_t incoming_end;
+};
 
-    //---
-    //--- CLASS Network
-    //---
-    class Network {
-    public:
-        static Network *create();
+//---
+//--- CLASS Network
+//---
+class Network
+{
+public:
+    static Network *
+    create();
 
-        std::size_t population_index;
+    std::size_t population_index;
 
-        virtual ~Network() {}
+    virtual ~Network()
+    {}
 
-        virtual void configure(const NetDims &dims,
-                               NetNode *nodes,
-                               NetLink *links) = 0;
+    virtual void
+    configure(const NetDims &dims,
+              NetNode *nodes,
+              NetLink *links) = 0;
 
-        virtual NetDims get_dims() = 0;
-    };
+    virtual NetDims
+    get_dims() = 0;
+};
 
-    //---
-    //--- CLASS NetworkEvaluator
-    //---
-    class NetworkEvaluator {
-    public:
-        virtual ~NetworkEvaluator() {}
+//---
+//--- CLASS NetworkEvaluator
+//---
+class NetworkEvaluator
+{
+public:
+    virtual ~NetworkEvaluator()
+    {}
 
-        virtual void execute(class Network **nets_,
-                             class OrganismEvaluation *results,
-                             size_t nnets) = 0;
-    };
+    virtual void
+    execute(class Network **nets_,
+            class OrganismEvaluation *results,
+            size_t nnets) = 0;
+};
 
 } // namespace NEAT

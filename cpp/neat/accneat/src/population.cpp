@@ -23,22 +23,25 @@ using namespace std;
 
 Population *NEAT::debug_population = nullptr;
 
-Population *Population::create(rng_t rng,
-                               vector<unique_ptr<Genome>> &seeds) {
-    Population *result;
+Population *
+Population::create(rng_t rng,
+                   vector<unique_ptr<Genome>> &seeds)
+{
+  Population *result;
 
-    switch(env->population_type) {
+  switch (env->population_type) {
     case PopulationType::SPECIES:
-        result = new SpeciesPopulation(rng, seeds);
-        break;
+      result = new SpeciesPopulation(rng,
+                                     seeds);
+      break;
     case PopulationType::MULTI_NN_SPECIES:
-        result = new MultiNNSpeciesPopulation(rng, seeds);
-        break;
-    default:
-        panic();
-    }
+      result = new MultiNNSpeciesPopulation(rng,
+                                            seeds);
+      break;
+    default: panic();
+  }
 
-    debug_population = result;
+  debug_population = result;
 
-    return result;
+  return result;
 }

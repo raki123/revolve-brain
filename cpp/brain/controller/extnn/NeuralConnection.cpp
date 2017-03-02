@@ -4,30 +4,36 @@ namespace revolve {
 namespace brain {
 
 NeuralConnection::NeuralConnection(const NeuronPtr &src,
-				   const NeuronPtr &dst,
-				   double weight)
+                                   const NeuronPtr &dst,
+                                   double weight)
 {
-	weight_ = weight;
-	src_ = src;
-	dst_ = dst;
+  weight_ = weight;
+  src_ = src;
+  dst_ = dst;
 }
 
-double NeuralConnection::GetWeight() const
+double
+NeuralConnection::GetWeight() const
 {
-	return weight_;
+  return weight_;
 }
 
-void NeuralConnection::SetWeight(double weight) 
+void
+NeuralConnection::SetWeight(double weight)
 {
-	weight_ = weight;
+  weight_ = weight;
 }
-NeuronPtr NeuralConnection::GetInputNeuron() const
+
+NeuronPtr
+NeuralConnection::GetInputNeuron() const
 {
-	return src_;
+  return src_;
 }
-NeuronPtr NeuralConnection::GetOutputNeuron() const
+
+NeuronPtr
+NeuralConnection::GetOutputNeuron() const
 {
-	return dst_;
+  return dst_;
 }
 
 

@@ -4,10 +4,8 @@
 #include "Neuron.h"
 #include "NeuralConnection.h"
 
-namespace revolve
-{
-namespace brain
-{
+namespace revolve {
+namespace brain {
 
 class DifferentialCPG
         : public Neuron

@@ -4,8 +4,7 @@
 #include "GeneticEncoding.h"
 
 //crossover between genotypes
-namespace CPPNEAT
-{
+namespace CPPNEAT {
 class Crossover
 {
 public:

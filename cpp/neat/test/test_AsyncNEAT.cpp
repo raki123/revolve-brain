@@ -48,10 +48,9 @@ TestAsyncNeat::testXOR()
     std::shared_ptr<NeatEvaluation> eval = neat.getEvaluation();
     const NEAT::Organism *organism = eval->getOrganism();
     NEAT::CpuNetwork *net = reinterpret_cast< NEAT::CpuNetwork *> (organism->net
-            .get());
+                                                                           .get());
 
     float error = 0;
-//         std::cout << std::endl;
     for (unsigned int test = 0; test < inputs0.size(); test++) {
       net->load_sensor(0,
                        inputs0[test]);
@@ -61,8 +60,6 @@ TestAsyncNeat::testXOR()
       net->activate(1);
       NEAT::real_t *outputs = net->get_outputs();
       error += std::abs(outputs[0] - expectedOutputs[test]);
-
-//             std::cout << "#" << gen << "# " << inputs0[test] << ' ' << inputs1[test] << " -> " << outputs[0] << std::endl;
     }
 
     if (min_error > error) {
@@ -75,9 +72,9 @@ TestAsyncNeat::testXOR()
       std::cout << "\nAfter " << gen << " tries, a successful organism was found with an error of " << min_error
                 << std::endl;
       std::cout << "The organism fitness is " << neat.getFittest()
-              ->getOrganism()
-              ->eval
-              .fitness << std::endl;
+                                                     ->getOrganism()
+                                                     ->eval
+                                                     .fitness << std::endl;
       success = true;
       break;
     }

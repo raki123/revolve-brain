@@ -2,7 +2,6 @@
 
 #include <cmath>
 #include <iostream>
-#include <stdexcept>
 #include <sstream>
 
 #define NCYCLES 1
@@ -36,9 +35,9 @@ SUPGNeuron::SUPGNeuron(NEAT::CpuNetwork *cppn,
   set_coordinates(coordinates);
   NEAT::NetDims dims = cppn->get_dims();
   unsigned int n_input = dims.nnodes
-          .input;
+                             .input;
   unsigned int n_output = dims.nnodes
-          .output;
+                              .output;
 
   if (n_input < supg_internal_inputs) {
     std::stringstream ss;
@@ -72,9 +71,9 @@ SUPGNeuron::get_dims()
 {
   NEAT::NetDims dims = cppn->get_dims();
   dims.nnodes
-          .input -= supg_internal_inputs;
+      .input -= supg_internal_inputs;
   dims.nnodes
-          .output -= supg_internal_outputs;
+      .output -= supg_internal_outputs;
   return dims;
 }
 
@@ -82,15 +81,15 @@ void
 SUPGNeuron::setCppn(NEAT::CpuNetwork *cppn)
 {
   NEAT::NetDims prev_dims = this->cppn
-          ->get_dims();
+                                ->get_dims();
   NEAT::NetDims next_dims = cppn->get_dims();
 
   if ((prev_dims.nnodes
-               .input != next_dims.nnodes
-               .input) ||
+                .input != next_dims.nnodes
+                                   .input) ||
       (prev_dims.nnodes
-               .output != next_dims.nnodes
-               .output)) {
+                .output != next_dims.nnodes
+                                    .output)) {
     throw std::invalid_argument("SUPGNeuron::setCppn() cppn dimensions do not correspond");
   }
 
@@ -114,8 +113,8 @@ SUPGNeuron::init_timer(float global_time)
 
   // reset all other inputs
   unsigned int n_other_inputs = cppn->get_dims()
-                                        .nnodes
-                                        .input - supg_internal_inputs;
+                                    .nnodes
+                                    .input - supg_internal_inputs;
   for (unsigned int i = 0; i < n_other_inputs; i++) {
     this->load_sensor(i,
                       0);

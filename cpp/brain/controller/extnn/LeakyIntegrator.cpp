@@ -2,10 +2,8 @@
 #include <cmath>
 #include <iostream>
 
-namespace revolve
-{
-namespace brain
-{
+namespace revolve {
+namespace brain {
 
 LeakyIntegrator::LeakyIntegrator(const std::string &id,
                                  const std::map<std::string, double> &params) :
@@ -18,9 +16,9 @@ LeakyIntegrator::LeakyIntegrator(const std::string &id,
   }
 
   this->bias_ = params.find("rv:bias")
-          ->second;
+                      ->second;
   this->tau_ = params.find("rv:tau")
-          ->second;
+                     ->second;
 
   this->lastTime_ = 0;
   this->stateDeriv_ = 0;
@@ -42,11 +40,11 @@ LeakyIntegrator::CalculateOutput(double t)
 
   // Calculate the input value
   for (auto it = this->incomingConnections_
-          .begin(); it != this->incomingConnections_
-          .end(); ++it) {
+                     .begin(); it != this->incomingConnections_
+                                         .end(); ++it) {
     auto inConnection = it->second;
     inputValue += inConnection->GetInputNeuron()
-                          ->GetOutput() * inConnection->GetWeight();
+                              ->GetOutput() * inConnection->GetWeight();
   }
 
   stateDeriv_ = (-state_ + inputValue) / tau_;
@@ -76,9 +74,9 @@ LeakyIntegrator::setNeuronParameters(std::map<std::string, double> params)
   }
 
   this->bias_ = params.find("rv:bias")
-          ->second;
+                      ->second;
   this->tau_ = params.find("rv:tau")
-          ->second;
+                     ->second;
 
   this->stateDeriv_ = 0;
   this->state_ = 0;

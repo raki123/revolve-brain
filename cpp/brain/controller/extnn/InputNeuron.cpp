@@ -1,9 +1,7 @@
 #include "InputNeuron.h"
 
-namespace revolve
-{
-namespace brain
-{
+namespace revolve {
+namespace brain {
 
 
 InputNeuron::InputNeuron(const std::string &id,

@@ -4,8 +4,7 @@
 #include <string>
 
 //class containg meta information about a gene
-namespace CPPNEAT
-{
+namespace CPPNEAT {
 class Gene
 {
 public:

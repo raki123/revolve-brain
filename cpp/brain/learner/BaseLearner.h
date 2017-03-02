@@ -50,8 +50,10 @@ public:
      * in this update cycle. The pointer is guaranteed to be valid until the
      * end of the update cycle.
      */
-    virtual base_controller* update(const std::vector<SensorPtr> &sensors,
-                                    double t, double step);
+    virtual base_controller *
+    update(const std::vector<SensorPtr> &sensors,
+           double t,
+           double step);
 
 protected:
     /**

@@ -22,10 +22,8 @@
 #include "brain/controller/extnn/InputDependentOscillatorNeuron.h"
 
 
-namespace revolve
-{
-namespace brain
-{
+namespace revolve {
+namespace brain {
 
 struct LayeredExtNNConfig
 {

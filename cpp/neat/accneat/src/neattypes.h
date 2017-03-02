@@ -4,32 +4,38 @@
 // CUDA compiler (C++11 features not currently supported).
 namespace NEAT {
 
-    typedef float real_t;
+typedef float real_t;
 
-    typedef unsigned char uchar;
-    typedef unsigned short ushort;
+typedef unsigned char uchar;
 
-    #define NODES_MAX USHRT_MAX
-    #define LINKS_MAX USHRT_MAX
+typedef unsigned short ushort;
 
-    typedef unsigned short node_size_t;
-    typedef unsigned short link_size_t;
+#define NODES_MAX USHRT_MAX
+#define LINKS_MAX USHRT_MAX
 
-    enum nodetype {
-        NT_BIAS = 0,
-        NT_SENSOR = 1,
-        NT_OUTPUT = 2,
-        NT_HIDDEN = 3
-    };
+typedef unsigned short node_size_t;
 
-    struct OrganismEvaluation {
-        real_t fitness;
-        real_t error;
+typedef unsigned short link_size_t;
 
-        void reset() {fitness = error = 0.0;}
-    };
+enum nodetype
+{
+    NT_BIAS = 0,
+    NT_SENSOR = 1,
+    NT_OUTPUT = 2,
+    NT_HIDDEN = 3
+};
 
-    #define accneat_in const
-    #define accneat_out
-    #define accneat_inout
+struct OrganismEvaluation
+{
+    real_t fitness;
+    real_t error;
+
+    void
+    reset()
+    { fitness = error = 0.0; }
+};
+
+#define accneat_in const
+#define accneat_out
+#define accneat_inout
 }

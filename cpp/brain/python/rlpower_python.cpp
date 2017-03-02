@@ -32,7 +32,7 @@ read_or_default(const boost::python::object &o,
   try {
     const boost::python::object &o2 = o.attr(key);
 
-    boost::python::extract <T> extractor(o2);
+    boost::python::extract<T> extractor(o2);
     if (extractor.check())
       return extractor;
     else

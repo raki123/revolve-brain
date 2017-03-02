@@ -1,12 +1,10 @@
 #include "Mutator.h"
 
-#include <algorithm>
 #include <iostream>
 #include <fstream>
 #include <yaml-cpp/yaml.h>
 
-namespace CPPNEAT
-{
+namespace CPPNEAT {
 
 std::vector<Neuron::Ntype>
 Mutator::get_addable_types(std::map<Neuron::Ntype, Neuron::NeuronTypeSpec> brain_spec)
@@ -15,11 +13,11 @@ Mutator::get_addable_types(std::map<Neuron::Ntype, Neuron::NeuronTypeSpec> brain
   for (auto it : brain_spec) {
     Neuron::NeuronTypeSpec spec = it.second;
     if (std::find(spec.possible_layers
-                          .begin(),
+                      .begin(),
                   spec.possible_layers
-                          .end(),
+                      .end(),
                   Neuron::HIDDEN_LAYER) != spec.possible_layers
-                .end()) {
+                                               .end()) {
       possible.push_back(it.first);
     }
   }
@@ -69,9 +67,9 @@ Mutator::write_known_innovations(std::string yaml_path)
   for (std::pair<std::pair<int, int>, int> connection_innovation : connection_innovations) {
     outputFile << "  - connection_innovation: " << std::endl;
     outputFile << "      mark_from: " << connection_innovation.first
-            .first << std::endl;
+                                                              .first << std::endl;
     outputFile << "      mark_to: " << connection_innovation.first
-            .second << std::endl;
+                                                            .second << std::endl;
     outputFile << "      in_no: " << connection_innovation.second << std::endl;
   }
 
@@ -79,9 +77,9 @@ Mutator::write_known_innovations(std::string yaml_path)
   for (std::pair<std::pair<int, Neuron::Ntype>, std::vector<int>> neuron_innovation : neuron_innovations) {
     outputFile << "  - neuron_innovation: " << std::endl;
     outputFile << "      conn_split: " << neuron_innovation.first
-            .first << std::endl;
+                                                           .first << std::endl;
     outputFile << "      ntype: " << neuron_innovation.first
-            .second << std::endl;
+                                                      .second << std::endl;
     outputFile << "      in_nos: " << std::endl;
     for (int in_no : neuron_innovation.second) {
       outputFile << "      - in_no: " << in_no << std::endl;
@@ -143,20 +141,20 @@ Mutator::mutate_neuron_params(GeneticEncodingPtr genotype,
     for (NeuronGenePtr neuron_gene : genotype->neuron_genes) {
       if (uniform(generator) < probability) {
         std::vector<Neuron::ParamSpec> neuron_params = brain_spec[neuron_gene->neuron
-                ->neuron_type].param_specs;
+                                                                             ->neuron_type].param_specs;
         if (neuron_params.size() > 0) {
           std::uniform_int_distribution<int> uniform_int(0,
                                                          neuron_params.size() - 1);
           Neuron::ParamSpec param = neuron_params[uniform_int(generator)];
           double cur_val = neuron_gene->neuron
-                  ->neuron_params[param.name];
+                                      ->neuron_params[param.name];
 // 					std::normal_distribution<double> normal(0,sigma*(param.max_value-param.min_value));
           std::normal_distribution<double> normal(0,
                                                   sigma);
           cur_val += normal(generator);
           neuron_gene->neuron
-                  ->set_neuron_param(cur_val,
-                                     param);
+                     ->set_neuron_param(cur_val,
+                                        param);
         }
       }
     }
@@ -165,20 +163,20 @@ Mutator::mutate_neuron_params(GeneticEncodingPtr genotype,
       for (NeuronGenePtr neuron_gene : layer) {
         if (uniform(generator) < probability) {
           std::vector<Neuron::ParamSpec> neuron_params = brain_spec[neuron_gene->neuron
-                  ->neuron_type].param_specs;
+                                                                               ->neuron_type].param_specs;
           if (neuron_params.size() > 0) {
             std::uniform_int_distribution<int> uniform_int(0,
                                                            neuron_params.size() - 1);
             Neuron::ParamSpec param = neuron_params[uniform_int(generator)];
             double cur_val = neuron_gene->neuron
-                    ->neuron_params[param.name];
+                                        ->neuron_params[param.name];
 // 						std::normal_distribution<double> normal(0,sigma*(param.max_value-param.min_value));
             std::normal_distribution<double> normal(0,
                                                     sigma);
             cur_val += normal(generator);
             neuron_gene->neuron
-                    ->set_neuron_param(cur_val,
-                                       param);
+                       ->set_neuron_param(cur_val,
+                                          param);
           }
         }
       }
@@ -242,7 +240,7 @@ Mutator::add_connection_mutation(GeneticEncodingPtr genotype,
 
     while (genotype->connection_exists(mark_from,
                                        mark_to) || neuron_to->neuron
-                                                           ->layer == Neuron::INPUT_LAYER) {
+                                                            ->layer == Neuron::INPUT_LAYER) {
       neuron_from = genotype->neuron_genes[choice(generator)];
       neuron_to = genotype->neuron_genes[choice(generator)];
       mark_from = neuron_from->getInnovNumber();
@@ -459,9 +457,9 @@ Mutator::remove_neuron_mutation(GeneticEncodingPtr genotype)
 {
   std::vector<int> hidden_neuron_ids;
   for (unsigned int i = 0; i < genotype->neuron_genes
-          .size(); i++) {
+                                       .size(); i++) {
     if (genotype->neuron_genes[i]->neuron
-                ->layer == Neuron::HIDDEN_LAYER) {
+                                 ->layer == Neuron::HIDDEN_LAYER) {
       hidden_neuron_ids.push_back(i);
     }
   }
@@ -473,7 +471,7 @@ Mutator::remove_neuron_mutation(GeneticEncodingPtr genotype)
 
   std::vector<int> bad_connections;
   for (unsigned int i = 0; i < genotype->connection_genes
-          .size(); i++) {
+                                       .size(); i++) {
     if (genotype->connection_genes[i]->mark_from == neuron_mark ||
         genotype->connection_genes[i]->mark_to == neuron_mark) {
       bad_connections.push_back(i);

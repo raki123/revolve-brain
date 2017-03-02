@@ -4,7 +4,6 @@
 #include <vector>
 #include <cmath>
 #include <iostream>
-#include <memory>
 
 #include "innovgenome/innovgenomemanager.h"
 #include "innovgenome/innovgenome.h"
@@ -68,7 +67,7 @@ public:
 
       start_genome.add_link(start_genome.links,
                             NEAT::InnovLinkGene(rng.element(start_genome.traits)
-                                                        .trait_id,
+                                                   .trait_id,
                                                 rng.prob(),
                                                 node_id_input + 0,
                                                 node_id_output + 0,
@@ -84,7 +83,7 @@ public:
           NEAT::InnovGenome *g = new NEAT::InnovGenome();
           start_genome.duplicate_into(g);
           g->rng
-                  .seed(_rng.integer());
+           .seed(_rng.integer());
           g->mutate_link_weights(1.0,
                                  1.0,
                                  NEAT::COLDGAUSSIAN);
@@ -132,7 +131,7 @@ TestCustomGenomeManager::testXOR()
     std::shared_ptr<NeatEvaluation> eval = neat.getEvaluation();
     const NEAT::Organism *organism = eval->getOrganism();
     NEAT::CpuNetwork *net = reinterpret_cast< NEAT::CpuNetwork *> (organism->net
-            .get());
+                                                                           .get());
 
     float error = 0;
 //         std::cout << std::endl;
@@ -159,9 +158,9 @@ TestCustomGenomeManager::testXOR()
       std::cout << "\nAfter " << gen << " tries, a successful organism was found with an error of " << min_error
                 << std::endl;
       std::cout << "The organism fitness is " << neat.getFittest()
-              ->getOrganism()
-              ->eval
-              .fitness << std::endl;
+                                                     ->getOrganism()
+                                                     ->eval
+                                                     .fitness << std::endl;
       success = true;
       break;
     }

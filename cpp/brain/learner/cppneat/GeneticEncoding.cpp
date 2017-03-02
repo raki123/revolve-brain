@@ -1,11 +1,9 @@
 #include "GeneticEncoding.h"
 
-#include <algorithm>
 #include <iostream>
 #include <cmath>
 
-namespace CPPNEAT
-{
+namespace CPPNEAT {
 
 GeneticEncodingPtr
 GeneticEncoding::copy()
@@ -115,7 +113,7 @@ GeneticEncoding::get_dissimilarity(GeneticEncodingPtr genotype1,
   for (std::pair<GenePtr, GenePtr> pair : gene_pairs) {
     if (pair.first != nullptr && pair.second != nullptr) {
       if (pair.first
-                  ->gene_type == Gene::CONNECTION_GENE) {
+              ->gene_type == Gene::CONNECTION_GENE) {
         weight_diff += std::abs(boost::dynamic_pointer_cast<ConnectionGene>(pair.first)->weight
                                 - boost::dynamic_pointer_cast<ConnectionGene>(pair.second)->weight);
         count++;
@@ -292,11 +290,11 @@ GeneticEncoding::get_space_map(std::vector<GeneticEncodingPtr> genotypes,
                                                        1));
       } else if (cur_gene->gene_type == Gene::NEURON_GENE) {
         Neuron::Ntype neuron_type = boost::dynamic_pointer_cast<NeuronGene>(cur_gene)->neuron
-                ->neuron_type;
+                                                                                     ->neuron_type;
         Neuron::NeuronTypeSpec neuron_spec = brain_spec[neuron_type];
         in_param_numbers.push_back(std::pair<int, int>(in,
                                                        neuron_spec.param_specs
-                                                               .size()));
+                                                                  .size()));
       }
     }
   }
@@ -315,10 +313,10 @@ GeneticEncoding::adopt(GeneticEncodingPtr adoptee)
     //adopt genes that i dont have
     if (pair.first != nullptr && pair.second == nullptr) {
       if (pair.first
-                  ->gene_type == Gene::NEURON_GENE) {
+              ->gene_type == Gene::NEURON_GENE) {
         add_neuron_gene(boost::dynamic_pointer_cast<NeuronGene>(pair.first));
       } else if (pair.first
-                         ->gene_type == Gene::CONNECTION_GENE) {
+                     ->gene_type == Gene::CONNECTION_GENE) {
         add_connection_gene(boost::dynamic_pointer_cast<ConnectionGene>(pair.first));
       }
     }

@@ -27,7 +27,8 @@
 namespace revolve {
 namespace brain {
 
-class SUPGBrain_python : public revolve::brain::SUPGBrain
+class SUPGBrain_python
+        : public revolve::brain::SUPGBrain
 {
 public:
     SUPGBrain_python(revolve::brain::EvaluatorPtr evaluator,
@@ -36,9 +37,11 @@ public:
                      const boost::python::list /*< SensorPtr> */ &sensors);
 
 
-    void update(boost::python::list& actuators,
-                const boost::python::list& sensors,
-                double t, double step);
+    void
+    update(boost::python::list &actuators,
+           const boost::python::list &sensors,
+           double t,
+           double step);
 
 };
 

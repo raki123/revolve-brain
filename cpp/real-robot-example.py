@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 
-import revolve_brain_python
-import pigpio
-import time
 import json
 import logging
-from random import random
+import pigpio
+import revolve_brain_python
+import time
 from fitness_querier import FitnessQuerier
+
 
 class RLPowerConf:
     def __init__(self):
@@ -19,6 +19,7 @@ class RLPowerConf:
         self.sigma_tau_correction = None
         self.source_y_size = None
         self.update_step = None
+
 
 class Servo(revolve_brain_python.Actuator):
     """Class for controlling servos using PWM signals sent to GPIO pins
@@ -94,8 +95,7 @@ class Evaluator(revolve_brain_python.Evaluator):
     def fitness(self):
         print("calling fitness")
         return self._reactivision_fitness.get_fitness()
-        #return float(input("manual fitness: "))
-
+        # return float(input("manual fitness: "))
 
 
 def main():
@@ -106,19 +106,17 @@ def main():
             config_options = json.load(config_file)
     except IOError:
         logging.error("Configuration file could not be read: {}"
-                        .format(config_file_path))
+                      .format(config_file_path))
         raise SystemExit
 
-
     robot_name = config_options['robot_name']
-    #TIME_CHECK_TIMEOUT = config_options['evaluation_time']
-    #LIGHT_THRESHOLD = config_options['light_mating_threshold']
-    #offline = config_options['disable_learning']
+    # TIME_CHECK_TIMEOUT = config_options['evaluation_time']
+    # LIGHT_THRESHOLD = config_options['light_mating_threshold']
+    # offline = config_options['disable_learning']
 
     evaluator = Evaluator(config_options)
     servos = [Servo(pin) for pin in config_options['servo_pins']]
     sensors = []
-
 
     rlconf = RLPowerConf()
     rlconf.algorithm_type = config_options["algorithm_type"]
@@ -132,14 +130,14 @@ def main():
     rlconf.update_step = config_options["update_step_rate"]
 
     controller = revolve_brain_python.RLPower(
-        robot_name,
-        rlconf,
-        evaluator,
-        len(servos),
-        len(sensors)
+            robot_name,
+            rlconf,
+            evaluator,
+            len(servos),
+            len(sensors)
     )
 
-    #main life cycle
+    # main life cycle
     try:
         before = time.time()
         while True:
@@ -152,8 +150,7 @@ def main():
     except KeyboardInterrupt:
         pass
 
-
-    #shut down servos
+    # shut down servos
     for servo in servos:
         servo.off()
 
