@@ -31,17 +31,21 @@ namespace NEAT {
 
     public:
         inline int out_node_id() const { return _out_node_id; }
+
         inline void set_out_node_id(int id) { _out_node_id = id; }
 
         inline int in_node_id() const { return _in_node_id; }
+
         inline void set_in_node_id(int id) { _in_node_id = id; }
 
         inline real_t &weight() { return _weight; }
 
         inline int trait_id() const { return _trait_id; }
+
         inline void set_trait_id(int tid) { _trait_id = tid; }
 
         inline bool is_recurrent() const { return _is_recurrent; }
+
         inline void set_recurrent(bool r) { _is_recurrent = r; }
 
 
@@ -55,36 +59,36 @@ namespace NEAT {
 
         //Construct a gene with no trait
         InnovLinkGene(real_t w,
-                 int inode_id,
-                 int onode_id,
-                 bool recur,
-                 int innov,
-                 real_t mnum);
+                      int inode_id,
+                      int onode_id,
+                      bool recur,
+                      int innov,
+                      real_t mnum);
 
         //Construct a gene with a trait
         InnovLinkGene(int trait_id,
-                 real_t w,
-                 int inode_id,
-                 int onode_id,
-                 bool recur,
-                 int innov,
-                 real_t mnum);
+                      real_t w,
+                      int inode_id,
+                      int onode_id,
+                      bool recur,
+                      int innov,
+                      real_t mnum);
 
         //Construct a gene off of another gene as a duplicate
         InnovLinkGene(InnovLinkGene *g,
-                 int trait_id,
-                 int inode_id,
-                 int onode_id);
+                      int trait_id,
+                      int inode_id,
+                      int onode_id);
 
         //Construct a gene from a file spec given traits and nodes
         InnovLinkGene(const char *argline);
 
         // Copy Constructor
-        InnovLinkGene(const InnovLinkGene& gene);
+        InnovLinkGene(const InnovLinkGene &gene);
 
         ~InnovLinkGene();
 
-        bool operator==(const InnovLinkGene& rhs) const;
+        bool operator==(const InnovLinkGene &rhs) const;
 
         //Print gene to a file- called from Genome
         void print_to_file(std::ostream &outFile) const;

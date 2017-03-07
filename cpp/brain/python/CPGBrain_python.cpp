@@ -3,7 +3,7 @@
 //
 
 #include "CPGBrain_python.h"
-#include "python_list_wrap.h"
+#include "PythonListWrap.h"
 
 using namespace revolve::brain;
 

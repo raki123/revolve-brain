@@ -1,9 +1,24 @@
 #!/usr/bin/env python3
 
-import revolve_brain_python
+import json
+import logging
 import pigpio
+import revolve_brain_python
 import time
-from random import random
+from fitness_querier import FitnessQuerier
+
+
+class RLPowerConf:
+    def __init__(self):
+        self.algorithm_type = None
+        self.evaluation_rate = None
+        self.interpolation_spline_size = None
+        self.max_evaluations = None
+        self.max_ranked_policies = None
+        self.noise_sigma = None
+        self.sigma_tau_correction = None
+        self.source_y_size = None
+        self.update_step = None
 
 
 class Servo(revolve_brain_python.Actuator):
@@ -69,30 +84,60 @@ class Servo(revolve_brain_python.Actuator):
 
 
 class Evaluator(revolve_brain_python.Evaluator):
-    def __init__(self):
+    def __init__(self, config):
         super().__init__()
+        self._reactivision_fitness = FitnessQuerier(config)
 
     def start(self):
         print("starting evaluation")
+        self._reactivision_fitness.start()
 
     def fitness(self):
         print("calling fitness")
-        return float(input("manual fitness: "))
-
+        return self._reactivision_fitness.get_fitness()
+        # return float(input("manual fitness: "))
 
 
 def main():
-    evaluator = Evaluator()
-    servos = [Servo(pin) for pin in [17, 18, 27, 22, 25]]
+    config_file_path = "gecko.cfg"
+
+    try:
+        with open(config_file_path) as config_file:
+            config_options = json.load(config_file)
+    except IOError:
+        logging.error("Configuration file could not be read: {}"
+                      .format(config_file_path))
+        raise SystemExit
+
+    robot_name = config_options['robot_name']
+    # TIME_CHECK_TIMEOUT = config_options['evaluation_time']
+    # LIGHT_THRESHOLD = config_options['light_mating_threshold']
+    # offline = config_options['disable_learning']
+
+    evaluator = Evaluator(config_options)
+    servos = [Servo(pin) for pin in config_options['servo_pins']]
     sensors = []
 
+    rlconf = RLPowerConf()
+    rlconf.algorithm_type = config_options["algorithm_type"]
+    rlconf.evaluation_rate = config_options["evaluation_rate"]
+    rlconf.interpolation_spline_size = config_options["interpolation_cache_size"]
+    rlconf.max_evaluations = config_options["number_of_fitness_evaluations"]
+    rlconf.max_ranked_policies = config_options["max_ranked_policies"]
+    rlconf.noise_sigma = config_options["noise_sigma"]
+    rlconf.sigma_tau_correction = config_options["sigma_decay_squared"]
+    rlconf.source_y_size = config_options["initial_spline_size"]
+    rlconf.update_step = config_options["update_step_rate"]
+
     controller = revolve_brain_python.RLPower(
-        evaluator,
-        len(servos),
-        len(sensors)
+            robot_name,
+            rlconf,
+            evaluator,
+            len(servos),
+            len(sensors)
     )
 
-    #main life cycle
+    # main life cycle
     try:
         before = time.time()
         while True:
@@ -105,8 +150,7 @@ def main():
     except KeyboardInterrupt:
         pass
 
-
-    #shut down servos
+    # shut down servos
     for servo in servos:
         servo.off()
 

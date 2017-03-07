@@ -17,58 +17,67 @@
 #include "genomemanager.h"
 #include "network/network.h"
 #include "organism.h"
-
-#include <memory>
-#include <ostream>
+#include <iostream>
 
 using namespace NEAT;
 
-Organism::Organism(const Organism &other) {
-    this->genome = env->genome_manager->make_default();
-    this->net = std::unique_ptr<Network>(Network::create());
-    other.copy_into(*this);
+Organism::Organism(const Organism &other)
+{
+  this->genome = env->genome_manager->make_default();
+  this->net = std::unique_ptr<Network>(Network::create());
+  other.copy_into(*this);
 }
 
-Organism::Organism(const Genome &genome) {
-    this->genome = env->genome_manager->make_default();
-    *this->genome = genome;
-    this->net = std::unique_ptr<Network>(Network::create());
+Organism::Organism(const Genome &genome)
+{
+  this->genome = env->genome_manager->make_default();
+  *this->genome = genome;
+  this->net = std::unique_ptr<Network>(Network::create());
 
-    //Note: We're in the base class constructor, so a derived class' init() won't
-    //      be called. The derived class' constructor must also call init().
-    init(0);
+  //Note: We're in the base class constructor, so a derived class' init() won't
+  //      be called. The derived class' constructor must also call init().
+  init(0);
 }
 
-Organism::~Organism() {
+Organism::~Organism()
+{
 }
 
-void Organism::init(int gen) {
-    generation=gen;
-    eval.reset();
+void
+Organism::init(int gen)
+{
+  generation = gen;
+  eval.reset();
 }
 
-Organism &Organism::operator=(const Organism &other) {
-    other.copy_into(*this);
-    return *this;
+Organism &
+Organism::operator=(const Organism &other)
+{
+  other.copy_into(*this);
+  return *this;
 }
 
-void Organism::write(std::ostream &out) const {
-    out << "/* Organism #" << population_index << " "
-        << "Fitness: " << eval.fitness << " "
-        << "Error: " << eval.error << " */" << std::endl;
-    genome->print(out);
+void
+Organism::write(std::ostream &out) const
+{
+  out << "/* Organism #" << population_index << " "
+      << "Fitness: " << eval.fitness << " "
+      << "Error: " << eval.error << " */" << std::endl;
+  genome->print(out);
 }
 
-void Organism::copy_into(Organism &dst) const {
+void
+Organism::copy_into(Organism &dst) const
+{
 #define copy(field) dst.field = this->field;
 
-    copy(population_index);
-    copy(eval);
-    *dst.genome = *this->genome;
-    copy(generation);
+  copy(population_index);
+  copy(eval);
+  *dst.genome = *this->genome;
+  copy(generation);
 
-    // Networks must be regenerated.
-    dst.net = std::unique_ptr<Network>(Network::create());
+  // Networks must be regenerated.
+  dst.net = std::unique_ptr<Network>(Network::create());
 
 
 #undef copy

@@ -19,31 +19,36 @@
 
 namespace NEAT {
 
-    class Genome {
-    public:
-        rng_t rng;
-        int genome_id;
+class Genome
+{
+public:
+    rng_t rng;
+    int genome_id;
 
-        virtual ~Genome() {}
+    virtual ~Genome()
+    {}
 
-        virtual Genome &operator=(const Genome &other) = 0;
+    virtual Genome &
+    operator=(const Genome &other) = 0;
 
-        virtual void init_phenotype(class Network &net) = 0;
+    virtual void
+    init_phenotype(class Network &net) = 0;
 
-        virtual void print(std::ostream &out) const = 0;
-        virtual void verify() = 0;
+    virtual void print(std::ostream &out) const = 0;
+    virtual void verify() = 0;
 
 
-        virtual void save(std::ostream &out) const = 0;
-        virtual bool load(std::istream &in) = 0;
+    virtual void save(std::ostream &out) const = 0;
+    virtual bool load(std::istream &in) = 0;
 
-        struct Stats {
-            size_t nnodes;
-            size_t nlinks;
-        };
-
-        virtual Stats get_stats() = 0;
+    struct Stats {
+        size_t nnodes;
+        size_t nlinks;
     };
+
+    virtual Stats
+    get_stats() = 0;
+};
 
 } // namespace NEAT
 

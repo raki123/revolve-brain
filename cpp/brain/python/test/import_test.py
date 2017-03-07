@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 
-import unittest
 import revolve_brain_python
+import unittest
+
 
 class ImportTest(unittest.TestCase):
     def test_import(self):

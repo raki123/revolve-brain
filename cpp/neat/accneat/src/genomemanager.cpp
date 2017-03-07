@@ -4,11 +4,12 @@
 
 using namespace NEAT;
 
-GenomeManager *GenomeManager::create() {
-    switch(env->genome_type) {
+GenomeManager *
+GenomeManager::create()
+{
+  switch (env->genome_type) {
     case GenomeType::INNOV:
-        return new InnovGenomeManager();
-    default:
-        panic();
-    }
+      return new InnovGenomeManager();
+    default: panic();
+  }
 }

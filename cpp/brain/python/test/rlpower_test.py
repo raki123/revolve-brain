@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 
-import revolve_brain_python
-from sensor_test import Sensor
-from actuator_test import Actuator
-
-import unittest
 import random
+import revolve_brain_python
+import unittest
+
+from actuator_test import Actuator
+from sensor_test import Sensor
 
 robot_name = "unit_test_robot"
+
 
 class RLPowerConf:
     def __init__(self):
@@ -21,6 +22,7 @@ class RLPowerConf:
         self.source_y_size = None
         self.update_step = None
 
+
 class Evaluator(revolve_brain_python.Evaluator):
     def __init__(self):
         super().__init__()
@@ -32,6 +34,7 @@ class Evaluator(revolve_brain_python.Evaluator):
     def fitness(self):
         self.i += 1
         return random.random()
+
 
 class RLPowerTestInstance(unittest.TestCase):
     def setUp(self):
@@ -64,15 +67,15 @@ class RLPowerTestRun(unittest.TestCase):
         self.evaluator = Evaluator()
         self.assertIsInstance(self.evaluator, Evaluator)
 
-        self.actuators = [Actuator() for i in range(0,2)]
-        self.sensors = [Sensor(i) for i in range(0,2)]
+        self.actuators = [Actuator() for i in range(0, 2)]
+        self.sensors = [Sensor(i) for i in range(0, 2)]
 
         self.controller = revolve_brain_python.RLPower(
-            robot_name,
-            RLPowerConf(),
-            self.evaluator,
-            len(self.actuators) * Actuator.SIZE,
-            len(self.sensors) * Sensor.SIZE
+                robot_name,
+                RLPowerConf(),
+                self.evaluator,
+                len(self.actuators) * Actuator.SIZE,
+                len(self.sensors) * Sensor.SIZE
         )
         self.assertIsInstance(self.controller, revolve_brain_python.Brain)
 
@@ -87,7 +90,7 @@ class RLPowerTestRun(unittest.TestCase):
         import time
 
         start = time.time()
-        for i in range(0,100000):
+        for i in range(0, 100000):
             self.controller.update(self.actuators, self.sensors, self.time, step)
             self.time += step
         end = time.time()
@@ -96,6 +99,7 @@ class RLPowerTestRun(unittest.TestCase):
     def tearDown(self):
         # Called after the last testfunction was executed
         pass
+
 
 if __name__ == "__main__":
     unittest.main()

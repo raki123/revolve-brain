@@ -21,7 +21,7 @@
 #define REVOLVE_BRAIN_SUPGBRAINPHOTOTAXIS_H
 
 #include "fakelightsensor.h"
-#include "supgbrain.h"
+#include "SUPGBrain.h"
 
 namespace revolve {
 namespace brain {

@@ -6,7 +6,7 @@
 #define REVOLVE_BRAIN_PATTERNFORMATIONNEURON_H
 
 #include "CPGNeuron.h"
-#include "../sensor.h"
+#include "../Sensor.h"
 
 namespace revolve {
 namespace brain {

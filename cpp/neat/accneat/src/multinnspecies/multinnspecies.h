@@ -22,81 +22,102 @@
 
 namespace NEAT {
 
-    // ---------------------------------------------
-    // SPECIES CLASS:
-    //   A Species is a group of similar Organisms
-    //   Reproduction takes place mostly within a
-    //   single species, so that compatible organisms
-    //   can mate.
-    // ---------------------------------------------
-    class MultiNNSpecies {
-    public:
-        int id;
-        int age; //The age of the Species
-        real_t ave_fitness; //The average fitness of the Species
-        real_t max_fitness; //Max fitness of the Species
-        real_t max_fitness_ever; //The max it ever had
-        int expected_offspring;
-        bool novel;
-        bool checked;
-        bool obliterate;  //Allows killing off in competitive coevolution stagnation
-        std::vector<MultiNNSpeciesOrganism*> organisms; //The organisms in the Species
-        int age_of_last_improvement;  //If this is too long ago, the Species will goes extinct
-        real_t average_est; //When playing real-time allows estimating average fitness
+// ---------------------------------------------
+// SPECIES CLASS:
+//   A Species is a group of similar Organisms
+//   Reproduction takes place mostly within a
+//   single species, so that compatible organisms
+//   can mate.
+// ---------------------------------------------
+class MultiNNSpecies
+{
+public:
+    int id;
+    int age; //The age of the Species
+    real_t ave_fitness; //The average fitness of the Species
+    real_t max_fitness; //Max fitness of the Species
+    real_t max_fitness_ever; //The max it ever had
+    int expected_offspring;
+    bool novel;
+    bool checked;
+    bool obliterate;  //Allows killing off in competitive coevolution stagnation
+    std::vector<MultiNNSpeciesOrganism *> organisms; //The organisms in the Species
+    int age_of_last_improvement;  //If this is too long ago, the Species will goes extinct
+    real_t average_est; //When playing real-time allows estimating average fitness
 
-        bool add_Organism(MultiNNSpeciesOrganism *o);
+    bool
+    add_Organism(MultiNNSpeciesOrganism *o);
 
-        MultiNNSpeciesOrganism *first();
+    MultiNNSpeciesOrganism *
+    first();
 
-        bool print_to_file(std::ostream &outFile);
+    bool
+    print_to_file(std::ostream &outFile);
 
-        //Change the fitness of all the organisms in the species to possibly depend slightly on the age of the species
-        //and then divide it by the size of the species so that the organisms in the species "share" the fitness
-        void adjust_fitness();
+    //Change the fitness of all the organisms in the species to possibly depend slightly on the age of the species
+    //and then divide it by the size of the species so that the organisms in the species "share" the fitness
+    void
+    adjust_fitness();
 
-        real_t compute_average_fitness();
+    real_t
+    compute_average_fitness();
 
-        real_t compute_max_fitness();
+    real_t
+    compute_max_fitness();
 
-        //Counts the number of offspring expected from all its members skim is for keeping track of remaining
-        // fractional parts of offspring and distributing them among species
-        real_t count_offspring(real_t skim);
+    //Counts the number of offspring expected from all its members skim is for keeping track of remaining
+    // fractional parts of offspring and distributing them among species
+    real_t
+    count_offspring(real_t skim);
 
-        //Compute generations since last improvement
-        int last_improved() {
-            return age-age_of_last_improvement;
-        }
+    //Compute generations since last improvement
+    int
+    last_improved()
+    {
+      return age - age_of_last_improvement;
+    }
 
-        //Remove an organism from Species
-        void remove_eliminated();
-        void remove_generation(int gen);
+    //Remove an organism from Species
+    void
+    remove_eliminated();
 
-        real_t size() {
-            return organisms.size();
-        }
+    void
+    remove_generation(int gen);
 
-        //Perform mating and mutation to form next generation
-        void reproduce(int ioffspring,
-                       MultiNNSpeciesOrganism &baby,
-                       class GenomeManager *genome_manager,
-                       std::vector<MultiNNSpecies*> &sorted_species);
+    real_t
+    size()
+    {
+      return organisms.size();
+    }
 
-        // *** Real-time methods ***
+    //Perform mating and mutation to form next generation
+    void
+    reproduce(int ioffspring,
+              MultiNNSpeciesOrganism &baby,
+              class GenomeManager *genome_manager,
+              std::vector<MultiNNSpecies *> &sorted_species);
 
-        MultiNNSpecies(int i);
+    // *** Real-time methods ***
 
-        //Allows the creation of a Species that won't age (a novel one)
-        //This protects new Species from aging inside their first generation
-        MultiNNSpecies(int i,bool n);
+    MultiNNSpecies(int i);
 
-        ~MultiNNSpecies();
+    //Allows the creation of a Species that won't age (a novel one)
+    //This protects new Species from aging inside their first generation
+    MultiNNSpecies(int i,
+                   bool n);
 
-    };
+    ~MultiNNSpecies();
 
-    // This is used for list sorting of Species by fitness of best organism highest fitness first
-    bool order_species(MultiNNSpecies *x, MultiNNSpecies *y);
+};
 
-    bool order_new_species(MultiNNSpecies *x, MultiNNSpecies *y);
+// This is used for list sorting of Species by fitness of best organism highest fitness first
+bool
+order_species(MultiNNSpecies *x,
+              MultiNNSpecies *y);
+
+bool
+order_new_species(MultiNNSpecies *x,
+                  MultiNNSpecies *y);
 
 }
 

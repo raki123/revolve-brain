@@ -9,23 +9,31 @@
 
 namespace NEAT {
 
-class MultiInnovGenome : public Genome
+class MultiInnovGenome
+        : public Genome
 {
 public:
     MultiInnovGenome(std::list<std::unique_ptr<InnovGenome>> &genome_list);
+
     virtual ~MultiInnovGenome() override;
 
-    virtual Genome &operator=(const Genome &other) override;
+    virtual Genome &
+    operator=(const Genome &other) override;
 
-    virtual void init_phenotype(class Network &net) override;
+    virtual void
+    init_phenotype(class Network &net) override;
 
-    virtual void print(std::ostream &out) const override;
-    virtual void verify() override;
+    virtual void
+    print(std::ostream &out) const override;
 
-    virtual Stats get_stats() override;
+    virtual void
+    verify() override;
+
+    virtual Stats
+    get_stats() override;
 
 private:
-    std::vector<std::unique_ptr< InnovGenome >> *innov_genome_list;
+    std::vector<std::unique_ptr<InnovGenome >> *innov_genome_list;
 };
 
 }

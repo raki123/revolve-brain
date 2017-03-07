@@ -20,7 +20,7 @@
 #ifndef REVOLVE_BRAIN_FAKELIGHT_H
 #define REVOLVE_BRAIN_FAKELIGHT_H
 
-#include "sensor.h"
+#include "Sensor.h"
 #include <iostream>
 
 namespace revolve {

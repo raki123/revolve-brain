@@ -5,55 +5,74 @@
 
 namespace NEAT {
 
-    class InnovGenomeManager : public GenomeManager {
-        friend class GenomeManager;
-    protected:
-        InnovGenomeManager();
-    public:
-        virtual ~InnovGenomeManager();
+class InnovGenomeManager
+        : public GenomeManager
+{
+    friend class GenomeManager;
 
-        virtual std::unique_ptr<Genome> make_default() override;
+protected:
+    InnovGenomeManager();
 
-        virtual std::vector<std::unique_ptr<Genome>> create_seed_generation(size_t ngenomes,
-                                                                            class rng_t rng,
-                                                                            size_t ntraits,
-                                                                            size_t ninputs,
-                                                                            size_t noutputs,
-                                                                            size_t nhidden) override;
+public:
+    virtual ~InnovGenomeManager();
 
-        virtual bool are_compatible(Genome &genome1,
-                                    Genome &genome2) override;
+    virtual std::unique_ptr<Genome>
+    make_default() override;
 
-        virtual void clone(Genome &orig,
-                           Genome &clone) override;
+    virtual std::vector<std::unique_ptr<Genome>>
+    create_seed_generation(size_t ngenomes,
+                           class rng_t rng,
+                           size_t ntraits,
+                           size_t ninputs,
+                           size_t noutputs,
+                           size_t nhidden) override;
 
-        virtual void mate(Genome &genome1,
-                          Genome &genome2,
-                          Genome &offspring,
-                          real_t fitness1,
-                          real_t fitness2) override;
+    virtual bool
+    are_compatible(Genome &genome1,
+                   Genome &genome2) override;
 
-        virtual void mutate(Genome &genome,
-                            MutationOperation op = MUTATE_OP_ANY) override;
+    virtual void
+    clone(Genome &orig,
+          Genome &clone) override;
 
-        virtual void finalize_generation(bool new_fittest) override;
+    virtual void
+    mate(Genome &genome1,
+         Genome &genome2,
+         Genome &offspring,
+         real_t fitness1,
+         real_t fitness2) override;
 
-    protected:
-        CreateInnovationFunc create_innov_func(Genome &g);
-        bool is_mate_allowed();
-        bool is_add_allowed();
-        bool is_delete_allowed();
+    virtual void
+    mutate(Genome &genome,
+           MutationOperation op = MUTATE_OP_ANY) override;
 
-        PopulationInnovations innovations;
+    virtual void
+    finalize_generation(bool new_fittest) override;
 
-        int generation;
-        enum SearchPhase {
-            UNDEFINED,
-            COMPLEXIFY,
-            PRUNE
-        } search_phase;
-        int search_phase_start;
-        int max_phase_duration;
-    };
+protected:
+    CreateInnovationFunc
+    create_innov_func(Genome &g);
+
+    bool
+    is_mate_allowed();
+
+    bool
+    is_add_allowed();
+
+    bool
+    is_delete_allowed();
+
+    PopulationInnovations innovations;
+
+    int generation;
+    enum SearchPhase
+    {
+        UNDEFINED,
+        COMPLEXIFY,
+        PRUNE
+    } search_phase;
+    int search_phase_start;
+    int max_phase_duration;
+};
 
 }

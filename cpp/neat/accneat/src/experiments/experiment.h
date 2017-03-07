@@ -6,25 +6,32 @@
 
 namespace NEAT {
 
-    class Experiment {
-    public:
-        static std::vector<std::string> get_names();
-        static Experiment *get(const char *name);
+class Experiment
+{
+public:
+    static std::vector<std::string>
+    get_names();
 
-    private:
-        static std::map<std::string, Experiment*> *experiments;
+    static Experiment *
+    get(const char *name);
 
-    public:
-        virtual ~Experiment();
+private:
+    static std::map<std::string, Experiment *> *experiments;
 
-        virtual void run(class rng_t &rng, int gens) = 0;
+public:
+    virtual ~Experiment();
 
-    protected:
-        Experiment(const char *name);
+    virtual void
+    run(class rng_t &rng,
+        int gens) = 0;
 
-    private:
-        Experiment() {}
+protected:
+    Experiment(const char *name);
 
-        const char *name;
-    };
+private:
+    Experiment()
+    {}
+
+    const char *name;
+};
 }

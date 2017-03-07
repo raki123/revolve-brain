@@ -21,38 +21,53 @@
 
 namespace NEAT {
 
-    class MultiNNSpeciesPopulation : public Population {
-    public:
-        // Construct off of a single spawning Genome
-        MultiNNSpeciesPopulation(rng_t rng,
-                          std::vector<std::unique_ptr<Genome>> &seeds);
-        virtual ~MultiNNSpeciesPopulation();
+class MultiNNSpeciesPopulation
+        : public Population
+{
+public:
+    // Construct off of a single spawning Genome
+    MultiNNSpeciesPopulation(rng_t rng,
+                             std::vector<std::unique_ptr<Genome>> &seeds);
 
-        virtual size_t size() override;
-        virtual class Organism *get(size_t index) override;
-        virtual std::unique_ptr<Organism> make_copy(size_t index) override;
+    virtual ~MultiNNSpeciesPopulation();
 
-        virtual void next_generation() override;
-        virtual void verify() override;
+    virtual size_t
+    size() override;
 
-        virtual void write(std::ostream& out) override;
+    virtual class Organism *
+    get(size_t index) override;
 
-    private:
-        void spawn();
-        void speciate();
+    virtual std::unique_ptr<Organism>
+    make_copy(size_t index) override;
 
-        size_t norgs;
-        int generation;
-        OrganismsBuffer<MultiNNSpeciesOrganism> orgs;
+    virtual void
+    next_generation() override;
 
-        std::vector<class MultiNNSpecies*> species;  // Species in the SpeciesPopulation. Note that the species should comprise all the genomes
+    virtual void
+    verify() override;
 
-        // ******* Member variables used during reproduction *******
-        int last_species;  //The highest species number
+    virtual void
+    write(std::ostream &out) override;
 
-        // ******* When do we need to delta code? *******
-        real_t highest_fitness;  //Stagnation detector
-        int highest_last_changed; //If too high, leads to delta coding
-    };
+private:
+    void
+    spawn();
+
+    void
+    speciate();
+
+    size_t norgs;
+    int generation;
+    OrganismsBuffer<MultiNNSpeciesOrganism> orgs;
+
+    std::vector<class MultiNNSpecies *> species;  // Species in the SpeciesPopulation. Note that the species should comprise all the genomes
+
+    // ******* Member variables used during reproduction *******
+    int last_species;  //The highest species number
+
+    // ******* When do we need to delta code? *******
+    real_t highest_fitness;  //Stagnation detector
+    int highest_last_changed; //If too high, leads to delta coding
+};
 
 } // namespace NEAT
