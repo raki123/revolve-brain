@@ -17,7 +17,7 @@
  *
  */
 
-#include "fakelightsensor.h"
+#include "FakeLightSensor.h"
 #include <cmath>
 
 using namespace revolve::brain;

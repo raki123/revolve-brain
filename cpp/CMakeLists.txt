@@ -44,12 +44,12 @@ include_directories(${Boost_INCLUDE_DIRS} ${PROJECT_SOURCE_DIR} ${GSL_INCLUDE_DI
 
 
 file(GLOB_RECURSE BRAIN_SRCS
-     brain/fakelightsensor.cpp
+     brain/FakeLightSensor.cpp
      brain/RLPower.cpp
      brain/NeuralNetwork.cpp
      brain/CPGBrain.cpp
      brain/SUPGBrain.cpp
-     brain/supgbrainphototaxis.cpp
+     brain/SUPGBrainPhototaxis.cpp
      brain/supg/SUPGNeuron.cpp
      brain/supg/SUPGGenomeManager.cpp
      neat/AsyncNEAT.cpp

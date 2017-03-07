@@ -17,7 +17,7 @@
  *
  */
 
-#include "supgbrainphototaxis.h"
+#include "SUPGBrainPhototaxis.h"
 
 #include <functional>
 #include <cmath>

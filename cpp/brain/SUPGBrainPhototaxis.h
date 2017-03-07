@@ -20,7 +20,7 @@
 #ifndef REVOLVE_BRAIN_SUPGBRAINPHOTOTAXIS_H
 #define REVOLVE_BRAIN_SUPGBRAINPHOTOTAXIS_H
 
-#include "fakelightsensor.h"
+#include "FakeLightSensor.h"
 #include "SUPGBrain.h"
 
 namespace revolve {
