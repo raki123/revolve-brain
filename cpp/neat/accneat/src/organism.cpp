@@ -17,6 +17,7 @@
 #include "genomemanager.h"
 #include "network/network.h"
 #include "organism.h"
+#include <iostream>
 
 using namespace NEAT;
 

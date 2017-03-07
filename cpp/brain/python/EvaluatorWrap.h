@@ -3,7 +3,7 @@
 
 #include <boost/python/wrapper.hpp>
 #include <boost/python/object.hpp>
-#include "brain/evaluator.h"
+#include "brain/Evaluator.h"
 
 #include <iostream>
 

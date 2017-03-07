@@ -1,3 +1,4 @@
+cmake_minimum_required(VERSION 3.0)
 project(revolve-brain)
 
 # C++11 ########################################################################
@@ -34,6 +35,9 @@ include_directories("neat/accneat/src")
 # Gnu mathematical library
 find_package(GSL REQUIRED)
 
+# add CPG
+add_subdirectory("brain/cpg")
+
 # end Libraries stuff
 include_directories(${Boost_INCLUDE_DIRS} ${PROJECT_SOURCE_DIR} ${GSL_INCLUDE_DIRS})
 
@@ -49,7 +53,9 @@ file(GLOB_RECURSE BRAIN_SRCS
      brain/supg/SUPGGenomeManager.cpp
      neat/AsyncNEAT.cpp
      neat/NEATEvaluation.cpp
-     brain/Conversion.cpp)
+     brain/Conversion.cpp
+     brain/CPGBrain.cpp
+)
 
 # Compiling ####################################################################
 add_subdirectory("brain/learner/")
@@ -59,13 +65,14 @@ add_library(revolve-brain SHARED)
 
 target_link_libraries(revolve-brain-static
                       accneat
+                      cpg
                       revolve-brain-controller
                       revolve-brain-learner
                       ${Boost_LIBRARIES}
                       ${PYTHON_LIBRARIES}
                       ${GSL_LIBRARIES}
                       yaml-cpp
-                      )
+)
 
 target_link_libraries(revolve-brain revolve-brain-static)
 
@@ -76,19 +83,27 @@ install(TARGETS revolve-brain DESTINATION lib)
 # Tests ########################################################################
 #if tests are enabled
 enable_testing()
+add_library(test-shared STATIC
+        test/test_Evaluator.cpp
+        test/test_Actuator.cpp
+        test/test_Sensor.cpp
+)
 
 add_executable(testAsyncNeat neat/test/test_AsyncNEAT.cpp)
 add_executable(testCustomGenomeManager neat/test/test_CustomGenomeManager.cpp)
 add_executable(testMultiNNSpecies neat/test/test_MultiANNSpeciesNEAT.cpp)
 add_executable(testSUPGBrain test/test_SUPGBrain.cpp)
+add_executable(testCPGBrain test/test_CPGBrain.cpp)
 target_link_libraries(testAsyncNeat revolve-brain)
 target_link_libraries(testCustomGenomeManager revolve-brain)
 target_link_libraries(testMultiNNSpecies revolve-brain)
 target_link_libraries(testSUPGBrain revolve-brain)
+target_link_libraries(testCPGBrain revolve-brain test-shared)
 add_test(testAsyncNeat testAsyncNeat)
 add_test(testCustomGenomeManager testCustomGenomeManager)
 add_test(testMultiNNSpecies testMultiNNSpecies)
 add_test(testSUPGBrain testSUPGBrain)
+add_test(testCPGBrain testCPGBrain)
 
 
 if (WITH_PYTHON)

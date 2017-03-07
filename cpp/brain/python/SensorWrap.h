@@ -3,8 +3,8 @@
 
 #include <boost/python/wrapper.hpp>
 #include <boost/python/object.hpp>
-#include "brain/sensor.h"
-#include "brain/python/python_array.h"
+#include "brain/Sensor.h"
+#include "brain/python/PythonArray.h"
 
 #include <string>
 

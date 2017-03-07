@@ -47,10 +47,11 @@ include_directories(${Boost_INCLUDE_DIRS} ${PYTHON_INCLUDE_DIRS})
 
 # add python wrapper target
 python_add_module(revolve_brain_python
-                  Brain.cpp
-                  RLPower_python.cpp
-                  SUGPBrain_python.cpp
-                  )
+    Brain.cpp
+    RLPower_python.cpp
+        SUPGBrain_python.cpp
+    CPGBrain_python.cpp
+)
 
 # link libraries
 target_link_libraries(revolve_brain_python revolve-brain-static ${Boost_LIBRARIES})
@@ -65,9 +66,11 @@ file(COPY test/sensor_test.py DESTINATION .)
 file(COPY test/actuator_test.py DESTINATION .)
 file(COPY test/rlpower_test.py DESTINATION .)
 file(COPY test/supg_test.py DESTINATION .)
-add_test(00-Import /usr/bin/env python3 -m unittest import_test.py)
-add_test(01-Sensor /usr/bin/env python3 -m unittest sensor_test.py)
-add_test(01-Actuator /usr/bin/env python3 -m unittest actuator_test.py)
-add_test(03-NeuralNetwork /usr/bin/env python3 -m unittest neuralnetwork_test.py)
-add_test(04-RLPower /usr/bin/env python3 -m unittest rlpower_test.py)
-add_test(05-SUPG /usr/bin/env python3 -m unittest supg_test.py)
+file(COPY test/cpg_test.py DESTINATION .)
+add_test(python00-Import /usr/bin/env python3 -m unittest import_test.py)
+add_test(python01-Sensor /usr/bin/env python3 -m unittest sensor_test.py)
+add_test(python01-Actuator /usr/bin/env python3 -m unittest actuator_test.py)
+add_test(python03-NeuralNetwork /usr/bin/env python3 -m unittest neuralnetwork_test.py)
+add_test(python04-RLPower /usr/bin/env python3 -m unittest rlpower_test.py)
+add_test(python05-SUPG /usr/bin/env python3 -m unittest supg_test.py)
+add_test(python06-CPG /usr/bin/env python3 -m unittest cpg_test.py)

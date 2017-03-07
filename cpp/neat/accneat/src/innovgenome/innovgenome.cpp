@@ -18,6 +18,7 @@
 #include "recurrencychecker.h"
 #include "util/util.h"
 #include <assert.h>
+#include <cstring>
 
 using namespace NEAT;
 using namespace std;

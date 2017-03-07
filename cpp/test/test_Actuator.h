@@ -17,35 +17,22 @@
  *
  */
 
-#ifndef REVOLVEBRAIN_BRAIN_PYTHON_SUPGBRAIN_H_
-#define REVOLVEBRAIN_BRAIN_PYTHON_SUPGBRAIN_H_
+#ifndef TESTACTUATOR_H
+#define TESTACTUATOR_H
 
-#include "brain/supgbrain.h"
-#include <boost/python/list.hpp>
-#include <vector>
+#include "brain/Actuator.h"
 
-namespace revolve {
-namespace brain {
-
-class SUPGBrain_python
-        : public revolve::brain::SUPGBrain
+class TestActuator : public revolve::brain::Actuator
 {
 public:
-    SUPGBrain_python(revolve::brain::EvaluatorPtr evaluator,
-                     const boost::python::list /*< boost::python::list< float > >*/ &neuron_coordinates,
-                     const boost::python::list /*< ActuatorPtr> */ &motors,
-                     const boost::python::list /*< SensorPtr> */ &sensors);
+    TestActuator(bool verbose = false);
 
+    virtual void update(double *output_vector,
+                        double step) override;
+    virtual unsigned int outputs() const override;
 
-    void
-    update(boost::python::list &actuators,
-           const boost::python::list &sensors,
-           double t,
-           double step);
-
+private:
+    bool verbose;
 };
 
-}
-}
-
-#endif // REVOLVEBRAIN_BRAIN_PYTHON_SUPGBRAIN_H_
+#endif // TESTACTUATOR_H

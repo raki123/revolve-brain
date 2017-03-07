@@ -3,8 +3,8 @@
 
 #include <boost/python/wrapper.hpp>
 #include <boost/python/object.hpp>
-#include "brain/actuator.h"
-#include "brain/python/python_array.h"
+#include "brain/Actuator.h"
+#include "brain/python/PythonArray.h"
 
 #include <iostream>
 

@@ -1,7 +1,7 @@
 #ifndef REVOLVE_BRAIN_RLPOWER_PYTHON_H
 #define REVOLVE_BRAIN_RLPOWER_PYTHON_H
 
-#include "brain/rlpower.h"
+#include "brain/RLPower.h"
 #include <boost/python/object.hpp>
 #include <boost/python/list.hpp>
 #include <string>

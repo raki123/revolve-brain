@@ -18,6 +18,7 @@
 #include "cpunetwork.h"
 #include "neat.h"
 #include "util/util.h"
+#include <cstring>
 
 using namespace NEAT;
 

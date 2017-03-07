@@ -17,7 +17,7 @@
  *
  */
 
-#include "SUGPBrain_python.h"
+#include "SUPGBrain_python.h"
 #include "PythonListWrap.h"
 
 using namespace revolve::brain;
