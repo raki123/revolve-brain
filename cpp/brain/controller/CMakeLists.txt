@@ -5,6 +5,7 @@ add_library(revolve-brain-controller
             ExtendedANNWeights.cpp
             LayeredExtendedANN.cpp
             AccNEATCPPNController.cpp
+            CPGController.cpp
             )
 
 add_subdirectory("extnn")
