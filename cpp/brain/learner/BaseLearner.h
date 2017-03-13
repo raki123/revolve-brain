@@ -10,7 +10,7 @@
 namespace revolve {
 namespace brain {
 
-class base_learner
+class BaseLearner
 {
 public:
     /**
@@ -19,10 +19,10 @@ public:
      * @param controller p_controller: the base_controller will take ownership
      * of this controller
      */
-    explicit base_learner(std::unique_ptr<base_controller> controller);
+    explicit BaseLearner(std::unique_ptr<BaseController> controller);
 
     // REMEMBER TO MAKE YOUR CHILD DECONSTRUCTORS VIRTUAL AS WELL
-    virtual ~base_learner();
+    virtual ~BaseLearner();
 
     /**
      * Updates the learner and modifies the controller if needed. Is using the
@@ -50,7 +50,7 @@ public:
      * in this update cycle. The pointer is guaranteed to be valid until the
      * end of the update cycle.
      */
-    virtual base_controller *
+    virtual BaseController *
     update(const std::vector<SensorPtr> &sensors,
            double t,
            double step);
@@ -62,13 +62,13 @@ protected:
      *
      * @brief constructor that leaves the active_controller empty.
      */
-    explicit base_learner();
+    explicit BaseLearner();
 
 protected:
     /**
      * @brief pointer to the current active controller
      */
-    std::unique_ptr<base_controller> active_controller;
+    std::unique_ptr<BaseController> active_controller;
 };
 
 }
