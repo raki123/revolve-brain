@@ -5,7 +5,7 @@
 #ifndef TRIANGLEOFLIFE_CPGCONTROLLER_H
 #define TRIANGLEOFLIFE_CPGCONTROLLER_H
 
-#include <brain/cpg/CPGNetwork.h>
+#include "brain/cpg/CPGNetwork.h"
 #include "BaseController.h"
 
 namespace revolve { namespace brain {
@@ -20,7 +20,11 @@ namespace revolve { namespace brain {
                     const std::vector<SensorPtr> &sensors,
                     double t, double step) override;
 
-        void setConnections(std::vector<std::vector<cpg::CPGNetwork::Weights>> connections);
+        std::vector<cpg::CPGNetwork *>::iterator beginCPGNetwork()
+        { return cpgs.begin(); }
+
+        std::vector<cpg::CPGNetwork *>::iterator endCPGNetwork()
+        { return cpgs.end(); }
 
     protected:
         void initRandom(float sigma);
@@ -29,7 +33,7 @@ namespace revolve { namespace brain {
         size_t n_inputs, n_outputs;
 
         //list of cpgs
-        std::vector<cpg::CPGNetwork*> cpgs;
+        std::vector<cpg::CPGNetwork *> cpgs;
 
         /** Connection matrix between the different servos
          * First is start of the connections, second is end.

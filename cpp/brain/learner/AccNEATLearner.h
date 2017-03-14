@@ -12,7 +12,7 @@
 namespace revolve { namespace brain {
 
     class AccNEATLearner : public BaseLearner {
-    public:
+    public: // METHODS
         AccNEATLearner(EvaluatorPtr evaluator,
                        size_t n_inputs,
                        size_t n_outputs,
@@ -29,9 +29,14 @@ namespace revolve { namespace brain {
                double step) override;
 
     protected:
+        virtual void nextBrain();
+
+        float getFitness();
+
+    private:
         void initAsyncNeat();
 
-    protected:
+    protected: // VARIABLES
         EvaluatorPtr evaluator;
         size_t n_inputs, n_outputs;
 
@@ -55,10 +60,6 @@ namespace revolve { namespace brain {
          * 30 seconds is usually a good value
          */
         double EVALUATION_TIME;
-
-        void nextBrain();
-
-        float getFitness();
     };
 
 }}

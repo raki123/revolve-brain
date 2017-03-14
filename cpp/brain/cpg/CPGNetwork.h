@@ -67,11 +67,43 @@ public:
         connections.push_back(new_connection);
     }
 
+    // setting raw values
+    void setRGEWeight(real_t value) {rge->setWeight(value);}
+    void setRGFWeight(real_t value) {rgf->setWeight(value);}
+    void setRGEWeightNeighbour(real_t value, size_t index) {rge->setWeightNeighbour(value, index);}
+    void setRGFWeightNeighbour(real_t value, size_t index) {rgf->setWeightNeighbour(value, index);}
+    void setRGEC(real_t value) {rge->setC(value);}
+    void setRGFC(real_t value) {rgf->setC(value);}
+    void setRGEAmplitude(real_t value) {rge->setAmplitude(value);}
+    void setRGFAmplitude(real_t value) {rgf->setAmplitude(value);}
+    void setRGEOffset(real_t value) {rge->setOffset(value);}
+    void setRGFOffset(real_t value) {rgf->setOffset(value);}
+    void setPFEAlpha(real_t value) {pfe->setAlpha(value);}
+    void setPFFAlpha(real_t value) {pff->setAlpha(value);}
+    void setPFETheta(real_t value) {pfe->setTheta(value);}
+    void setPFFTheta(real_t value) {pff->setTheta(value);}
+
+
+    // setting percentage values
+    void setRGEWeightPercentage(real_t value) {rge->setWeightPercentage(value);}
+    void setRGFWeightPercentage(real_t value) {rgf->setWeightPercentage(value);}
+    void setRGEWeightNeighbourPercentage(real_t value, size_t index) {rge->setWeightNeighbourPercentage(value, index);}
+    void setRGFWeightNeighbourPercentage(real_t value, size_t index) {rgf->setWeightNeighbourPercentage(value, index);}
+    void setRGECPercentage(real_t value) {rge->setCPercentage(value);}
+    void setRGFCPercentage(real_t value) {rgf->setCPercentage(value);}
+    void setRGEAmplitudePercentage(real_t value) {rge->setAmplitudePercentage(value);}
+    void setRGFAmplitudePercentage(real_t value) {rgf->setAmplitudePercentage(value);}
+    void setRGEOffsetPercentage(real_t value) {rge->setOffsetPercentage(value);}
+    void setRGFOffsetPercentage(real_t value) {rgf->setOffsetPercentage(value);}
+    void setPFEAlphaPercentage(real_t value) {pfe->setAlphaPercentage(value);}
+    void setPFFAlphaPercentage(real_t value) {pff->setAlphaPercentage(value);}
+    void setPFEThetaPercentage(real_t value) {pfe->setThetaPercentage(value);}
+    void setPFFThetaPercentage(real_t value) {pff->setThetaPercentage(value);}
 
 protected:
-    void updateRythmGeneration(double step);
-    void updatePatternFormation(const std::vector<real_t> &sensor_readings, double step);
-    void updateMotoNeuron(double step);
+    void updateRythmGeneration(real_t step);
+    void updatePatternFormation(const std::vector<real_t> &sensor_readings, real_t step);
+    void updateMotoNeuron(real_t step);
 
 protected:
 

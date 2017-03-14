@@ -70,48 +70,20 @@ void CPGController::update(const std::vector<ActuatorPtr> &actuators, const std:
   assert(p == n_outputs);
 }
 
-void CPGController::setConnections(std::vector<std::vector<cpg::CPGNetwork::Weights>> connections)
-{
-  assert(connections.size() == this->connections.size());
-  for (int i = 0; i < connections.size(); i++) {
-    assert(connections[i].size() == this->connections[i].size());
-  }
-
-  this->connections = connections;
-
-  for (int i = 0; i < connections.size(); i++) {
-//    GenomePtr genome = current_policy_->at(i);
-    const auto &conn_line = connections[i];
-
-    for (int j = 0; j < conn_line.size(); i++) {
-      const cpg::CPGNetwork::Weights &connection = conn_line[j];
-
-      // check revolve::brain::cpg::CPGNetwork::update_genome for hardcoded values
-      if (j == i) { // self weight
-//        (*genome)[0] = connection.we;
-//        (*genome)[4] = connection.wf;
-      } else { // connection weight
-//        (*genome)[12 + 2*j] = connection.we;
-//        (*genome)[12 + 2*j + 1] = connection.wf;
-      }
-    }
-  }
-}
-
 void CPGController::initRandom(float sigma)
 {
   std::random_device rd;
   std::mt19937 mt(rd());
   std::normal_distribution<float> dist(0, sigma);
 
-  for (auto &cpg_it: cpgs) {
-    std::shared_ptr<std::vector<cpg::real_t>> genome = cpg_it->get_genome();
+  for (auto cpg: cpgs) {
+    std::shared_ptr<std::vector<cpg::real_t>> genome = cpg->get_genome();
     size_t genome_size = genome->size();
     for (size_t i = 0; i < genome_size; i++) {
       genome->at(i) = dist(mt);
     }
 
-    cpg_it->update_genome();
+    cpg->update_genome();
   }
 
 }
