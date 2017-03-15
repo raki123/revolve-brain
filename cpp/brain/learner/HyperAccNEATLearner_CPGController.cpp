@@ -41,6 +41,10 @@ HyperAccNEATLearner_CPGController::HyperAccNEATLearner_CPGController(const Evalu
   );
 
   this->active_controller = std::move(controller);
+
+  // NEAT settings
+  AsyncNeat::SetRecurProb(0);
+  AsyncNeat::SetRecurOnlyProb(0);
 }
 
 void HyperAccNEATLearner_CPGController::nextBrain()
