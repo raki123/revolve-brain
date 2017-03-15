@@ -92,7 +92,7 @@ real_t RythmGenerationNeuron::getWeight() const {
     return weight;
 }
 
-real_t RythmGenerationNeuron::getWeightNeighbour(unsigned int index) const {
+real_t RythmGenerationNeuron::getWeightNeighbour(size_t index) const {
     return weight_neigbours[index];
 }
 
@@ -104,7 +104,7 @@ void RythmGenerationNeuron::setWeight(real_t weight) {
 }
 
 // the weight that determines the shape [0, 4.5]
-void RythmGenerationNeuron::setWeightNeighbour(real_t weight, unsigned int index) {
+void RythmGenerationNeuron::setWeightNeighbour(real_t weight, size_t index) {
     if (weight < WEIGHT_MIN || weight > WEIGHT_MAX)
         throw invalid_parameter("weight", weight, WEIGHT_MIN, WEIGHT_MAX);
     RythmGenerationNeuron::weight_neigbours[index] = weight;
@@ -150,7 +150,7 @@ real_t revolve::brain::cpg::RythmGenerationNeuron::calculateWeightFromPercentage
     return percentage_from_range(weight, WEIGHT_MIN, WEIGHT_MAX);
 }
 
-real_t revolve::brain::cpg::RythmGenerationNeuron::calculateWeightNeighbourFromPercentage(real_t weight, unsigned int index) const
+real_t revolve::brain::cpg::RythmGenerationNeuron::calculateWeightNeighbourFromPercentage(real_t weight, size_t index) const
 {
     return percentage_from_range(weight_neigbours[index], WEIGHT_MIN, WEIGHT_MAX);
 }
@@ -177,7 +177,7 @@ real_t revolve::brain::cpg::RythmGenerationNeuron::calculateWeightPercentage(rea
     return percentage_of_range(weight, WEIGHT_MIN, WEIGHT_MAX);
 }
 
-real_t revolve::brain::cpg::RythmGenerationNeuron::calculateWeightNeighbourPercentage(real_t weight, unsigned int index) const
+real_t revolve::brain::cpg::RythmGenerationNeuron::calculateWeightNeighbourPercentage(real_t weight, size_t index) const
 {
     return percentage_of_range(weight_neigbours[index], WEIGHT_MIN, WEIGHT_MAX);
 }
@@ -204,7 +204,7 @@ real_t RythmGenerationNeuron::setWeightPercentage(real_t weight) {
     return this->weight;
 }
 
-real_t RythmGenerationNeuron::setWeightNeighbourPercentage(real_t weight, unsigned int index) {
+real_t RythmGenerationNeuron::setWeightNeighbourPercentage(real_t weight, size_t index) {
     this->weight_neigbours[index] = calculateWeightFromPercentage(weight);
     return this->weight_neigbours[index];
 }

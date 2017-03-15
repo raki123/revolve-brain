@@ -76,12 +76,12 @@ public:
     real_t calculateWeightPercentage(real_t weight) const;
     real_t calculateWeightFromPercentage(real_t weight) const;
 
-    real_t getWeightNeighbour(unsigned int index) const;
-    void setWeightNeighbour(real_t weight, unsigned int index);
+    real_t getWeightNeighbour(size_t index) const;
+    void setWeightNeighbour(real_t weight, size_t index);
     // value from 0 to 1, does not throw exceptions if value is outside the allowed domain
-    real_t setWeightNeighbourPercentage(real_t weight, unsigned int index);
-    real_t calculateWeightNeighbourPercentage(real_t weight, unsigned int index) const;
-    real_t calculateWeightNeighbourFromPercentage(real_t weight, unsigned int index) const;
+    real_t setWeightNeighbourPercentage(real_t weight, size_t index);
+    real_t calculateWeightNeighbourPercentage(real_t weight, size_t index) const;
+    real_t calculateWeightNeighbourFromPercentage(real_t weight, size_t index) const;
 
     real_t getC() const;
     void setC(real_t c);

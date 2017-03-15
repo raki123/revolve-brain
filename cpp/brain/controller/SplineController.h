@@ -6,17 +6,17 @@
 namespace revolve {
 namespace brain {
 
-class base_learner;
+class BaseLearner;
 
 class SplineController
-        : public base_controller
+        : public BaseController
 {
 public: // typedefs
     typedef std::vector<double> Spline;
     typedef std::vector<Spline> Policy;
     typedef std::shared_ptr<Policy> PolicyPtr;
 
-    friend class base_learner;
+    friend class BaseLearner;
 
 // METHODS-FUNCTIONS ----------------------------------------------------------
 public: // STATIC METHODS
