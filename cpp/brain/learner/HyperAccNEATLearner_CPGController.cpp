@@ -61,10 +61,10 @@ void HyperAccNEATLearner_CPGController::nextBrain()
     cpg::CPGNetwork *cpg = (*cpg_it);
 
     // LOAD CPPN start and end coordinates (skip one input for the z)
-    for (size_t i = 0; i <  n_coordinates - 1; i++) {
+    for (size_t i = 0; i < n_coordinates - 1; i++) {
       auto c = cpgs_coordinates[x][i];
       cppn->load_sensor(i, c); //start
-      cppn->load_sensor(n_coordinates + 1, c); //end
+      cppn->load_sensor(n_coordinates + i, c); //end
     }
 
     /* repeat for both z coordinates
