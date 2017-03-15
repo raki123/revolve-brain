@@ -89,6 +89,26 @@ public:
       NEAT::env->population_type = type;
     }
 
+    /**
+     * Set the prob. that a link mutation which doesn't have to be recurrent will be made recurrent
+     * @param prob new probability
+     */
+    static void
+    SetRecurProb(NEAT::real_t prob)
+    {
+      NEAT::env->recur_prob = prob;
+    }
+
+    /**
+     * Set the probability of forcing selection of ONLY links that are naturally recurrent
+     * @param prob new probability
+     */
+    static void 
+    SetRecurOnlyProb(NEAT::real_t prob)
+    {
+      NEAT::env->recur_only_prob = prob;
+    }
+
     std::shared_ptr<NeatEvaluation>
     getFittest() const
     {

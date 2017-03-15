@@ -19,8 +19,7 @@ namespace revolve { namespace brain {
                        const float evaluationTime,
                        const long maxEvaluations = -1);
 
-        virtual ~AccNEATLearner()
-        {}
+        virtual ~AccNEATLearner();
 
 
         virtual BaseController *
