@@ -23,8 +23,14 @@ AccNEATLearner::AccNEATLearner(EvaluatorPtr evaluator, size_t n_inputs, size_t n
   this->initAsyncNeat();
 }
 
+AccNEATLearner::~AccNEATLearner()
+{
+  AsyncNeat::CleanUp();
+}
+
 void AccNEATLearner::initAsyncNeat()
 {
+  AsyncNeat::Init();
   std::unique_ptr<AsyncNeat> neat(new AsyncNeat(
       (unsigned int) n_inputs,
       (unsigned int) n_outputs,
