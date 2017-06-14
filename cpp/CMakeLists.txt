@@ -56,6 +56,7 @@ file(GLOB_RECURSE BRAIN_SRCS
      neat/NEATEvaluation.cpp
      brain/Conversion.cpp
      brain/CPGBrain.cpp
+     brain/GenericLearnerBrain.cpp
 )
 
 # Compiling ####################################################################

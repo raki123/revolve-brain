@@ -109,14 +109,15 @@ CPGNetwork::~CPGNetwork()
 
 real_t CPGNetwork::update(const std::vector<real_t> &sensor_readings, double step)
 {
-    updateRythmGeneration(step);
-    updatePatternFormation(sensor_readings, step);
-    updateMotoNeuron(step);
+    real_t r_step = (real_t) step;
+    updateRythmGeneration(r_step);
+    updatePatternFormation(sensor_readings, r_step);
+    updateMotoNeuron(r_step);
 
     return mn_out;
 }
 
-void CPGNetwork::updateRythmGeneration(double step)
+void CPGNetwork::updateRythmGeneration(real_t step)
 {
     real_t phi_e = rge->getPhi();
     real_t phi_f = rgf->getPhi();
@@ -133,7 +134,7 @@ void CPGNetwork::updateRythmGeneration(double step)
     rgf_out = rgf->update(inputs_f, step)[0];
 }
 
-void CPGNetwork::updatePatternFormation(const std::vector<real_t> &sensor_readings, double step)
+void CPGNetwork::updatePatternFormation(const std::vector<real_t> &sensor_readings, real_t step)
 {
     std::vector<real_t> pfe_inputs = std::vector<real_t>(sensor_readings);
     std::vector<real_t> pff_inputs = std::vector<real_t>(sensor_readings);
@@ -149,7 +150,7 @@ void CPGNetwork::updatePatternFormation(const std::vector<real_t> &sensor_readin
     }
 }
 
-void CPGNetwork::updateMotoNeuron(double step)
+void CPGNetwork::updateMotoNeuron(real_t step)
 {
     mn_out = mn->update({pfe_out, pff_out}, step)[0];
 }
@@ -242,7 +243,7 @@ void revolve::brain::cpg::CPGNetwork::update_genome()
     //NONE
 
     // Connection Weights
-    for (int j=0; j<n_connections; j++) { //12 + 2*j
+    for (size_t j=0; j<n_connections; j++) { //12 + 2*j
         rge->setWeightNeighbourPercentage((*genome)[i++], j);
         rgf->setWeightNeighbourPercentage((*genome)[i++], j);
     }

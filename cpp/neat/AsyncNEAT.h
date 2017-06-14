@@ -90,17 +90,43 @@ public:
     }
 
     // default is 0.01
-    static void SetMutateAddNodeProb(NEAT::real_t value) {
-        NEAT::env->mutate_add_node_prob = value;
+    static void
+    SetMutateAddNodeProb(NEAT::real_t value)
+    {
+      NEAT::env->mutate_add_node_prob = value;
     }
 
     // default is 0.3
-    static void SetMutateAddLinkProb(NEAT::real_t value) {
-        NEAT::env->mutate_add_link_prob = value;
+    static void
+    SetMutateAddLinkProb(NEAT::real_t value)
+    {
+      NEAT::env->mutate_add_link_prob = value;
     }
 
-    std::shared_ptr<NeatEvaluation> getFittest() const {
-        return fittest;
+    /**
+     * Set the prob. that a link mutation which doesn't have to be recurrent will be made recurrent
+     * @param prob new probability
+     */
+    static void
+    SetRecurProb(NEAT::real_t prob)
+    {
+      NEAT::env->recur_prob = prob;
+    }
+
+    /**
+     * Set the probability of forcing selection of ONLY links that are naturally recurrent
+     * @param prob new probability
+     */
+    static void
+    SetRecurOnlyProb(NEAT::real_t prob)
+    {
+      NEAT::env->recur_only_prob = prob;
+    }
+
+    std::shared_ptr<NeatEvaluation>
+    getFittest() const
+    {
+      return fittest;
     }
 
 protected:

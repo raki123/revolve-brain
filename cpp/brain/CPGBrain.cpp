@@ -43,7 +43,7 @@ CPGBrain::CPGBrain(std::string robot_name,
 
     std::random_device rd;
     std::mt19937 mt(rd());
-    std::normal_distribution<double> dist(0, this->noise_sigma_);
+    std::normal_distribution<float> dist(0, (float) this->noise_sigma_);
 
     // Init first random controller
     if (!current_policy_)

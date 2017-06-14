@@ -1,5 +1,5 @@
-#ifndef REVOLVEBRAIN_BRAIN_CONTROLLER_BASECONTROLLER_H_
-#define REVOLVEBRAIN_BRAIN_CONTROLLER_BASECONTROLLER_H_
+#ifndef REVOLVE_BRAIN_BASECONTROLLER_H_
+#define REVOLVE_BRAIN_BASECONTROLLER_H_
 
 #include <vector>
 #include "brain/Actuator.h"
@@ -8,11 +8,11 @@
 namespace revolve {
 namespace brain {
 
-class base_controller
+class BaseController
 {
 public:
     // REMEMBER TO MAKE YOUR CHILD DECONSTRUCTORS VIRTUAL AS WELL
-    virtual ~base_controller()
+    virtual ~BaseController()
     {}
 
     /**
@@ -35,4 +35,4 @@ public:
 }
 }
 
-#endif // REVOLVEBRAIN_BRAIN_CONTROLLER_BASECONTROLLER_H_
+#endif // REVOLVE_BRAIN_BASECONTROLLER_H_
