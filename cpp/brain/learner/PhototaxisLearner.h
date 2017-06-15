@@ -142,9 +142,10 @@ protected:
             generation_counter++;
 
             // creates new controller from wrapper learner
-            active_controller.reset(
-                    encapsulatedLearner->create_new_controller(fitness)
-            );
+            BaseController * new_controller = this->create_new_controller(fitness);
+            if (new_controller != active_controller.get()) {
+                active_controller.reset(new_controller);
+            }
 
             partial_fitness = 0;
 
@@ -195,6 +196,10 @@ protected:
         start_eval_time = t;
     }
 
+
+    BaseController *create_new_controller(double fitness) override {
+        return encapsulatedLearner->create_new_controller(fitness);
+    }
 
 protected:
     std::unique_ptr<EncapsulatedLearner> encapsulatedLearner;
