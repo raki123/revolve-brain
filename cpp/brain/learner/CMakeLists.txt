@@ -4,7 +4,7 @@ add_library(revolve-brain-learner
             RLPowerLearner.cpp
             AccNEATLearner.cpp
             HyperAccNEATLearner_CPGController.cpp
-            )
+            PhototaxisLearner.cpp)
 
 add_subdirectory("cppneat")
 

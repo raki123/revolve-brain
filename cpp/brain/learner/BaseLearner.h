@@ -64,6 +64,14 @@ protected:
      */
     explicit BaseLearner();
 
+    /***
+     * Creates a new controller. Useful if you want to wrap the controller inside another.
+     * @param fitness fitness of the previous controller.
+     * @return pointer to the new controller.
+     */
+    virtual BaseController *
+    create_new_controller(double fitness) = 0;
+
 protected:
     /**
      * @brief pointer to the current active controller
