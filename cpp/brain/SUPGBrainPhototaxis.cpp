@@ -143,10 +143,10 @@ void SUPGBrainPhototaxis::learner(double t)
         static const double angle_52_5 = 7*pi/24;
 
         const double radius = light_radius_distance;
-        const float x_52_5 = std::cos(angle_52_5) * radius;
-        const float y_52_5 = std::sin(angle_52_5) * radius;
-        const float x_15   = std::cos(angle_15) * radius;
-        const float y_15   = std::sin(angle_15) * radius;
+        const float x_52_5 = (const float) (std::cos(angle_52_5) * radius);
+        const float y_52_5 = (const float) (std::sin(angle_52_5) * radius);
+        const float x_15   = (const float) (std::cos(angle_15) * radius);
+        const float y_15   = (const float) (std::sin(angle_15) * radius);
 
         switch (phase) {
         case CENTER:
