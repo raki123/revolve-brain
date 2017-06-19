@@ -41,14 +41,16 @@ public:
                               std::vector<float> coordinates)> _light_constructor_left,
                       std::function<boost::shared_ptr<FakeLightSensor>(
                               std::vector<float> coordinates)> _light_constructor_right,
+                      std::vector< SensorPtr > &_sensors,
                       double _light_radius_distance,
                       const float evaluationTime = 30,
                       const long maxEvaluations = -1)
             : BaseLearner()
-              , encapsulatedLearner(std::move(encapsulatedLearner))
+              , encapsulatedLearner(std::move(_encapsulatedLearner))
               , phase(END)
               , light_constructor_left(_light_constructor_left)
               , light_constructor_right(_light_constructor_right)
+              , sensors(&_sensors)
               , current_light_left(nullptr)
               , current_light_right(nullptr)
               , light_radius_distance(_light_radius_distance)
@@ -58,7 +60,11 @@ public:
               , EVALUATION_TIME(evaluationTime)
               , MAX_EVALUATIONS(maxEvaluations)
     {
-
+        // Inject fake light sensor in sensor list
+        this->current_light_left_pos = _sensors.size();
+        _sensors.push_back(this->current_light_left);
+        this->current_light_right_pos = _sensors.size();
+        _sensors.push_back(this->current_light_right);
     }
 
     BaseController *update(const std::vector<SensorPtr> &sensors, double t, double step) override {
@@ -189,8 +195,12 @@ protected:
 
         //delete current_light_left; //shared pointer takes care of this already
         //delete current_light_right; //shared pointer takes care of this already
-        current_light_left = light_constructor_left(relative_coordinates);
-        current_light_right = light_constructor_right(relative_coordinates);
+
+        this->current_light_left  = this->light_constructor_left(relative_coordinates);
+        this->current_light_right = this->light_constructor_right(relative_coordinates);
+
+        this->sensors->at(this->current_light_left_pos)  = this->current_light_left;
+        this->sensors->at(this->current_light_right_pos) = this->current_light_right;
 
         // evaluation restart
         start_eval_time = t;
@@ -203,6 +213,7 @@ protected:
 
 protected:
     std::unique_ptr<EncapsulatedLearner> encapsulatedLearner;
+    std::vector<SensorPtr> *sensors;
 
     enum PHASE {
         CENTER = 0,
@@ -216,6 +227,9 @@ protected:
     std::function<boost::shared_ptr<FakeLightSensor>(std::vector<float> coordinates)>
             light_constructor_left,
             light_constructor_right;
+
+    unsigned long current_light_left_pos;
+    unsigned long current_light_right_pos;
 
     boost::shared_ptr<FakeLightSensor> current_light_left,
             current_light_right;
