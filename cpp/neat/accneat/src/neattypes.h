@@ -1,5 +1,9 @@
 #pragma once
 
+#include <string>
+#include <stdio.h>
+#include <yaml-cpp/yaml.h>
+
 // Some common types that must be in their own header so they can be used by the
 // CUDA compiler (C++11 features not currently supported).
 namespace NEAT {
@@ -38,4 +42,47 @@ struct OrganismEvaluation
 #define accneat_in const
 #define accneat_out
 #define accneat_inout
+}
+
+namespace YAML {
+template<>
+struct convert<NEAT::nodetype> {
+    static Node encode(const NEAT::nodetype& rhs) {
+        std::string text;
+        switch (rhs) {
+            case NEAT::nodetype::NT_BIAS:
+                text = "BIAS";
+                break;
+            case NEAT::nodetype::NT_HIDDEN:
+                text = "SENSOR";
+                break;
+            case NEAT::nodetype::NT_OUTPUT:
+                text = "OUTPUT";
+                break;
+            case NEAT::nodetype::NT_SENSOR:
+                text = "HIDDEN";
+                break;
+        }
+
+        return Node(text);
+
+    }
+    static bool decode(const Node& node, NEAT::nodetype& rhs) {
+        std::string text = node.as<std::string>();
+
+        if (text == "BIAS") {
+            rhs = NEAT::nodetype::NT_BIAS;
+        } else if (text == "SENSOR"){
+            rhs = NEAT::nodetype::NT_SENSOR;
+        } else if (text == "OUTPUT"){
+            rhs = NEAT::nodetype::NT_OUTPUT;
+        } else if (text == "HIDDEN"){
+            rhs = NEAT::nodetype::NT_HIDDEN;
+        } else {
+            return false;
+        }
+
+        return true;
+    }
+};
 }

@@ -45,7 +45,7 @@ namespace revolve { namespace brain {
         /**
          * Creates the next brain
          */
-        virtual void nextBrain() override;
+        virtual BaseController * create_new_controller(double fitness) override;
 
     protected: // VARIABLES
         const std::vector<std::vector<bool>> connections_active;

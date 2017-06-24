@@ -24,7 +24,7 @@ public:
     init_phenotype(class Network &net) override;
 
     virtual void
-    print(std::ostream &out) override;
+    print(std::ostream &out) const override;
 
     virtual void
     verify() override;

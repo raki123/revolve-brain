@@ -28,7 +28,7 @@ namespace revolve { namespace brain {
                double step) override;
 
     protected:
-        virtual void nextBrain();
+        virtual BaseController * create_new_controller(double fitness) override;
 
         float getFitness();
 

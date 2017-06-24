@@ -89,6 +89,20 @@ public:
       NEAT::env->population_type = type;
     }
 
+    // default is 0.01
+    static void
+    SetMutateAddNodeProb(NEAT::real_t value)
+    {
+      NEAT::env->mutate_add_node_prob = value;
+    }
+
+    // default is 0.3
+    static void
+    SetMutateAddLinkProb(NEAT::real_t value)
+    {
+      NEAT::env->mutate_add_link_prob = value;
+    }
+
     /**
      * Set the prob. that a link mutation which doesn't have to be recurrent will be made recurrent
      * @param prob new probability
@@ -103,7 +117,7 @@ public:
      * Set the probability of forcing selection of ONLY links that are naturally recurrent
      * @param prob new probability
      */
-    static void 
+    static void
     SetRecurOnlyProb(NEAT::real_t prob)
     {
       NEAT::env->recur_only_prob = prob;
@@ -115,10 +129,14 @@ public:
       return fittest;
     }
 
+protected:
+    void setFittest(std::shared_ptr<NeatEvaluation> new_fittest, float new_fitness);
+
 private:
     unsigned int n_inputs;
     unsigned int n_outputs;
     unsigned int generation;
+    unsigned int best_fitness_counter;
     int rng_seed;
 
     NEAT::Population *population;

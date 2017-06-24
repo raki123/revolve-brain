@@ -50,7 +50,7 @@ MultiInnovGenome::get_stats()
 }
 
 void
-MultiInnovGenome::print(std::ostream &out)
+MultiInnovGenome::print(std::ostream &out) const
 {
   for (auto g = innov_genome_list->begin(); g != innov_genome_list->end(); g++) {
     (*g)->print(out);

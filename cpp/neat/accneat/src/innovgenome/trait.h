@@ -21,37 +21,28 @@
 
 namespace NEAT {
 
-const int NUM_TRAIT_PARAMS = 8;
+  const int NUM_TRAIT_PARAMS = 8;
 
-// ------------------------------------------------------------------
-// TRAIT: A Trait is a group of parameters that can be expressed
-//        as a group more than one time.  Traits save a genetic
-//        algorithm from having to search vast parameter landscapes
-//        on every node.  Instead, each node can simply point to a trait
-//        and those traits can evolve on their own
-class Trait
-{
+  // ------------------------------------------------------------------
+  // TRAIT: A Trait is a group of parameters that can be expressed
+  //        as a group more than one time.  Traits save a genetic
+  //        algorithm from having to search vast parameter landscapes
+  //        on every node.  Instead, each node can simply point to a trait
+  //        and those traits can evolve on their own
+  class Trait {
 
     // ************ LEARNING PARAMETERS ***********
     // The following parameters are for use in
     //   neurons that learn through habituation,
     //   sensitization, or Hebbian-type processes
 
-public:
+  public:
     int trait_id; // Used in file saving and loading
     real_t params[NUM_TRAIT_PARAMS]; // Keep traits in an array
 
     Trait();
 
-    Trait(int id,
-          real_t p1,
-          real_t p2,
-          real_t p3,
-          real_t p4,
-          real_t p5,
-          real_t p6,
-          real_t p7,
-          real_t p8,
+    Trait(int id, real_t p1, real_t p2, real_t p3, real_t p4, real_t p5, real_t p6, real_t p7, real_t p8,
           real_t p9);
 
     // Copy Constructor
@@ -64,19 +55,27 @@ public:
     Trait(const char *argline);
 
     // Special Constructor creates a new Trait which is the average of 2 existing traits passed in
-    Trait(const Trait &t1,
-          const Trait &t2);
+    Trait(const Trait &t1, const Trait &t2);
 
     // Dump trait to a stream
-    void
-    print_to_file(std::ostream &outFile);
+    void print_to_file(std::ostream &outFile) const;
 
     // Perturb the trait parameters slightly
-    void
-    mutate(rng_t &rng);
+    void mutate(rng_t &rng);
 
-};
+  };
 
 } // namespace NEAT
+
+#include <yaml-cpp/yaml.h>
+
+namespace YAML {
+  template<>
+  struct convert<NEAT::Trait> {
+    static Node encode(const NEAT::Trait &rhs);
+
+    static bool decode(const Node &node, NEAT::Trait &rhs);
+  };
+}
 
 #endif

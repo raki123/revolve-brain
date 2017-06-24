@@ -31,9 +31,10 @@ include_directories("neat/accneat/src")
 
 
 ### RLPOWER DEPENDENCIES ###
-# GSL
-# Gnu mathematical library
+# GSL - Gnu mathematical library
+# yaml cpp
 find_package(GSL REQUIRED)
+find_package(yaml-cpp REQUIRED)
 
 # add CPG
 add_subdirectory("brain/cpg")
@@ -43,12 +44,12 @@ include_directories(${Boost_INCLUDE_DIRS} ${PROJECT_SOURCE_DIR} ${GSL_INCLUDE_DI
 
 
 file(GLOB_RECURSE BRAIN_SRCS
-     brain/fakelightsensor.cpp
-     brain/phototaxisevaluator.cpp
+     brain/FakeLightSensor.cpp
      brain/RLPower.cpp
      brain/NeuralNetwork.cpp
+     brain/CPGBrain.cpp
      brain/SUPGBrain.cpp
-     brain/supgbrainphototaxis.cpp
+     brain/SUPGBrainPhototaxis.cpp
      brain/supg/SUPGNeuron.cpp
      brain/supg/SUPGGenomeManager.cpp
      neat/AsyncNEAT.cpp
@@ -64,6 +65,7 @@ add_subdirectory("brain/controller/")
 add_library(revolve-brain-static STATIC ${BRAIN_SRCS})
 add_library(revolve-brain SHARED)
 
+# Linking ######################################################################
 target_link_libraries(revolve-brain-static
                       accneat
                       cpg
@@ -72,7 +74,7 @@ target_link_libraries(revolve-brain-static
                       ${Boost_LIBRARIES}
                       ${PYTHON_LIBRARIES}
                       ${GSL_LIBRARIES}
-                      yaml-cpp
+                      ${YAML_CPP_LIBRARIES}
 )
 
 target_link_libraries(revolve-brain revolve-brain-static)
@@ -98,7 +100,7 @@ add_executable(testCPGBrain test/test_CPGBrain.cpp)
 target_link_libraries(testAsyncNeat revolve-brain)
 target_link_libraries(testCustomGenomeManager revolve-brain)
 target_link_libraries(testMultiNNSpecies revolve-brain)
-target_link_libraries(testSUPGBrain revolve-brain)
+target_link_libraries(testSUPGBrain revolve-brain test-shared)
 target_link_libraries(testCPGBrain revolve-brain test-shared)
 add_test(testAsyncNeat testAsyncNeat)
 add_test(testCustomGenomeManager testCustomGenomeManager)

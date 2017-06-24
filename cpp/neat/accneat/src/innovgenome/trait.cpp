@@ -100,9 +100,7 @@ Trait::Trait(const Trait &t1,
     params[count] = (t1.params[count] + t2.params[count]) / 2.0;
 }
 
-void
-Trait::print_to_file(std::ostream &outFile)
-{
+void Trait::print_to_file(std::ostream &outFile) const {
   outFile << "trait " << trait_id << " ";
   for (int count = 0; count < NUM_TRAIT_PARAMS; count++)
     outFile << params[count] << " ";
@@ -121,3 +119,30 @@ Trait::mutate(rng_t &rng)
     }
   }
 }
+
+bool YAML::convert<NEAT::Trait>::decode(const YAML::Node &node, NEAT::Trait &rhs)
+{
+  rhs.trait_id = node["id"].as<int>();
+  Node yaml_params = node["params"];
+
+  if (!yaml_params.IsSequence() || yaml_params.size() != NUM_TRAIT_PARAMS) {
+    return false;
+  }
+
+  for (int count = 0; count < NUM_TRAIT_PARAMS; count++)
+    rhs.params[count] = yaml_params[count].as<real_t>();
+
+  return true;
+}
+
+YAML::Node YAML::convert<NEAT::Trait>::encode(const NEAT::Trait &rhs)
+{
+  Node node;
+  node["id"] = rhs.trait_id;
+  Node yaml_params = node["params"];
+  for (int count = 0; count < NUM_TRAIT_PARAMS; count++)
+    yaml_params.push_back(rhs.params[count]);
+
+  return node;
+}
+

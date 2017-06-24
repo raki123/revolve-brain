@@ -57,11 +57,11 @@ BaseController *AccNEATLearner::update(const std::vector<SensorPtr> &sensors, do
         << generation_counter
         << " )"
         << std::endl;
-    if (current_evalaution) {
-      // not first `nextBrain`
-      current_evalaution->finish(getFitness());
+
+    BaseController *new_controller = this->create_new_controller(getFitness());
+    if (new_controller != active_controller.get()) {
+      this->active_controller.reset(new_controller);
     }
-    this->nextBrain();
     start_eval_time = t;
     evaluator->start();
   }
@@ -69,8 +69,12 @@ BaseController *AccNEATLearner::update(const std::vector<SensorPtr> &sensors, do
   return BaseLearner::update(sensors, t, step);
 }
 
-void AccNEATLearner::nextBrain()
+BaseController * AccNEATLearner::create_new_controller(double fitness)
 {
+  if (current_evalaution) {
+    // not first `create_new_controller`
+    current_evalaution->finish((float) fitness);
+  }
   current_evalaution = neat->getEvaluation();
   NEAT::CpuNetwork *cppn = reinterpret_cast< NEAT::CpuNetwork * > (
       current_evalaution->getOrganism()->net.get()
@@ -78,6 +82,8 @@ void AccNEATLearner::nextBrain()
 
   AccNEATCPPNController *controller = (AccNEATCPPNController *) active_controller.get();
   controller->setCPPN(cppn);
+
+  return controller;
 }
 
 float AccNEATLearner::getFitness()

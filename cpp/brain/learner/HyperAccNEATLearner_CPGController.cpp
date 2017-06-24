@@ -47,8 +47,12 @@ HyperAccNEATLearner_CPGController::HyperAccNEATLearner_CPGController(const Evalu
   AsyncNeat::SetRecurOnlyProb(0);
 }
 
-void HyperAccNEATLearner_CPGController::nextBrain()
+BaseController * HyperAccNEATLearner_CPGController::create_new_controller(double fitness)
 {
+  if (current_evalaution) {
+    // not first `create_new_controller`
+    current_evalaution->finish(fitness);
+  }
   current_evalaution = neat->getEvaluation();
   NEAT::CpuNetwork *cppn = reinterpret_cast< NEAT::CpuNetwork * > (
       current_evalaution->getOrganism()->net.get()
@@ -171,5 +175,7 @@ void HyperAccNEATLearner_CPGController::nextBrain()
 
     x++;
   }
+
+  return controller;
 }
 

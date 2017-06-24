@@ -10,6 +10,9 @@ else ()
   message("BUILDING WITHOUT OPENMP SUPPORT")
 endif ()
 
+# yaml cpp
+find_package(yaml-cpp REQUIRED)
+
 #TODO enable cuda
 
 set(accneat_sources
@@ -53,6 +56,8 @@ set(accneat_cxx_sources
 include_directories("src")
 
 add_library(accneat ${accneat_sources} ${accneat_cxx_sources})
+
+target_link_libraries( accneat ${YAML_CPP_LIBRARIES})
 
 if (NOT ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   target_compile_definitions(accneat PRIVATE WITH_OPENMP)
