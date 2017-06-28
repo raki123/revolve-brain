@@ -34,7 +34,7 @@ include_directories("neat/accneat/src")
 # GSL - Gnu mathematical library
 # yaml cpp
 find_package(GSL REQUIRED)
-find_package(yaml-cpp REQUIRED)
+#find_package(yaml-cpp REQUIRED)
 
 # add CPG
 add_subdirectory("brain/cpg")
@@ -74,7 +74,8 @@ target_link_libraries(revolve-brain-static
                       ${Boost_LIBRARIES}
                       ${PYTHON_LIBRARIES}
                       ${GSL_LIBRARIES}
-                      ${YAML_CPP_LIBRARIES}
+                      yaml-cpp
+#                      ${YAML_CPP_LIBRARIES}
 )
 
 target_link_libraries(revolve-brain revolve-brain-static)

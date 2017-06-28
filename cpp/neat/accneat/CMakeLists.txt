@@ -11,7 +11,7 @@ else ()
 endif ()
 
 # yaml cpp
-find_package(yaml-cpp REQUIRED)
+#find_package(yaml-cpp REQUIRED)
 
 #TODO enable cuda
 

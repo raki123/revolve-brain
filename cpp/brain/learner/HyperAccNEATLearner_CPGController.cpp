@@ -9,7 +9,7 @@
 
 using namespace revolve::brain;
 
-const size_t HyperAccNEATLearner_CPGController::CPPN_OUTPUT_SIZE = 6;
+const size_t HyperAccNEATLearner_CPGController::CPPN_OUTPUT_SIZE = 4;
 
 HyperAccNEATLearner_CPGController::HyperAccNEATLearner_CPGController(const EvaluatorPtr &evaluator,
                                                                      const size_t n_inputs,
@@ -105,24 +105,24 @@ BaseController * HyperAccNEATLearner_CPGController::create_new_controller(double
 
       if (z < 0) { //E
         // Rhythm generator parameters
-        cpg->setRGEWeightPercentage(output[0]);    //1
-        cpg->setRGEAmplitudePercentage(output[1]); //2
-        cpg->setRGECPercentage(output[2]);         //3
-        cpg->setRGEOffsetPercentage(output[3]);    //4
+//        cpg->setRGEWeightPercentage(output[0]);    //1
+        cpg->setRGEAmplitudePercentage(output[0]); //2
+        cpg->setRGECPercentage(output[1]);         //3
+//        cpg->setRGEOffsetPercentage(output[3]);    //4
 
         // Pattern Formation parameters
-        cpg->setPFEAlphaPercentage(output[4]); //5
-        cpg->setPFEThetaPercentage(output[5]); //6
+        cpg->setPFEAlphaPercentage(output[2]); //5
+        cpg->setPFEThetaPercentage(output[3]); //6
       } else { //F
         // Rhythm generator parameters
-        cpg->setRGFWeightPercentage(output[0]);    //1
-        cpg->setRGFAmplitudePercentage(output[1]); //2
-        cpg->setRGFCPercentage(output[2]);         //3
-        cpg->setRGFOffsetPercentage(output[3]);    //4
+//        cpg->setRGFWeightPercentage(output[0]);    //1
+        cpg->setRGFAmplitudePercentage(output[0]); //2
+        cpg->setRGFCPercentage(output[1]);         //3
+//        cpg->setRGFOffsetPercentage(output[3]);    //4
 
         // Pattern Formation parameters
-        cpg->setPFFAlphaPercentage(output[4]); //5
-        cpg->setPFFThetaPercentage(output[5]); //6
+        cpg->setPFFAlphaPercentage(output[2]); //5
+        cpg->setPFFThetaPercentage(output[3]); //6
       }
     }
 

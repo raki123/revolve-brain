@@ -28,8 +28,8 @@ CPGNetwork::CPGNetwork(unsigned int n_sensors, unsigned int n_connections)
 //     }
 
     // RG
-    rge = new cpg::RythmGenerationNeuron(2,weight_neigbours_e, .5,1,0);
-    rgf = new cpg::RythmGenerationNeuron(2,weight_neigbours_f,-.5,1,0);
+    rge = new cpg::RythmGenerationNeuron(1,weight_neigbours_e, .5,1,0);
+    rgf = new cpg::RythmGenerationNeuron(1,weight_neigbours_f,-.5,1,0);
 
     // PF
     std::vector<cpg::real_t> pfe_weights(1+n_sensors, 0.0001);
