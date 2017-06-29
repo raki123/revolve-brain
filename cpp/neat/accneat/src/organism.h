@@ -52,8 +52,8 @@ public:
     Organism &
     operator=(const Organism &other);
 
-    virtual void
-    write(std::ostream &out) const;
+//    virtual void
+//    write(std::ostream &out) const;
 
 protected:
     Organism()

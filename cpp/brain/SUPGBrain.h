@@ -18,7 +18,8 @@ class SUPGBrain : public Brain
 {
 //METHODS
 public:
-    SUPGBrain(EvaluatorPtr evaluator,
+    SUPGBrain(const std::string &robot_name,
+              EvaluatorPtr evaluator,
               const std::vector< std::vector< float > > &neuron_coordinates,
               const std::vector< ActuatorPtr >& actuators,
               const std::vector< SensorPtr >& sensors);
@@ -100,7 +101,7 @@ protected:
     unsigned int n_inputs, n_outputs;
     std::vector< std::vector< float > > neuron_coordinates;
 
-
+    const std::string robot_name;
     std::unique_ptr<AsyncNeat> neat;
     EvaluatorPtr evaluator;
     double start_eval_time;

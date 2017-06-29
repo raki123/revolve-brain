@@ -21,7 +21,8 @@
 #include "SUPGNeuron.h"
 #include "innovgenome/innovgenome.h"
 
-SUPGGenomeManager::SUPGGenomeManager()
+SUPGGenomeManager::SUPGGenomeManager(const std::string &robot_name)
+  : InnovGenomeManager(robot_name)
 {
 
 }
@@ -38,13 +39,15 @@ SUPGGenomeManager::create_seed_generation(size_t ngenomes,
                                           size_t ntraits,
                                           size_t ninputs,
                                           size_t noutputs,
-                                          size_t nhidden)
+                                          size_t nhidden,
+                                          const std::string &robot_name)
 {
   NEAT::InnovGenome start_genome(rng,
                                  ntraits,
                                  ninputs,
                                  noutputs,
-                                 nhidden);
+                                 nhidden,
+                                 robot_name);
 
 
   const int node_id_bias = 1;
@@ -63,7 +66,7 @@ SUPGGenomeManager::create_seed_generation(size_t ngenomes,
                                             node_id_output + 2,
                                             false,
                                             start_genome.get_last_gene_innovnum(),
-                                            0.0)
+                                            0.0, robot_name, -1)
   );
 //         }
   // FINISHED MODIFICATION
@@ -72,7 +75,7 @@ SUPGGenomeManager::create_seed_generation(size_t ngenomes,
   {
     NEAT::rng_t _rng = rng;
     for (int i = 0; i < NEAT::env->pop_size; i++) {
-      NEAT::InnovGenome *g = new NEAT::InnovGenome();
+      NEAT::InnovGenome *g = new NEAT::InnovGenome(robot_name);
       start_genome.duplicate_into(g);
       g->rng
        .seed(_rng.integer());

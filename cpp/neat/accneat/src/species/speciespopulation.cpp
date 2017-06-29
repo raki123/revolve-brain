@@ -31,8 +31,7 @@ using namespace std;
 
 SpeciesPopulation::SpeciesPopulation(rng_t rng,
                                      vector<unique_ptr<Genome>> &seeds)
-        :
-        norgs(seeds.size())
+        : norgs(seeds.size())
         , generation(0)
         , orgs(rng,
                seeds,
@@ -113,12 +112,12 @@ SpeciesPopulation::speciate()
   }
 }
 
-void
-SpeciesPopulation::write(std::ostream &out)
-{
-  for (auto &s: species)
-    s->print_to_file(out);
-}
+//void
+//SpeciesPopulation::write(std::ostream &out)
+//{
+//  for (auto &s: species)
+//    s->print_to_file(out);
+//}
 
 void
 SpeciesPopulation::next_generation()

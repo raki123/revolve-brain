@@ -18,8 +18,9 @@ public:
      *
      * @param controller p_controller: the base_controller will take ownership
      * of this controller
+     * @param name of the robot that the learner is instructing (for logging purposes)
      */
-    explicit BaseLearner(std::unique_ptr<BaseController> controller);
+    explicit BaseLearner(std::unique_ptr<BaseController> controller, const std::string &robot_name);
 
     // REMEMBER TO MAKE YOUR CHILD DECONSTRUCTORS VIRTUAL AS WELL
     virtual ~BaseLearner();
@@ -61,8 +62,9 @@ protected:
      * it will fail (`assert active_controller.get() != nullptr`)
      *
      * @brief constructor that leaves the active_controller empty.
+     * @param name of the robot that the learner is instructing (for logging purposes)
      */
-    explicit BaseLearner();
+    explicit BaseLearner(const std::string &robot_name);
 
     /***
      * Creates a new controller. Useful if you want to wrap the controller inside another.
@@ -77,6 +79,11 @@ protected:
      * @brief pointer to the current active controller
      */
     std::unique_ptr<BaseController> active_controller;
+
+    /**
+     * @brief name of the robot that the learner is instructing (for logging purposes)
+     */
+    const std::string robot_name;
 };
 
 }

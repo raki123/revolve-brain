@@ -51,7 +51,7 @@ real_t PatternFormationNeuron::generateInput(std::vector<real_t> inputs) const {
 real_t PatternFormationNeuron::output(real_t combined_inputs) const {
     real_t result;
 
-    result = theta - combined_inputs;
+    result = theta*combined_inputs - combined_inputs;
     result = 1 + alpha * std::exp(result);
     result = 1 / result;
 

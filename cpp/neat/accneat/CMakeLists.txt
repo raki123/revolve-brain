@@ -29,8 +29,8 @@ set(accneat_sources
     src/innovgenome/innovlinkgene.cpp
     src/innovgenome/innovnodegene.cpp
     src/innovgenome/trait.cpp
-    src/multiinnovgenome/multiinnovgenome.cpp
-    #     src/main.cpp
+    # src/multiinnovgenome/multiinnovgenome.cpp
+    # src/main.cpp
     src/neat.cpp
     src/network/cpu/cpunetwork.cpp
     src/organism.cpp

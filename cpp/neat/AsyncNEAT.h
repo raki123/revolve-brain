@@ -29,7 +29,8 @@ class AsyncNeat
 public:
     AsyncNeat(unsigned int n_inputs,
               unsigned int n_outputs,
-              int rng_seed);
+              int rng_seed,
+              const std::string &robot_name);
 
     virtual ~AsyncNeat();
 
@@ -42,11 +43,12 @@ public:
 
     /**
      * to be called before any AsyncNeat object can be used
+     * @param robot_name robot_name to
      */
     static void
-    Init()
+    Init(const std::string &robot_name)
     {
-      NEAT::env->genome_manager = NEAT::GenomeManager::create();
+      NEAT::env->genome_manager = NEAT::GenomeManager::create(robot_name);
     };
 
     /**
@@ -145,6 +147,8 @@ private:
 
     std::shared_ptr<NeatEvaluation> fittest;
     float fittest_fitness;
+
+    const std::string robot_name;
 
     void
     singleEvalutionFinished(std::shared_ptr<NeatEvaluation> evaluation,

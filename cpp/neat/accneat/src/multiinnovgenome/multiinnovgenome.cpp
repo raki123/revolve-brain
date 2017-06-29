@@ -2,7 +2,9 @@
 
 using namespace NEAT;
 
-MultiInnovGenome::MultiInnovGenome(std::list<std::unique_ptr<InnovGenome> > &genome_list)
+MultiInnovGenome::MultiInnovGenome(
+        std::list<std::unique_ptr<InnovGenome>,
+        std::allocator<std::unique_ptr<InnovGenome>>> &genome_list)
 {
   innov_genome_list = new std::vector<std::unique_ptr<InnovGenome>>();
 

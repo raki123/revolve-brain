@@ -9,9 +9,13 @@
 using namespace revolve::brain;
 
 
-AccNEATLearner::AccNEATLearner(EvaluatorPtr evaluator, size_t n_inputs, size_t n_outputs, const float evaluationTime,
+AccNEATLearner::AccNEATLearner(const std::string &robot_name,
+                               EvaluatorPtr evaluator,
+                               size_t n_inputs,
+                               size_t n_outputs,
+                               const float evaluationTime,
                                const long maxEvaluations)
-    : BaseLearner(std::unique_ptr<BaseController>(new AccNEATCPPNController(n_inputs, n_outputs))),
+    : BaseLearner(std::unique_ptr<BaseController>(new AccNEATCPPNController(n_inputs, n_outputs)), robot_name),
       evaluator(evaluator),
       n_inputs(n_inputs),
       n_outputs(n_outputs),
@@ -30,11 +34,12 @@ AccNEATLearner::~AccNEATLearner()
 
 void AccNEATLearner::initAsyncNeat()
 {
-  AsyncNeat::Init();
+  AsyncNeat::Init(robot_name);
   std::unique_ptr<AsyncNeat> neat(new AsyncNeat(
       (unsigned int) n_inputs,
       (unsigned int) n_outputs,
-      (int) std::time(0) // random seed
+      (int) std::time(0), // random seed,
+      robot_name
   ));
   this->neat = std::move(neat);
 }

@@ -23,18 +23,22 @@ InnovLinkGene::InnovLinkGene(real_t w,
                              int onode_id,
                              bool recur,
                              int innov,
-                             real_t mnum)
+                             real_t mnum,
+                             const std::string &creator_name,
+                             const int creator_index)
+ : _weight(w)
+ , _in_node_id(inode_id)
+ , _out_node_id(onode_id)
+ , _is_recurrent(recur)
+ , _trait_id(1)
+ , innovation_num(innov)
+ , mutation_num(mnum)
+ , enable(true)
+ , frozen(false)
+ , creator_name(creator_name)
+ , creator_index(creator_index)
 {
-  _weight = w;
-  _in_node_id = inode_id;
-  _out_node_id = onode_id;
-  _is_recurrent = recur;
-  _trait_id = 1;
 
-  innovation_num = innov;
-  mutation_num = mnum;
-  enable = true;
-  frozen = false;
 }
 
 
@@ -45,18 +49,12 @@ InnovLinkGene::InnovLinkGene(int trait_id,
                              int onode_id,
                              bool recur,
                              int innov,
-                             real_t mnum)
+                             real_t mnum,
+                             const std::string &creator_name,
+                             const int creator_index)
+  : InnovLinkGene(w, inode_id, onode_id, recur, innov, mnum, creator_name, creator_index)
 {
-  _weight = w;
-  _in_node_id = inode_id;
-  _out_node_id = onode_id;
-  _is_recurrent = recur;
   _trait_id = trait_id;
-
-  innovation_num = innov;
-  mutation_num = mnum;
-  enable = true;
-  frozen = false;
 }
 
 InnovLinkGene::InnovLinkGene(InnovLinkGene *g,
@@ -75,29 +73,9 @@ InnovLinkGene::InnovLinkGene(InnovLinkGene *g,
   enable = g->enable;
 
   frozen = g->frozen;
-}
 
-//todo: use NodeLookup
-InnovLinkGene::InnovLinkGene(const char *argline)
-{
-  //InnovLinkGene parameter holders
-  int trait_id;
-  int inodenum;
-  int onodenum;
-  real_t weight;
-  int recur;
-
-  //Get the gene parameters
-  std::stringstream ss(argline);
-  ss >> trait_id >> inodenum >> onodenum >> weight >> recur >> innovation_num >> mutation_num >> enable;
-
-  frozen = false; //TODO: MAYBE CHANGE
-
-  _weight = weight;
-  _in_node_id = inodenum;
-  _out_node_id = onodenum;
-  _is_recurrent = recur;
-  _trait_id = trait_id;
+  creator_name = g->creator_name;
+  creator_index = g->creator_index;
 }
 
 InnovLinkGene::InnovLinkGene(const InnovLinkGene &gene)
@@ -116,23 +94,6 @@ InnovLinkGene::InnovLinkGene(const InnovLinkGene &gene)
 
 InnovLinkGene::~InnovLinkGene()
 {
-}
-
-
-void
-InnovLinkGene::print_to_file(std::ostream &outFile) const
-{
-  outFile << "gene ";
-
-  //Start off with the trait number for this gene
-  outFile << _trait_id << " ";
-  outFile << _in_node_id << " ";
-  outFile << _out_node_id << " ";
-  outFile << _weight << " ";
-  outFile << _is_recurrent << " ";
-  outFile << innovation_num << " ";
-  outFile << mutation_num << " ";
-  outFile << enable << std::endl;
 }
 
 bool NEAT::InnovLinkGene::operator==(const NEAT::InnovLinkGene &rhs) const {
@@ -158,6 +119,8 @@ bool YAML::convert<NEAT::InnovLinkGene>::decode(const YAML::Node &node, NEAT::In
   rhs.mutation_num = node["mutation_num"].as<real_t>();
   rhs.enable = node["enable"].as<bool>();
   rhs.frozen = node["frozen"].as<bool>();
+  rhs.creator_name = node["creator_name"].as<std::string>();
+  rhs.creator_index = node["creator_index"].as<int>();
 
   return true;
 }
@@ -174,6 +137,8 @@ YAML::Node YAML::convert<NEAT::InnovLinkGene>::encode(const NEAT::InnovLinkGene 
   node["mutation_num"] = rhs.mutation_num;
   node["enable"] = rhs.enable;
   node["frozen"] = rhs.frozen;
+  node["creator_name"] = rhs.creator_name;
+  node["creator_index"] = rhs.creator_index;
 
   return node;
 }

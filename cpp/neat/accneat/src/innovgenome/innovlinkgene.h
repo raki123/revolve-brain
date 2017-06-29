@@ -29,6 +29,9 @@ namespace NEAT {
         bool _is_recurrent;
         int _trait_id;  // identify the trait derived by this link
 
+        std::string creator_name;
+        int creator_index;
+
     public:
         inline int out_node_id() const { return _out_node_id; }
 
@@ -48,6 +51,10 @@ namespace NEAT {
 
         inline void set_recurrent(bool r) { _is_recurrent = r; }
 
+        inline const std::string &get_creator_name() { return creator_name; }
+
+        inline int get_creator_index() { return creator_index; }
+
 
         int innovation_num;
         real_t mutation_num;  //Used to see how much mutation has changed the link
@@ -63,7 +70,9 @@ namespace NEAT {
                       int onode_id,
                       bool recur,
                       int innov,
-                      real_t mnum);
+                      real_t mnum,
+                      const std::string &creator_name,
+                      const int creator_index);
 
         //Construct a gene with a trait
         InnovLinkGene(int trait_id,
@@ -72,7 +81,9 @@ namespace NEAT {
                       int onode_id,
                       bool recur,
                       int innov,
-                      real_t mnum);
+                      real_t mnum,
+                      const std::string &creator_name,
+                      const int creator_index);
 
         //Construct a gene off of another gene as a duplicate
         InnovLinkGene(InnovLinkGene *g,
@@ -80,18 +91,12 @@ namespace NEAT {
                       int inode_id,
                       int onode_id);
 
-        //Construct a gene from a file spec given traits and nodes
-        InnovLinkGene(const char *argline);
-
         // Copy Constructor
         InnovLinkGene(const InnovLinkGene &gene);
 
         ~InnovLinkGene();
 
         bool operator==(const InnovLinkGene &rhs) const;
-
-        //Print gene to a file- called from Genome
-        void print_to_file(std::ostream &outFile) const;
 
         friend struct YAML::convert<NEAT::InnovLinkGene>;
     };

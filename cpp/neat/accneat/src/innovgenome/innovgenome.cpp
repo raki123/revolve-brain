@@ -34,9 +34,9 @@ InnovGenome::reset()
   links.clear();
 }
 
-InnovGenome::InnovGenome()
-        :
-        node_lookup(nodes)
+InnovGenome::InnovGenome(const std::string *robot_name)
+        : Genome(robot_name)
+        , node_lookup(nodes)
 {
 }
 
@@ -44,9 +44,10 @@ InnovGenome::InnovGenome(rng_t rng_,
                          size_t ntraits,
                          size_t ninputs,
                          size_t noutputs,
-                         size_t nhidden)
+                         size_t nhidden,
+                         const std::string &robot_name)
         :
-        InnovGenome()
+        InnovGenome(robot_name)
 {
 
   rng = rng_;
@@ -70,27 +71,27 @@ InnovGenome::InnovGenome(rng_t rng_,
     //Bias node
     add_node(nodes,
              InnovNodeGene(NT_BIAS,
-                           node_id++));
+                           node_id++, robot_name, robot_name, -1));
 
     //Sensor nodes
     for (size_t i = 0; i < ninputs; i++) {
       add_node(nodes,
                InnovNodeGene(NT_SENSOR,
-                             node_id++));
+                             node_id++, robot_name, robot_name, -1));
     }
 
     //Output nodes
     for (size_t i = 0; i < noutputs; i++) {
       add_node(nodes,
                InnovNodeGene(NT_OUTPUT,
-                             node_id++));
+                             node_id++, robot_name, robot_name, -1));
     }
 
     //Hidden nodes
     for (size_t i = 0; i < nhidden; i++) {
       add_node(nodes,
                InnovNodeGene(NT_HIDDEN,
-                             node_id++));
+                             node_id++, robot_name, robot_name, -1));
     }
   }
 
@@ -112,7 +113,9 @@ InnovGenome::InnovGenome(rng_t rng_,
                            i + node_id_hidden,
                            false,
                            innov++,
-                           0.0));
+                           0.0,
+                           robot_name,
+                           -1));
   }
 
   //Create links from all inputs to all hidden
@@ -125,7 +128,9 @@ InnovGenome::InnovGenome(rng_t rng_,
                              j + node_id_hidden,
                              false,
                              innov++,
-                             0.0));
+                             0.0,
+                             robot_name,
+                             -1));
     }
   }
 
@@ -139,7 +144,9 @@ InnovGenome::InnovGenome(rng_t rng_,
                              j + node_id_output,
                              false,
                              innov++,
-                             0.0));
+                             0.0,
+                             robot_name,
+                             -1));
     }
   }
 }
@@ -147,7 +154,8 @@ InnovGenome::InnovGenome(rng_t rng_,
 Genome &
 InnovGenome::operator=(const Genome &other)
 {
-  return *this = dynamic_cast<const InnovGenome &>(other);
+  *this = dynamic_cast<const InnovGenome &>(other);
+  return *this;
 }
 
 InnovGenome::~InnovGenome()
@@ -193,26 +201,6 @@ InnovGenome::get_stats()
   return {nodes.size(), links.size()};
 }
 
-void
-InnovGenome::print(std::ostream &out) const
-{
-  out << "genomestart " << genome_id << std::endl;
-
-  //Output the traits
-  for (auto &t: traits)
-    t.print_to_file(out);
-
-  //Output the nodes
-  for (auto &n: nodes)
-    n.print_to_file(out);
-
-  //Output the genes
-  for (auto &g: links)
-    g.print_to_file(out);
-
-  out << "genomeend " << genome_id << std::endl;
-}
-
 #define YAML_HEADER_VERSION 1
 #define YAML_HEADER_TYPE "innovgenome"
 
@@ -225,15 +213,15 @@ void NEAT::InnovGenome::save(std::ostream &out) const {
   header["version"] = YAML_HEADER_VERSION;
 
   // Save the traits
-  for (auto &t: traits)
+  for (auto &t: this->traits)
     config["traits"].push_back(t);
 
   // Save the nodes
-  for (auto &n: nodes)
+  for (auto &n: this->nodes)
     config["nodes"].push_back(n);
 
   // Save the links
-  for (auto &g: links)
+  for (auto &g: this->links)
     config["links"].push_back(g);
 
   // write out to file
@@ -265,18 +253,24 @@ bool NEAT::InnovGenome::load(std::istream& in)
   // Read the nodes
   YAML::Node c_nodes = config["nodes"];
   this->nodes.reserve(c_nodes.size());
-  for (auto node: c_nodes)
-    this->nodes.push_back(
-        node.as<InnovNodeGene>()
-    );
+  for (auto node: c_nodes) {
+      InnovNodeGene node_gene = node.as<InnovNodeGene>();
+      node_gene.set_creator_name("yaml_loaded");
+      node_gene.set_creator_index(-2);
+      this->nodes.push_back(
+              node_gene
+      );
+  }
 
   // Read the links
   YAML::Node c_links = config["links"];
   this->links.reserve(c_links.size());
-  for (auto link: c_links)
-    this->links.push_back(
-        link.as<InnovLinkGene>()
-    );
+  for (auto link: c_links) {
+      InnovLinkGene link_gene = link.as<InnovLinkGene>();
+      this->links.push_back(
+              link_gene
+      );
+  }
 
   return true;
 }
@@ -309,6 +303,7 @@ InnovGenome::operator=(const InnovGenome &other)
   traits = other.traits;
   nodes = other.nodes;
   links = other.links;
+  robot_name = other.robot_name;
   return *this;
 }
 
@@ -489,7 +484,7 @@ InnovGenome::mutate_add_node(CreateInnovationFunc create_innov,
   {
 
       InnovNodeGene newnode(NT_HIDDEN,
-                            innov->newnode_id);
+                            innov->newnode_id, *robot_name);
 
       InnovLinkGene newlink1(splitlink->trait_id(),
                              1.0,
@@ -497,7 +492,9 @@ InnovGenome::mutate_add_node(CreateInnovationFunc create_innov,
                              innov->newnode_id,
                              splitlink->is_recurrent(),
                              innov->innovation_num1,
-                             0);
+                             0,
+                             *this->robot_name,
+                             -1);
 
       InnovLinkGene newlink2(splitlink->trait_id(),
                              splitlink->weight(),
@@ -505,7 +502,9 @@ InnovGenome::mutate_add_node(CreateInnovationFunc create_innov,
                              innov->id.node_out_id,
                              false,
                              innov->innovation_num2,
-                             0);
+                             0,
+                             *this->robot_name,
+                             -1);
 
       if (delete_split_link) {
         delete_link(splitlink);
@@ -669,7 +668,9 @@ InnovGenome::mutate_add_link(CreateInnovationFunc create_innov,
                               innov->id.node_out_id,
                               innov->id.recur_flag,
                               innov->innovation_num1,
-                              innov->parms.new_weight);
+                              innov->parms.new_weight,
+                              *this->robot_name,
+                              -1);
 
         add_link(this->links,
                  newlink);
@@ -697,14 +698,12 @@ InnovGenome::add_link(vector<InnovLinkGene> &llist,
 
 void
 InnovGenome::add_node(vector<InnovNodeGene> &nlist,
-                      const InnovNodeGene &n)
-{
-  auto it = std::upper_bound(nlist.begin(),
-                             nlist.end(),
-                             n,
-                             nodelist_cmp);
-  nlist.insert(it,
-               n);
+                      const InnovNodeGene n) {
+    auto it = std::upper_bound(nlist.begin(),
+                               nlist.end(),
+                               n,
+                               nodelist_cmp);
+    nlist.insert(it,n);
 }
 
 void
@@ -876,13 +875,13 @@ InnovGenome::mate_multipoint(InnovGenome *genome1,
     if (curgene2 != newlinks.end()) skip = true;  //Links conflicts, abort adding
 
     if (!skip) {
-      //Now add the gene to the baby
-      InnovNodeGene new_inode;
-      InnovNodeGene new_onode;
-
       //Next check for the nodes, add them if not in the baby InnovGenome already
       InnovNodeGene *inode = protogene.in();
       InnovNodeGene *onode = protogene.out();
+
+      //Now add the gene to the baby
+      InnovNodeGene new_inode(*offspring->robot_name);
+      InnovNodeGene new_onode(*offspring->robot_name);
 
       //Check for inode in the newnodes list
       if (inode->node_id < onode->node_id) {
@@ -1006,7 +1005,9 @@ InnovGenome::mate_multipoint_avg(InnovGenome *genome1,
                        0,
                        0,
                        0,
-                       0);
+                       0,
+                       *genome1->robot_name,
+                       -1); //learner is the new creator in this case
   InnovLinkGene newgene;
 
   bool skip;
@@ -1151,9 +1152,10 @@ InnovGenome::mate_multipoint_avg(InnovGenome *genome1,
       InnovNodeGene *onode = protogene.out();
 
       //Check for inode in the newnodes list
-      InnovNodeGene new_inode;
-      InnovNodeGene new_onode;
-      if (inode->node_id < onode->node_id) {
+      InnovNodeGene new_inode(*offspring->robot_name);
+      InnovNodeGene new_onode(*offspring->robot_name);
+
+        if (inode->node_id < onode->node_id) {
 
         //Checking for inode's existence
         curnode = newnodes.begin();
@@ -1535,4 +1537,25 @@ InnovGenome::delete_link(InnovLinkGene *link)
                           });
   assert(iterator != links.end());
   links.erase(iterator);
+}
+
+
+InnovNodeGene &InnovNodeGene::operator=(const NEAT::InnovNodeGene &other)
+{
+    creator_name = other.creator_name;
+    creator_index = other.creator_index;
+    type = other.type;
+    node_id = other.node_id;
+    frozen = other.frozen;
+    trait_id = other.trait_id;
+
+    return *this;
+}
+
+void InnovNodeGene::set_creator_name(const string &creator_name) {
+    InnovNodeGene::creator_name = creator_name;
+}
+
+void InnovNodeGene::set_creator_index(int creator_index) {
+    InnovNodeGene::creator_index = creator_index;
 }

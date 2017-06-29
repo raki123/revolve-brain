@@ -11,7 +11,8 @@ using namespace revolve::brain;
 
 const size_t HyperAccNEATLearner_CPGController::CPPN_OUTPUT_SIZE = 6;
 
-HyperAccNEATLearner_CPGController::HyperAccNEATLearner_CPGController(const EvaluatorPtr &evaluator,
+HyperAccNEATLearner_CPGController::HyperAccNEATLearner_CPGController(const std::string &robot_name,
+                                                                     const EvaluatorPtr &evaluator,
                                                                      const size_t n_inputs,
                                                                      const size_t n_outputs,
                                                                      const size_t n_coordinates,
@@ -19,7 +20,8 @@ HyperAccNEATLearner_CPGController::HyperAccNEATLearner_CPGController(const Evalu
                                                                      const std::vector<std::vector<float>> &cpgs_coordinates,
                                                                      const float evaluationTime,
                                                                      const long maxEvaluations)
-    : AccNEATLearner(evaluator,
+    : AccNEATLearner(robot_name,
+                     evaluator,
                      (n_coordinates + 1) * 2,
                      HyperAccNEATLearner_CPGController::CPPN_OUTPUT_SIZE,
                      evaluationTime,

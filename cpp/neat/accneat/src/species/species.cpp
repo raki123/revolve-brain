@@ -85,45 +85,45 @@ Species::first()
 {
   return *(organisms.begin());
 }
-
-//Print Species to a file outFile
-bool
-Species::print_to_file(std::ostream &outFile)
-{
-  //Print a comment on the Species info
-  outFile
-          << std::endl
-          << "/* Species #"
-          << id
-          << " : (Size "
-          << organisms.size()
-          << ") (AF "
-          << ave_fitness
-          << ") (Age "
-          << age
-          << ")  */"
-          << std::endl
-          << std::endl;
-
-  //Print all the Organisms' Genomes to the outFile
-  for (SpeciesOrganism *org: organisms) {
-    //Put the fitness for each organism in a comment
-    outFile
-            << std::endl
-            << "/* Organism #"
-            << org->genome->genome_id
-            << " Fitness: "
-            << org->eval.fitness
-            << " Error: "
-            << org->eval.error
-            << " */"
-            << std::endl;
-
-    org->genome->print(outFile);
-  }
-
-  return true;
-}
+//
+////Print Species to a file outFile
+//bool
+//Species::print_to_file(std::ostream &outFile)
+//{
+//  //Print a comment on the Species info
+//  outFile
+//          << std::endl
+//          << "/* Species #"
+//          << id
+//          << " : (Size "
+//          << organisms.size()
+//          << ") (AF "
+//          << ave_fitness
+//          << ") (Age "
+//          << age
+//          << ")  */"
+//          << std::endl
+//          << std::endl;
+//
+//  //Print all the Organisms' Genomes to the outFile
+//  for (SpeciesOrganism *org: organisms) {
+//    //Put the fitness for each organism in a comment
+//    outFile
+//            << std::endl
+//            << "/* Organism #"
+//            << org->genome->genome_id
+//            << " Fitness: "
+//            << org->eval.fitness
+//            << " Error: "
+//            << org->eval.error
+//            << " */"
+//            << std::endl;
+//
+//    org->genome->print(outFile);
+//  }
+//
+//  return true;
+//}
 
 void
 Species::adjust_fitness()

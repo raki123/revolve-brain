@@ -5,11 +5,11 @@
 using namespace NEAT;
 
 GenomeManager *
-GenomeManager::create()
+GenomeManager::create(const std::string &robot_name)
 {
   switch (env->genome_type) {
     case GenomeType::INNOV:
-      return new InnovGenomeManager();
+      return new InnovGenomeManager(robot_name);
     default: panic();
   }
 }

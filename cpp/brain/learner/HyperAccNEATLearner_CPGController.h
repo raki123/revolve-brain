@@ -29,7 +29,8 @@ namespace revolve { namespace brain {
          * @param maxEvaluations number of evaluations after which the learner will halt.
          * A negative value will be interpreted as an infinite number of evaluations.
          */
-        HyperAccNEATLearner_CPGController(const EvaluatorPtr &evaluator,
+        HyperAccNEATLearner_CPGController(const std::string &robot_name,
+                                          const EvaluatorPtr &evaluator,
                                           const size_t n_inputs,
                                           const size_t n_outputs,
                                           const size_t n_coordinates,

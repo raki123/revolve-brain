@@ -28,7 +28,8 @@ create_static_experiment(const char *name,
                                                           1,
                                                           s.input.size(),
                                                           s.output.size(),
-                                                          s.input.size());
+                                                          s.input.size(),
+                                                          "static_experiment");
   };
 
   //todo: This is wonky. Should maybe make an explicit static registry func?

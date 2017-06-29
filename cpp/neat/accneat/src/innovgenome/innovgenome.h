@@ -32,21 +32,24 @@ namespace NEAT {
     int get_last_node_id(); //Return id of final InnovNodeGene in InnovGenome
     real_t get_last_gene_innovnum(); //Return last innovation number in InnovGenome
 
-    InnovGenome();
+    InnovGenome(const InnovGenome &other)
+            : InnovGenome(other.robot_name)
+    { }
+
+    InnovGenome(const std::string &robot_name) : InnovGenome(&robot_name) {}
+    InnovGenome(const std::string *robot_name);
 
     InnovGenome(rng_t rng,
                 size_t ntraits,
                 size_t ninputs,
                 size_t noutputs,
-                size_t nhidden);
+                size_t nhidden,
+                const std::string &robot_name);
 
     virtual Genome &operator=(const Genome &other) override;
 
     //Destructor kills off all lists (including the trait vector)
     virtual ~InnovGenome();
-
-    // Dump this genome to specified file
-    virtual void print(std::ostream &out) const override;
 
     // Save this genome to specified file
     virtual void save(std::ostream &out) const override;
@@ -166,7 +169,7 @@ namespace NEAT {
     }
 
     //Inserts a InnovNodeGene into a given ordered list of InnovNodeGenes in order
-    static void add_node(std::vector<InnovNodeGene> &nlist, const InnovNodeGene &n);
+    static void add_node(std::vector<InnovNodeGene> &nlist, const InnovNodeGene n);
 
     //Adds a new gene that has been created through a mutation in the
     //*correct order* into the list of links in the genome

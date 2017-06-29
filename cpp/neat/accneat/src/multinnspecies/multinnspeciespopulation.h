@@ -46,8 +46,8 @@ public:
     virtual void
     verify() override;
 
-    virtual void
-    write(std::ostream &out) override;
+//    virtual void
+//    write(std::ostream &out) override;
 
 private:
     void
