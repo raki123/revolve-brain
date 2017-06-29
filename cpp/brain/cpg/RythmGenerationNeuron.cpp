@@ -10,8 +10,11 @@ using namespace revolve::brain::cpg;
 
 
 
-RythmGenerationNeuron::RythmGenerationNeuron(real_t weight, std::vector<real_t> weight_neigbours,
-                                             real_t c, real_t amplitude, real_t offset)
+RythmGenerationNeuron::RythmGenerationNeuron(real_t weight,
+                                             std::vector<real_t> weight_neigbours,
+                                             real_t c,
+                                             real_t amplitude,
+                                             real_t offset)
         : phi(1)
         , weight_neigbours(weight_neigbours)
 {
@@ -96,14 +99,14 @@ real_t RythmGenerationNeuron::getWeightNeighbour(size_t index) const {
     return weight_neigbours[index];
 }
 
-// the weight that determines the shape [0, 4.5]
+// the weight that determines the shape [0, 1.0]
 void RythmGenerationNeuron::setWeight(real_t weight) {
     if (weight < WEIGHT_MIN || weight > WEIGHT_MAX)
         throw invalid_parameter("weight", weight, WEIGHT_MIN, WEIGHT_MAX);
     RythmGenerationNeuron::weight = weight;
 }
 
-// the weight that determines the shape [0, 4.5]
+// the weight that determines the shape [0, 1.0]
 void RythmGenerationNeuron::setWeightNeighbour(real_t weight, size_t index) {
     if (weight < WEIGHT_MIN || weight > WEIGHT_MAX)
         throw invalid_parameter("weight", weight, WEIGHT_MIN, WEIGHT_MAX);
@@ -125,7 +128,7 @@ real_t RythmGenerationNeuron::getAmplitude() const {
     return amplitude;
 }
 
-//  the amplitude determines influence of a flexor/extensor on the final output signal [−10, 10]
+//  the amplitude determines influence of a flexor/extensor on the final output signal [−1, 1]
 void RythmGenerationNeuron::setAmplitude(real_t amplitude) {
     if (amplitude < AMPLITUDE_MIN || amplitude > AMPLITUDE_MAX)
         throw invalid_parameter("amplitude", amplitude, AMPLITUDE_MIN, AMPLITUDE_MAX);

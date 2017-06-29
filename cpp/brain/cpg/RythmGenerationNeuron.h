@@ -106,11 +106,11 @@ public:
 
 public:
     const real_t WEIGHT_MIN = 0;
-    const real_t WEIGHT_MAX = 4.5;
+    const real_t WEIGHT_MAX = 1.0;
     const real_t C_MIN = -2;
     const real_t C_MAX =  2;
-    const real_t AMPLITUDE_MIN = -10;
-    const real_t AMPLITUDE_MAX =  10;
+    const real_t AMPLITUDE_MIN = -1;
+    const real_t AMPLITUDE_MAX =  1;
     const real_t OFFSET_MIN = -0.1;
     const real_t OFFSET_MAX =  0.1;
 
@@ -120,13 +120,13 @@ protected:
 
 private:
     // RythmGenerationNeuron parameters
-    // the weight that determines the shape [0, 4.5]
+    // the weight that determines the shape [0, 1.0]
     real_t weight;
     // weights for neighbours nodes
     std::vector<real_t> weight_neigbours;
     // the phase difference [-2, 2]
     real_t c;
-    //  the amplitude determines influence of a flexor/extensor on the final output signal [−10, 10]
+    //  the amplitude determines influence of a flexor/extensor on the final output signal [−1, 1]
     real_t amplitude;
     //  the offset dims shape of the final output signal to the starting position [-0.1, 0.1]
     real_t offset;
