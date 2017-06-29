@@ -28,6 +28,10 @@ public:
 protected:
     Experiment(const char *name);
 
+    const char * const get_name() const {
+        return name;
+    }
+
 private:
     Experiment()
     {}

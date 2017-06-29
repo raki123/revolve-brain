@@ -21,7 +21,8 @@ static struct MazeInit
                                                               1,
                                                               __sensor_N,
                                                               __output_N,
-                                                              __sensor_N);
+                                                              __sensor_N,
+                                                              "maze_experiment");
       };
 
       //todo: This is wonky. Should maybe make an explicit static registry func?

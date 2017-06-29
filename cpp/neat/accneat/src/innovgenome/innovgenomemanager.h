@@ -11,7 +11,7 @@ class InnovGenomeManager
     friend class GenomeManager;
 
 protected:
-    InnovGenomeManager();
+    InnovGenomeManager(const std::string &robot_name);
 
 public:
     virtual ~InnovGenomeManager();
@@ -25,7 +25,8 @@ public:
                            size_t ntraits,
                            size_t ninputs,
                            size_t noutputs,
-                           size_t nhidden) override;
+                           size_t nhidden,
+                           const std::string &robot_name) override;
 
     virtual bool
     are_compatible(Genome &genome1,
@@ -73,6 +74,7 @@ protected:
     } search_phase;
     int search_phase_start;
     int max_phase_duration;
+    const std::string robot_name;
 };
 
 }

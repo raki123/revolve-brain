@@ -24,14 +24,15 @@
 
 using namespace revolve::brain;
 
-SUPGBrainPhototaxis::SUPGBrainPhototaxis(EvaluatorPtr evaluator,
+SUPGBrainPhototaxis::SUPGBrainPhototaxis(const std::string &robot_name,
+                                         EvaluatorPtr evaluator,
                                          std::function<boost::shared_ptr<FakeLightSensor> (std::vector<float> coordinates)> _light_constructor_left,
                                          std::function<boost::shared_ptr<FakeLightSensor> (std::vector<float> coordinates)> _light_constructor_right,
                                          double _light_radius_distance,
                                          const std::vector< std::vector< float > >& neuron_coordinates,
                                          const std::vector< ActuatorPtr >& actuators,
                                          const std::vector< SensorPtr >& sensors)
-    : SUPGBrain(evaluator, neuron_coordinates, actuators, sensors)
+    : SUPGBrain(robot_name, evaluator, neuron_coordinates, actuators, sensors)
     , phase(END)
     , light_constructor_left(_light_constructor_left)
     , light_constructor_right(_light_constructor_right)

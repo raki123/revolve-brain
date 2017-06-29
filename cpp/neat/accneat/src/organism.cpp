@@ -57,14 +57,14 @@ Organism::operator=(const Organism &other)
   return *this;
 }
 
-void
-Organism::write(std::ostream &out) const
-{
-  out << "/* Organism #" << population_index << " "
-      << "Fitness: " << eval.fitness << " "
-      << "Error: " << eval.error << " */" << std::endl;
-  genome->print(out);
-}
+//void
+//Organism::write(std::ostream &out) const
+//{
+//  out << "/* Organism #" << population_index << " "
+//      << "Fitness: " << eval.fitness << " "
+//      << "Error: " << eval.error << " */" << std::endl;
+//  genome->print(out);
+//}
 
 void
 Organism::copy_into(Organism &dst) const

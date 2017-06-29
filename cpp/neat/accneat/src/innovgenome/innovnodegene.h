@@ -1,5 +1,6 @@
 /*
  Copyright 2001 The University of Texas at Austin
+ Copyright 2001 The University of Texas at Austin
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -23,18 +24,35 @@ namespace NEAT {
 
 class InnovNodeGene {
     int trait_id;  // identify the trait derived by this node
+
+    std::string creator_name;
+    int creator_index;
+
 public:
     bool frozen; // When frozen, cannot be mutated (meaning its trait pointer is fixed)
     nodetype type;
     int node_id;  // A node can be given an identification number for saving in files
 
+    InnovNodeGene() : InnovNodeGene("ERROR") {}
+
+    InnovNodeGene(const InnovNodeGene &other);
+
     // Construct InnovNodeGene with invalid state.
-    InnovNodeGene() {}
-    InnovNodeGene(nodetype ntype,int nodeid);
-    // Construct the node out of a file specification using given list of traits
-    InnovNodeGene (const char *argline);
+    InnovNodeGene(const std::string &robot_name);
+
+    InnovNodeGene(nodetype ntype, int nodeid,
+                  const std::string &robot_name,
+                  const std::string &creator_name,
+                  const int creator_index);
+
+    InnovNodeGene(nodetype ntype, int nodeid,
+                  const std::string &robot_name)
+            : InnovNodeGene(ntype, nodeid, robot_name, robot_name, -1)
+    {}
 
     ~InnovNodeGene();
+
+    InnovNodeGene &operator=(const InnovNodeGene& other);
 
     inline void set_trait_id(int id) { assert(id > 0); trait_id = id; }
     inline int get_trait_id() const {return trait_id;}
@@ -42,8 +60,13 @@ public:
     inline const nodetype get_type() const {return type;}
     inline void set_type(nodetype t) {type = t;}
 
-    // Print the node to a file
-    void  print_to_file(std::ostream &outFile) const;
+    inline const std::string &get_creator_name() { return creator_name; }
+    inline int get_creator_index() { return creator_index; }
+
+    void set_creator_name(const std::string &creator_name);
+    void set_creator_index(int creator_index);
+
+    friend struct YAML::convert<NEAT::InnovNodeGene>;
 };
 
 } // namespace NEAT
@@ -57,4 +80,5 @@ struct convert<NEAT::InnovNodeGene> {
   static Node encode(const NEAT::InnovNodeGene& rhs);
   static bool decode(const Node& node, NEAT::InnovNodeGene& rhs);
 };
+
 }

@@ -11,7 +11,8 @@ using namespace NEAT;
 #define MAX_COMPLEXIFY_PHASE_DURATION 40
 #define PRUNE_PHASE_FACTOR 0.5
 
-InnovGenomeManager::InnovGenomeManager()
+InnovGenomeManager::InnovGenomeManager(const std::string &robot_name)
+  : robot_name(robot_name)
 {
   if (env->search_type == GeneticSearchType::PHASED) {
     search_phase = COMPLEXIFY;
@@ -38,7 +39,7 @@ to_innov(Genome &g)
 std::unique_ptr<Genome>
 InnovGenomeManager::make_default()
 {
-  return std::unique_ptr<Genome>(new InnovGenome());
+  return std::unique_ptr<Genome>(new InnovGenome(robot_name));
 }
 
 std::vector<std::unique_ptr<Genome>>
@@ -47,19 +48,21 @@ InnovGenomeManager::create_seed_generation(size_t ngenomes,
                                            size_t ntraits,
                                            size_t ninputs,
                                            size_t noutputs,
-                                           size_t nhidden)
+                                           size_t nhidden,
+                                           const std::string &robot_name)
 {
   InnovGenome start_genome(rng,
                            ntraits,
                            ninputs,
                            noutputs,
-                           nhidden);
+                           nhidden,
+                           robot_name);
 
   std::vector<std::unique_ptr<Genome>> genomes;
   {
     rng_t _rng = rng;
     for (int i = 0; i < env->pop_size; i++) {
-      InnovGenome *g = new InnovGenome();
+      InnovGenome *g = new InnovGenome(robot_name);
       start_genome.duplicate_into(g);
       g->rng.seed(_rng.integer());
       g->mutate_link_weights(1.0,

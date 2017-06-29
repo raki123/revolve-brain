@@ -94,7 +94,7 @@ public:
         rng_t rng_exp(rng.integer());
 
         fittest = nullptr;
-        env->genome_manager = GenomeManager::create();
+        env->genome_manager = GenomeManager::create(get_name());
         vector<unique_ptr<Genome>> genomes = create_seeds(rng_exp);
 
         //Spawn the Population
@@ -124,9 +124,9 @@ public:
           Timer::report();
 
           //Don't print on success because we'll exit the loop and print then.
-          if (!success && (gen % env->print_every == 0))
-            print(expcount,
-                  gen);
+//          if (!success && (gen % env->print_every == 0))
+//            print(expcount,
+//                  gen);
         }
 
         if (success) {
@@ -139,8 +139,8 @@ public:
           nlinks.push_back(gstats.nlinks);
         }
 
-        print(expcount,
-              gen - 1);
+//        print(expcount,
+//              gen - 1);
 
         delete pop;
         delete env->genome_manager;
@@ -157,16 +157,16 @@ public:
     }
 
 private:
-    void
-    print(int experiment_num,
-          int generation)
-    {
-      using namespace std;
-
-      ofstream out(get_fittest_path(experiment_num,
-                                    generation));
-      fittest->write(out);
-    }
+//    void
+//    print(int experiment_num,
+//          int generation)
+//    {
+//      using namespace std;
+//
+//      ofstream out(get_fittest_path(experiment_num,
+//                                    generation));
+//      fittest->write(out);
+//    }
 
     void
     evaluate()

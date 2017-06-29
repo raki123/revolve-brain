@@ -13,7 +13,8 @@ namespace revolve { namespace brain {
 
     class AccNEATLearner : public BaseLearner {
     public: // METHODS
-        AccNEATLearner(EvaluatorPtr evaluator,
+        AccNEATLearner(const std::string &robot_name,
+                       EvaluatorPtr evaluator,
                        size_t n_inputs,
                        size_t n_outputs,
                        const float evaluationTime,

@@ -24,6 +24,15 @@ class Genome
 public:
     rng_t rng;
     int genome_id;
+    const std::string * robot_name;
+
+    Genome(const std::string &robot_name)
+            : Genome(&robot_name)
+    {}
+
+    Genome(const std::string *robot_name)
+            : robot_name(robot_name)
+    {}
 
     virtual ~Genome()
     {}
@@ -34,7 +43,6 @@ public:
     virtual void
     init_phenotype(class Network &net) = 0;
 
-    virtual void print(std::ostream &out) const = 0;
     virtual void verify() = 0;
 
 

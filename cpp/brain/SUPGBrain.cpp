@@ -66,11 +66,13 @@ revolve::brain::SUPGBrain::SUPGBrain(EvaluatorPtr evaluator)
 }
 
 
-SUPGBrain::SUPGBrain(EvaluatorPtr evaluator,
+SUPGBrain::SUPGBrain(const std::string &robot_name,
+                     EvaluatorPtr evaluator,
                      const std::vector< std::vector< float > > &neuron_coordinates,
                      const std::vector< ActuatorPtr >& actuators,
                      const std::vector< SensorPtr >& sensors)
   : evaluator(evaluator)
+  , robot_name(robot_name)
   , start_eval_time(std::numeric_limits< double >::lowest())
   , generation_counter(0)
   , neuron_coordinates(neuron_coordinates)
@@ -107,7 +109,8 @@ void SUPGBrain::init_async_neat() {
     std::unique_ptr< AsyncNeat > neat(new AsyncNeat(
         SUPGNeuron::GetDimensionInput(n_inputs, neuron_coordinates[0].size()),
         SUPGNeuron::GetDimensionOutput(n_outputs),
-        std::time(0)
+        std::time(0),
+        robot_name
     ));
     this->neat = std::move(neat);
 }

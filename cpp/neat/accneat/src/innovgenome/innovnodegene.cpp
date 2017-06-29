@@ -18,40 +18,37 @@
 
 using namespace NEAT;
 
-InnovNodeGene::InnovNodeGene(nodetype ntype,
-                             int nodeid)
+InnovNodeGene::InnovNodeGene(const std::string &robot_name)
+  : creator_name(robot_name)
+  , creator_index(-1)
 {
-  type = ntype; //NEURON or SENSOR type
-  node_id = nodeid;
-  frozen = false;
-  trait_id = 1;
+
 }
 
-InnovNodeGene::InnovNodeGene(const char *argline)
+InnovNodeGene::InnovNodeGene(nodetype ntype,
+                             int nodeid,
+                             const std::string &robot_name,
+                             const std::string &creator_name,
+                             const int creator_index)
+  : creator_name(creator_name)
+  , creator_index(creator_index)
+  , type(ntype)
+  , node_id(nodeid)
+  , frozen(false)
+  , trait_id(1)
 {
-  std::stringstream ss(argline);
-  int nodety, nodepl;
-  ss >> node_id >> trait_id >> nodety >> nodepl;
-  type = (nodetype)nodety;
+}
 
-  if (trait_id == 0)
-    trait_id = 1;
-
-  // Get the Sensor Identifier and Parameter String
-  // mySensor = SensorRegistry::getSensor(id, param);
-  frozen = false;  //TODO: Maybe change
+InnovNodeGene::InnovNodeGene(const InnovNodeGene &other)
+        : InnovNodeGene(other.type,
+                        other.node_id,other.creator_name, creator_name, creator_index)
+{
+  frozen = other.frozen;
+  trait_id = other.trait_id;
 }
 
 InnovNodeGene::~InnovNodeGene()
 {
-}
-
-void
-InnovNodeGene::print_to_file(std::ostream &outFile) const
-{
-  outFile << "node " << node_id << " ";
-  outFile << trait_id << " ";
-  outFile << (int)type << std::endl;
 }
 
 bool YAML::convert<NEAT::InnovNodeGene>::decode(const YAML::Node &node, InnovNodeGene &rhs)
@@ -60,6 +57,8 @@ bool YAML::convert<NEAT::InnovNodeGene>::decode(const YAML::Node &node, InnovNod
   rhs.set_trait_id(node["trait_id"].as<int>());
   rhs.set_type(node["type"].as<nodetype>());
   rhs.frozen = node["frozen"].as<bool>();
+  rhs.creator_name = node["creator_name"].as<std::string>();
+  rhs.creator_index = node["creator_index"].as<int>();
 
   return true;
 }
@@ -71,6 +70,8 @@ YAML::Node YAML::convert<NEAT::InnovNodeGene>::encode(const InnovNodeGene &rhs)
   node["trait_id"] = rhs.get_trait_id();
   node["type"] = rhs.get_type();
   node["frozen"] = rhs.frozen;
+  node["creator_name"] = rhs.creator_name;
+  node["creator_index"] = rhs.creator_index;
 
   return node;
 }

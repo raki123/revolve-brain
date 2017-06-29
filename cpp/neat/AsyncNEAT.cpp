@@ -9,14 +9,15 @@
 
 AsyncNeat::AsyncNeat(unsigned int n_inputs,
                      unsigned int n_outputs,
-                     int rng_seed)
+                     int rng_seed, const std::string &robot_name)
     : n_inputs(n_inputs),
       n_outputs(n_outputs),
       generation(1),
       best_fitness_counter(0),
       rng_seed(rng_seed),
       fittest(nullptr),
-      fittest_fitness(std::numeric_limits<float>().min())
+      fittest_fitness(std::numeric_limits<float>().min()),
+      robot_name(robot_name)
 {
   if (NEAT::env->genome_manager == nullptr) {
     throw std::invalid_argument("genome manager not initialized, "
@@ -33,7 +34,8 @@ AsyncNeat::AsyncNeat(unsigned int n_inputs,
                                                         1,
                                                         n_inputs,
                                                         n_outputs,
-                                                        n_inputs);
+                                                        n_inputs,
+                                                        this->robot_name);
   //Spawn the Population
   population = NEAT::Population::create(rng_exp,
                                         genomes);

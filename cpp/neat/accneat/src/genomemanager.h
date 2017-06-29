@@ -14,7 +14,7 @@ class GenomeManager
 {
 public:
     static GenomeManager *
-    create();
+    create(const std::string &robot_name);
 
     virtual ~GenomeManager()
     {}
@@ -28,7 +28,8 @@ public:
                            size_t ntraits,
                            size_t ninputs,
                            size_t noutputs,
-                           size_t nhidden) = 0;
+                           size_t nhidden,
+                           const std::string &robot_name) = 0;
 
     virtual bool
     are_compatible(Genome &genome1,

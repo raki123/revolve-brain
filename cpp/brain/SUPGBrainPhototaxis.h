@@ -32,7 +32,8 @@ public:
     /**
      * Light sensor constructors are passed the coordinates with already the offset included
      */
-    SUPGBrainPhototaxis(EvaluatorPtr evaluator,
+    SUPGBrainPhototaxis(const std::string &robot_name,
+                        EvaluatorPtr evaluator,
                         std::function<boost::shared_ptr<FakeLightSensor> (std::vector<float> coordinates)> _light_constructor_left,
                         std::function<boost::shared_ptr<FakeLightSensor> (std::vector<float> coordinates)> _light_constructor_right,
                         double light_radius_distance,
