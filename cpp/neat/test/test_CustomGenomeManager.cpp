@@ -10,6 +10,7 @@
 #include "neat/AsyncNEAT.h"
 #include "network/cpu/cpunetwork.h"
 
+const std::string test_name = "TestGenomeManager";
 
 TestCustomGenomeManager::TestCustomGenomeManager()
 {
@@ -41,6 +42,7 @@ class TestGenomeManager
 {
 public:
     TestGenomeManager()
+            : NEAT::InnovGenomeManager(test_name)
     {
 
     }
@@ -57,7 +59,8 @@ public:
                                      ntraits,
                                      ninputs,
                                      noutputs,
-                                     nhidden);
+                                     nhidden,
+                                     test_name);
 
 
       const int node_id_bias = 1;
@@ -73,14 +76,16 @@ public:
                                                 node_id_output + 0,
                                                 false,
                                                 start_genome.get_last_gene_innovnum(),
-                                                0.0)
+                                                0.0,
+                                                test_name,
+                                                -1)
       );
 
       std::vector<std::unique_ptr<NEAT::Genome>> genomes;
       {
         NEAT::rng_t _rng = rng;
         for (int i = 0; i < NEAT::env->pop_size; i++) {
-          NEAT::InnovGenome *g = new NEAT::InnovGenome();
+          NEAT::InnovGenome *g = new NEAT::InnovGenome(test_name);
           start_genome.duplicate_into(g);
           g->rng
            .seed(_rng.integer());
@@ -117,7 +122,8 @@ TestCustomGenomeManager::testXOR()
   AsyncNeat::SetPopulationSize(10);
   AsyncNeat neat(2,
                  1,
-                 1);
+                 1,
+                 test_name);
   float success_margin_error = 0.0001;
 
   bool success = false;

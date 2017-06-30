@@ -12,9 +12,11 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/make_shared.hpp>
 
+const std::string test_name = "TestSUPGBrain";
+
 int main(int argc, char *argv[]) {
     std::cout << "testing supgbrain" << std::endl;
-    AsyncNeat::Init();
+    AsyncNeat::Init(test_name);
 
     revolve::brain::EvaluatorPtr testEvaluator = boost::make_shared<TestEvaluator>();
 
@@ -55,12 +57,13 @@ int main(int argc, char *argv[]) {
 
 TestSUPGBrain::TestSUPGBrain(revolve::brain::EvaluatorPtr evaluator,
                              const std::vector< std::vector< float > > &neuron_coordinates,
-                             const std::vector< revolve::brain::ActuatorPtr >& actuators,
-                             const std::vector< revolve::brain::SensorPtr >& sensors)
-    : revolve::brain::SUPGBrain(evaluator,
-              neuron_coordinates,
-              actuators,
-              sensors)
+                             const std::vector<revolve::brain::ActuatorPtr> &actuators,
+                             const std::vector<revolve::brain::SensorPtr> &sensors)
+        : revolve::brain::SUPGBrain(test_name,
+                                    evaluator,
+                                    neuron_coordinates,
+                                    actuators,
+                                    sensors)
 {
 
 }
