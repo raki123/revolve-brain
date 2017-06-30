@@ -1,4 +1,4 @@
-from distutils.core import setup, find_packages
+from distutils.core import setup
 
 requires = [
     'revolve-communication',
@@ -15,7 +15,7 @@ setup(
     description='revolve-brain',
     author='Matteo De Carlo',
     author_email='matteo.dek@gmail.com',
-    packages=find_packages(),
+    packages=['revolve-brain'],
     install_requires=requires,
     entry_points={
         # TODO: Add endpoints to main() in control_servos.py and main.py
