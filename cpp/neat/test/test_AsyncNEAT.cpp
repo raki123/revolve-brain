@@ -3,6 +3,8 @@
 #include "neat/AsyncNEAT.h"
 #include "network/cpu/cpunetwork.h"
 
+const std::string test_name = "TestAsyncNeat";
+
 TestAsyncNeat::TestAsyncNeat()
 {
 
@@ -29,12 +31,13 @@ TestAsyncNeat::test()
 bool
 TestAsyncNeat::testXOR()
 {
-  AsyncNeat::Init();
+  AsyncNeat::Init(test_name);
   AsyncNeat::SetSearchType(NEAT::GeneticSearchType::BLENDED);
   AsyncNeat::SetPopulationSize(10);
   AsyncNeat neat(2,
                  1,
-                 1);
+                 1,
+                 test_name);
   float success_margin_error = 0.0001;
 
   bool success = false;
