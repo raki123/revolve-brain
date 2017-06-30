@@ -28,6 +28,7 @@ public:
      *
      * Light sensor constructors are passed the coordinates with already the offset included
      *
+     * @param robot_name name of the robot to use in logs
      * @param _encapsulatedLearner encapsulated learner that creates the controllers.
      * @param _light_constructor_left left fakelight factory.
      * @param _light_constructor_right right fakelight factory.
@@ -36,7 +37,8 @@ public:
      * @param maxEvaluations Number of evaluation before the program should exit. If negative, the program will never
      * stop. Default to -1.
      */
-    PhototaxisLearner(std::unique_ptr<EncapsulatedLearner> _encapsulatedLearner,
+    PhototaxisLearner(const std::string &robot_name,
+                      std::unique_ptr<EncapsulatedLearner> _encapsulatedLearner,
                       std::function<boost::shared_ptr<FakeLightSensor>(
                               std::vector<float> coordinates)> _light_constructor_left,
                       std::function<boost::shared_ptr<FakeLightSensor>(
@@ -45,7 +47,7 @@ public:
                       double _light_radius_distance,
                       const float evaluationTime = 30,
                       const long maxEvaluations = -1)
-            : BaseLearner()
+            : BaseLearner(robot_name)
               , encapsulatedLearner(std::move(_encapsulatedLearner))
               , phase(END)
               , light_constructor_left(_light_constructor_left)
