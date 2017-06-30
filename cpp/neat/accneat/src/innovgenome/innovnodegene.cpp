@@ -41,7 +41,10 @@ InnovNodeGene::InnovNodeGene(nodetype ntype,
 
 InnovNodeGene::InnovNodeGene(const InnovNodeGene &other)
         : InnovNodeGene(other.type,
-                        other.node_id,other.creator_name, creator_name, creator_index)
+                        other.node_id,
+                        other.creator_name,
+                        other.creator_name,
+                        other.creator_index)
 {
   frozen = other.frozen;
   trait_id = other.trait_id;
