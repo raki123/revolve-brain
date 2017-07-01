@@ -238,8 +238,7 @@ convertForController(CPPNEAT::GeneticEncodingPtr genotype)
         break;
       }
       case CPPNEAT::Neuron::HIDDEN_LAYER: {
-        switch (neuron_gene->neuron
-                           ->neuron_type) {
+        switch (neuron_gene->neuron->neuron_type) {
           case CPPNEAT::Neuron::SIMPLE: {
             newNeuron.reset(new LinearNeuron(neuronId,
                                              neuron_params));

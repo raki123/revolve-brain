@@ -3,7 +3,6 @@
 //
 
 #include "RythmGenerationNeuron.h"
-#include <sstream>
 #include <cmath>
 
 using namespace revolve::brain::cpg;
@@ -60,7 +59,7 @@ real_t RythmGenerationNeuron::nextPhi(const std::vector<real_t> &inputs, real_t 
         2 * PI * this->c +
         this->weight * std::sin(otherPhi-thisPhi);
 
-    for (int i=1; i<inputs.size(); i++) {
+    for (size_t i = 1; i < inputs.size(); ++i) {
         const real_t otherPhi = inputs[i];
         deltaPhi += weight_neigbours[i-1] * std::sin(otherPhi - thisPhi);
     }

@@ -3,8 +3,8 @@
 
 //#define CPPNEAT_DEBUG
 
-#include "brain/learner/cppneat/Types.h"
-#include "brain/learner/cppneat/Mutator.h"
+#include "brain/learner/cppneat/types.h"
+#include "brain/learner/cppneat/mutator.h"
 #include "Learner.h"
 
 #include <map>

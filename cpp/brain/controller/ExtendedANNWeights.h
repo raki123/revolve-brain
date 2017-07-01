@@ -3,7 +3,7 @@
 
 #include "Controller.h"
 #include "brain/Evaluator.h"
-#include "brain/controller/extnn/Neuron.h"
+#include "brain/controller/extnn/neuron.h"
 #include "brain/controller/extnn/NeuralConnection.h"
 #include "ExtendedANN.h"
 #include <map>

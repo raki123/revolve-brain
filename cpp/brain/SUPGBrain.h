@@ -44,7 +44,7 @@ protected:
 
         // Read sensor data and feed the neural network
         double *inputs = new double[n_inputs];
-        unsigned int p = 0;
+        size_t p = 0;
         for (auto sensor : sensors) {
             sensor->read(&inputs[p]);
             p += sensor->inputs();
@@ -52,13 +52,13 @@ protected:
         assert(p == n_inputs);
 
         // load sensors
-        for (unsigned int i = 0; i < n_inputs; i++) {
+        for (size_t i = 0; i < n_inputs; i++) {
             neurons[0]->load_sensor(i, inputs[i]);
         }
 
         // Activate network and save results
         double *outputs = new double[n_outputs];
-        for (unsigned int i = 0; i < neurons.size(); i++) {
+        for (size_t i = 0; i < neurons.size(); i++) {
             neurons[i]->activate(t);
             outputs[i] = neurons[i]->get_outputs()[0] * 2 - 1;
         }
@@ -98,14 +98,14 @@ protected:
 
 // DATA
 protected:
-    unsigned int n_inputs, n_outputs;
+    size_t n_inputs, n_outputs;
     std::vector< std::vector< float > > neuron_coordinates;
 
-    const std::string robot_name;
     std::unique_ptr<AsyncNeat> neat;
     EvaluatorPtr evaluator;
+    const std::string robot_name;
     double start_eval_time;
-    unsigned int generation_counter;
+    long generation_counter;
     std::shared_ptr< NeatEvaluation > current_evalaution;
 
     std::vector< std::unique_ptr< SUPGNeuron > > neurons;

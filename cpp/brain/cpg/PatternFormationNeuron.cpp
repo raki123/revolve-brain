@@ -3,7 +3,6 @@
 //
 
 #include "PatternFormationNeuron.h"
-#include <sstream>
 #include <cmath>
 
 using namespace revolve::brain::cpg;
@@ -41,7 +40,7 @@ real_t PatternFormationNeuron::generateInput(std::vector<real_t> inputs) const {
 
     real_t combined_inputs = 0;
     size_t input_size = weights.size();
-    for (int i=0; i<input_size; i++) {
+    for (size_t i = 0; i < input_size; ++i) {
         combined_inputs += weights[i] * inputs[i];
     }
 
@@ -85,10 +84,10 @@ void PatternFormationNeuron::setWeights(const std::vector<real_t> &weights) {
     // Weight normalization
     real_t weight_sum = 0;
     size_t weights_size = this->weights.size();
-    for (int i=0; i<weights_size; i++) {
+    for (size_t i = 0; i < weights_size; ++i) {
         weight_sum += this->weights[i];
     }
-    for (int i=0; i<weights_size; i++) {
+    for (size_t i = 0; i < weights_size; ++i) {
         this->weights[i] /= weight_sum;
     }
 }

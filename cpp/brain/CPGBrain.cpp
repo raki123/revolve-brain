@@ -4,14 +4,13 @@
 
 #include "CPGBrain.h"
 #include <random>
-#include <cmath>
 
 using namespace revolve::brain;
 
 CPGBrain::CPGBrain(std::string robot_name,
                    EvaluatorPtr evaluator,
-                   unsigned int n_actuators,
-                   unsigned int n_sensors)
+                   size_t n_actuators,
+                   size_t n_sensors)
     : Brain()
     , robot_name(robot_name)
     , n_inputs(n_sensors)
@@ -27,7 +26,7 @@ CPGBrain::CPGBrain(std::string robot_name,
     , max_ranked_policies_(10)
     , noise_sigma_(0.1)
 {
-    unsigned int n_connections = n_actuators-1;
+    size_t n_connections = n_actuators-1;
 
     for(int i=0; i<n_actuators; i++) {
         cpgs[i] = new cpg::CPGNetwork(n_sensors, n_connections);
@@ -57,10 +56,10 @@ CPGBrain::CPGBrain(std::string robot_name,
 //         }
 //     }
 
-    for (unsigned int i = 0; i < n_actuators; i++) {
-        unsigned int genome_size = 12 + 2*n_connections;
+    for (size_t i = 0; i < n_actuators; ++i) {
+        size_t genome_size = 12 + 2*n_connections;
         GenomePtr spline = std::make_shared<Genome>(genome_size, 0);
-        for (unsigned int j = 0; j < genome_size; j++) {
+        for (size_t j = 0; j < genome_size; ++j) {
             spline->at(j) = dist(mt);
         }
         current_policy_->at(i) = spline;
@@ -109,11 +108,11 @@ void CPGBrain::learner(double t)
 }
 
 void CPGBrain::updatePolicy(double curr_fitness) {
-    unsigned int source_y_size = 12; //TODO
+    size_t source_y_size = 12; //TODO
 
     // Insert ranked policy in list
     PolicyPtr policy_copy = std::make_shared<Policy>(n_actuators);
-    for (unsigned int i = 0; i < n_actuators; i++) {
+    for (size_t i = 0; i < n_actuators; i++) {
         GenomePtr genome = current_policy_->at(i);
         policy_copy->at(i) = std::make_shared<Genome>(genome->begin(), genome->end());
     }
@@ -168,8 +167,8 @@ void CPGBrain::updatePolicy(double curr_fitness) {
     /// For algorithms B and D, is used two parent crossover with binary tournament selection
     if (ranked_policies_.size() < max_ranked_policies_) {
         // Generate random policy if number of stored policies is less then 'max_ranked_policies_'
-        for (unsigned int i = 0; i < n_actuators; i++) {
-            for (unsigned int j = 0; j < source_y_size; j++) {
+        for (size_t i = 0; i < n_actuators; i++) {
+            for (size_t j = 0; j < source_y_size; j++) {
                 current_policy_->at(i)->at(j) = dist(mt) + .5;
             }
         }
@@ -194,9 +193,9 @@ void CPGBrain::updatePolicy(double curr_fitness) {
             total_fitness = fitness1 + fitness2;
 
             // For each spline
-            for (unsigned int i = 0; i < n_actuators; i++) {
+            for (size_t i = 0; i < n_actuators; i++) {
                 // And for each control point
-                for (unsigned int j = 0; j < source_y_size; j++) {
+                for (size_t j = 0; j < source_y_size; j++) {
                     // Apply modifier
                     double param_point = 0;
                     param_point += ((policy1->at(i)->at(j) - current_policy_->at(i)->at(j))) * (fitness1 / total_fitness);
@@ -221,9 +220,9 @@ void CPGBrain::updatePolicy(double curr_fitness) {
 
             // For each spline
             // TODO: Verify that this should is correct formula
-            for (unsigned int i = 0; i < n_actuators; i++) {
+            for (size_t i = 0; i < n_actuators; i++) {
                 // And for each control point
-                for (unsigned int j = 0; j < source_y_size; j++) {
+                for (size_t j = 0; j < source_y_size; j++) {
 
                     // Apply modifier
                     double spline_point = 0;
@@ -245,11 +244,11 @@ void CPGBrain::updatePolicy(double curr_fitness) {
         }
     }
 
-    for (unsigned int i = 0; i < n_actuators; i++) {
+    for (size_t i = 0; i < n_actuators; i++) {
         // And for each control point
         cpg::CPGNetwork* cpg = cpgs[i];
         std::vector<cpg::CPGNetwork::Limit> limits = cpg->get_genome_limits();
-        for (unsigned int j = 0; j < source_y_size; j++) {
+        for (size_t j = 0; j < source_y_size; j++) {
             cpg::real_t &value = current_policy_->at(i)->at(j);
             cpg::CPGNetwork::Limit limit = limits[j];
 //             if (value < limit.lower)
@@ -270,10 +269,10 @@ void CPGBrain::updatePolicy(double curr_fitness) {
 std::map<double, CPGBrain::PolicyPtr>::iterator CPGBrain::binarySelection() {
     std::random_device rd;
     std::mt19937 umt(rd());
-    std::uniform_int_distribution<unsigned int> udist(0, max_ranked_policies_ - 1);
+    std::uniform_int_distribution<size_t> udist(0, max_ranked_policies_ - 1);
 
     // Select two different numbers from uniform distribution U(0, max_ranked_policies_ - 1)
-    unsigned int pindex1, pindex2;
+    size_t pindex1, pindex2;
     pindex1 = udist(umt);
     do {
         pindex2 = udist(umt);
@@ -296,7 +295,7 @@ std::map<double, CPGBrain::PolicyPtr>::iterator CPGBrain::binarySelection() {
 void CPGBrain::genomeToPhenotype()
 {
     // update the new parameters in the cpgs
-    for (int i=0; i<n_actuators; i++) {
+    for (size_t i=0; i<n_actuators; ++i) {
         GenomePtr genome = current_policy_->at(i);
         cpgs[i]->set_genome(*genome);
     }
@@ -306,7 +305,7 @@ void CPGBrain::genomeToPhenotype()
 void CPGBrain::setConnections(std::vector<std::vector<cpg::CPGNetwork::Weights> > connections)
 {
     assert(connections.size() == this->connections.size());
-    for (int i=0; i< connections.size(); i++) {
+    for (size_t i = 0; i < connections.size(); ++i) {
         assert(connections[i].size() == this->connections[i].size());
     }
 
@@ -316,11 +315,11 @@ void CPGBrain::setConnections(std::vector<std::vector<cpg::CPGNetwork::Weights> 
 
 void CPGBrain::connectionsToGenotype()
 {
-    for (int i=0; i< connections.size(); i++) {
+    for (size_t i = 0; i < connections.size(); ++i) {
         GenomePtr genome = current_policy_->at(i);
         const auto &conn_line = connections[i];
 
-        for (int j=0; j<conn_line.size(); i++) {
+        for (size_t j = 0; j < conn_line.size(); ++i) {
             const cpg::CPGNetwork::Weights &connection = conn_line[j];
 
             // check revolve::brain::cpg::CPGNetwork::update_genome for hardcoded values

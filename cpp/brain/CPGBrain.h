@@ -69,12 +69,12 @@ protected:
         assert(p == n_inputs);
 
         std::vector<cpg::real_t> inputs_readings(n_inputs, 0);
-        for (int i=0; i<n_inputs; i++)
+        for (size_t i = 0; i < n_inputs; i++)
             inputs_readings[i] = (cpg::real_t) inputs[i];
         delete[] inputs;
 
         double *outputs = new double[cpgs.size()];
-        for(int i=0; i<cpgs.size(); i++) {
+        for (size_t i = 0; i < cpgs.size(); i++) {
             cpg::CPGNetwork* cpg_network = cpgs[i];
             outputs[i] = cpg_network->update(inputs_readings, step) * 100;
         }
@@ -99,9 +99,9 @@ protected:
     // -- controller data --
 
     // number of sensory inputs expected
-    unsigned int n_inputs;
+    size_t n_inputs;
     // number of actuators
-    unsigned int n_actuators;
+    size_t n_actuators;
     //list of cpgs
     std::vector<cpg::CPGNetwork*> cpgs;
     /** Connection matrix between the different servos
@@ -119,7 +119,7 @@ protected:
     // last start of the evaluations. Needed to check duration of current evaluation.
     double start_eval_time_;
     // id of the current generation
-    unsigned int generation_counter_;
+    size_t generation_counter_;
     // needs to implement the grace period in starting the controller
     bool evaluator_started = false;
 
@@ -129,7 +129,7 @@ protected:
     // How many seconds should every evaluation last
     const double evaluation_rate_;
     // Maximal number of evaluations
-    const unsigned int max_evaluations_;
+    const size_t max_evaluations_;
 
 // RLPOWER SECTION ------------------------------------------------------------
 protected:
@@ -168,7 +168,7 @@ private:
     // Type of the used algorithm
     char algorithm_type_ = 'B';
     // Maximal number of stored ranked policies
-    unsigned int max_ranked_policies_; // = 10
+    size_t max_ranked_policies_; // = 10
     // Noise in generatePolicy() function
     double noise_sigma_; // = 0.008
     // Tau deviation for self-adaptive sigma

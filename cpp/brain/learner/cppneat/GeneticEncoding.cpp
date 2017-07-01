@@ -21,7 +21,7 @@ GeneticEncoding::copy()
     return copy_gen;
   } else {
     GeneticEncodingPtr copy_gen(new GeneticEncoding(true));
-    for (unsigned int i = 0; i < layers.size(); i++) {
+    for (size_t i = 0; i < layers.size(); i++) {
       bool first = true;
       for (NeuronGenePtr neuron_gene : layers[i]) {
         if (first) {
@@ -46,13 +46,13 @@ GeneticEncoding::copy()
   }
 }
 
-int
+size_t
 GeneticEncoding::num_genes()
 {
   if (!layered) {
     return neuron_genes.size() + connection_genes.size();
   } else {
-    int sum = 0;
+    size_t sum = 0;
     for (std::vector<NeuronGenePtr> layer : layers) {
       sum += layer.size();
     }
@@ -60,13 +60,13 @@ GeneticEncoding::num_genes()
   }
 }
 
-int
+size_t
 GeneticEncoding::num_neuron_genes()
 {
   if (!layered) {
     return neuron_genes.size();
   } else {
-    int sum = 0;
+    size_t sum = 0;
     for (std::vector<NeuronGenePtr> layer : layers) {
       sum += layer.size();
     }
@@ -74,7 +74,7 @@ GeneticEncoding::num_neuron_genes()
   }
 }
 
-int
+size_t
 GeneticEncoding::num_connection_genes()
 {
   return connection_genes.size();
@@ -104,7 +104,7 @@ GeneticEncoding::get_dissimilarity(GeneticEncodingPtr genotype1,
                                        genotype2,
                                        excess_num,
                                        disjoint_num);
-  int num_genes = std::max(genotype1->num_genes(),
+  size_t num_genes = std::max(genotype1->num_genes(),
                            genotype2->num_genes());
   std::vector<std::pair<GenePtr, GenePtr>> gene_pairs = GeneticEncoding::get_pairs(genotype1->get_sorted_genes(),
                                                                                    genotype2->get_sorted_genes());
@@ -136,11 +136,11 @@ GeneticEncoding::get_excess_disjoint(GeneticEncodingPtr genotype1,
   std::vector<GenePtr> genes_sorted1 = genotype1->get_sorted_genes();
   std::vector<GenePtr> genes_sorted2 = genotype2->get_sorted_genes();
 
-  int min_mark1 = genes_sorted1[0]->getInnovNumber();
-  int max_mark1 = genes_sorted1[genes_sorted1.size() - 1]->getInnovNumber();
+  size_t min_mark1 = genes_sorted1[0]->getInnovNumber();
+  size_t max_mark1 = genes_sorted1[genes_sorted1.size() - 1]->getInnovNumber();
 
-  int min_mark2 = genes_sorted2[0]->getInnovNumber();
-  int max_mark2 = genes_sorted2[genes_sorted2.size() - 1]->getInnovNumber();
+  size_t min_mark2 = genes_sorted2[0]->getInnovNumber();
+  size_t max_mark2 = genes_sorted2[genes_sorted2.size() - 1]->getInnovNumber();
 
   std::vector<std::pair<GenePtr, GenePtr>> pairs = GeneticEncoding::get_pairs(genes_sorted1,
                                                                               genes_sorted2);
@@ -166,33 +166,33 @@ std::vector<std::pair<GenePtr, GenePtr> >
 GeneticEncoding::get_pairs(std::vector<GenePtr> genes_sorted1,
                            std::vector<GenePtr> genes_sorted2)
 {
-  unsigned int num_genes1 = genes_sorted1.size();
-  unsigned int num_genes2 = genes_sorted2.size();
+  size_t num_genes1 = genes_sorted1.size();
+  size_t num_genes2 = genes_sorted2.size();
 
-  int min_mark1 = genes_sorted1[0]->getInnovNumber();
-  int max_mark1 = genes_sorted1[genes_sorted1.size() - 1]->getInnovNumber();
+  size_t min_mark1 = genes_sorted1[0]->getInnovNumber();
+  size_t max_mark1 = genes_sorted1[genes_sorted1.size() - 1]->getInnovNumber();
 
-  int min_mark2 = genes_sorted2[0]->getInnovNumber();
-  int max_mark2 = genes_sorted2[genes_sorted2.size() - 1]->getInnovNumber();
+  size_t min_mark2 = genes_sorted2[0]->getInnovNumber();
+  size_t max_mark2 = genes_sorted2[genes_sorted2.size() - 1]->getInnovNumber();
 
-  int min_mark = std::min(min_mark1,
+  size_t min_mark = std::min(min_mark1,
                           min_mark2);
-  int max_mark = std::max(max_mark1,
+  size_t max_mark = std::max(max_mark1,
                           max_mark2);
 
   std::vector<std::pair<GenePtr, GenePtr>> gene_pairs;
 
   //search for pairs with equal marks
-  int start_from1 = 0;
-  int start_from2 = 0;
+  size_t start_from1 = 0;
+  size_t start_from2 = 0;
 
-  int mark = min_mark;
+  size_t mark = min_mark;
 
   while (mark < max_mark + 1) {
     //jump1 and jump2 are here to skip long sequences of empty historical marks
     GenePtr gene1 = nullptr;
-    int jump1 = mark + 1;
-    for (unsigned int i = start_from1; i < num_genes1; i++) {
+    size_t jump1 = mark + 1;
+    for (size_t i = start_from1; i < num_genes1; i++) {
       if (genes_sorted1[i]->getInnovNumber() == mark) {
         gene1 = genes_sorted1[i];
         start_from1 = i;
@@ -209,8 +209,8 @@ GeneticEncoding::get_pairs(std::vector<GenePtr> genes_sorted1,
     }
 
     GenePtr gene2 = nullptr;
-    int jump2 = mark + 1;
-    for (int i = start_from2; i < num_genes2; i++) {
+    size_t jump2 = mark + 1;
+    for (size_t i = start_from2; i < num_genes2; i++) {
       if (genes_sorted2[i]->getInnovNumber() == mark) {
         gene2 = genes_sorted2[i];
         start_from2 = i;
@@ -246,12 +246,12 @@ GeneticEncoding::get_space_map(std::vector<GeneticEncodingPtr> genotypes,
     sorted_gene_vectors.push_back(genotype->get_sorted_genes());
   }
 
-  unsigned int glob_min_in = sorted_gene_vectors[0][0]->getInnovNumber();
-  unsigned int glob_max_in = sorted_gene_vectors[0][sorted_gene_vectors.size() - 1]->getInnovNumber();
+  size_t glob_min_in = sorted_gene_vectors[0][0]->getInnovNumber();
+  size_t glob_max_in = sorted_gene_vectors[0][sorted_gene_vectors.size() - 1]->getInnovNumber();
 
   for (std::vector<GenePtr> gene_vector : sorted_gene_vectors) {
-    unsigned int min_in = gene_vector[0]->getInnovNumber();
-    unsigned int max_in = gene_vector[gene_vector.size() - 1]->getInnovNumber();
+    size_t min_in = gene_vector[0]->getInnovNumber();
+    size_t max_in = gene_vector[gene_vector.size() - 1]->getInnovNumber();
 
     if (min_in < glob_min_in) {
       glob_min_in = min_in;
@@ -264,7 +264,7 @@ GeneticEncoding::get_space_map(std::vector<GeneticEncodingPtr> genotypes,
   std::vector<std::pair<int, int>> in_param_numbers;
   //TODO::check of 0 is necessary
   //TODO::make this faster
-  for (unsigned int in = 0; in <= glob_max_in; in++) {
+  for (size_t in = 0; in <= glob_max_in; in++) {
     GenePtr cur_gene = nullptr;
     for (std::vector<GenePtr> gene_vector : sorted_gene_vectors) {
       bool total_break = false;
@@ -528,12 +528,12 @@ bool GeneticEncoding::is_valid()
 }
 #endif
 
-std::pair<unsigned int, unsigned int>
-GeneticEncoding::convert_index_to_layer_index(unsigned int index)
+std::pair<size_t, size_t>
+GeneticEncoding::convert_index_to_layer_index(size_t index)
 {
-  unsigned int layer = 0;
-  unsigned int in_layer = 0;
-  unsigned int i = 0;
+  size_t layer = 0;
+  size_t in_layer = 0;
+  size_t i = 0;
   while (i < index) {
     if (layers[layer].size() == in_layer + 1) {
       layer++;
@@ -543,15 +543,14 @@ GeneticEncoding::convert_index_to_layer_index(unsigned int index)
     }
     i++;
   }
-  return std::pair<unsigned int, unsigned int>(layer,
-                                               in_layer);
+  return std::pair<size_t, size_t>(layer, in_layer);
 }
 
-std::pair<unsigned int, unsigned int>
+std::pair<size_t, size_t>
 GeneticEncoding::convert_in_to_layer_index(int innov_number)
 {
-  unsigned int layer = 0;
-  unsigned int in_layer = 0;
+  size_t layer = 0;
+  size_t in_layer = 0;
   while (layers[layer][in_layer]->getInnovNumber() != innov_number) {
     if (layers[layer].size() == in_layer + 1) {
       layer++;
@@ -560,7 +559,7 @@ GeneticEncoding::convert_in_to_layer_index(int innov_number)
       in_layer++;
     }
   }
-  return std::pair<unsigned int, unsigned int>(layer,
+  return std::pair<size_t, size_t>(layer,
                                                in_layer);
 }
 

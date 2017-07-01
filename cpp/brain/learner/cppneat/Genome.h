@@ -25,7 +25,7 @@ public:
             , parent_index(parent_index)
     {}
 
-    virtual inline unsigned int
+    virtual inline size_t
     getInnovNumber()
     { return innov_number; }
 

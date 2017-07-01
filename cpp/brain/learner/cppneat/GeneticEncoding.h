@@ -39,13 +39,13 @@ public:
     GeneticEncodingPtr
     copy();
 
-    int
+    size_t
     num_genes();
 
-    int
+    size_t
     num_neuron_genes();
 
-    int
+    size_t
     num_connection_genes();
 
     bool
@@ -117,10 +117,10 @@ public:
     bool is_valid();
 #endif
 
-    std::pair<unsigned int, unsigned int>
-    convert_index_to_layer_index(unsigned int index);
+    std::pair<size_t, size_t>
+    convert_index_to_layer_index(size_t index);
 
-    std::pair<unsigned int, unsigned int>
+    std::pair<size_t, size_t>
     convert_in_to_layer_index(int innov_number);
 
 public:

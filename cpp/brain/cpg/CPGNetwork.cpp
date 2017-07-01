@@ -64,7 +64,7 @@ CPGNetwork::CPGNetwork(unsigned int n_sensors, unsigned int n_connections)
         //NONE
     };
 
-    for (int i=0; i<n_connections; i++) {
+    for (size_t i=0; i<n_connections; ++i) {
         genome_limits.push_back({rge->WEIGHT_MIN, rge->WEIGHT_MAX});
         genome_limits.push_back({rgf->WEIGHT_MIN, rgf->WEIGHT_MAX});
     }
@@ -125,7 +125,7 @@ void CPGNetwork::updateRythmGeneration(real_t step)
     std::vector<real_t> inputs_e = { phi_f };
     std::vector<real_t> inputs_f = { phi_e };
 
-    for (int i=0; i<n_connections; i++) {
+    for (size_t i=0; i<n_connections; ++i) {
         inputs_e.push_back(connections[i]->rge->getPhi());
         inputs_f.push_back(connections[i]->rgf->getPhi());
     }
@@ -184,7 +184,7 @@ void revolve::brain::cpg::CPGNetwork::set_genome(std::vector<real_t> other)
 void revolve::brain::cpg::CPGNetwork::update_genome()
 {
     assert(genome->size() == (12 + 2*n_connections));
-    unsigned int i=0;
+    size_t i=0;
 
     std::cout << "new parameters: {";
 

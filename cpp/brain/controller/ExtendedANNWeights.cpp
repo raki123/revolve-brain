@@ -24,7 +24,7 @@ ExtNNController::ExtNNController(std::string modelName,
   inputPositionMap_ = Config->inputPositionMap_;
   idToNeuron_ = Config->idToNeuron_;
   connections_ = Config->connections_;
-  unsigned int p = 0;
+  size_t p = 0;
   for (auto sensor : sensors) {
     p += sensor->inputs();
   }
@@ -54,7 +54,7 @@ ExtNNController::update(const std::vector<ActuatorPtr> &actuators,
   //boost::mutex::scoped_lock lock(networkMutex_);
 
   // Read sensor data into the input buffer
-  unsigned int p = 0;
+  size_t p = 0;
   for (auto sensor : sensors) {
     sensor->read(&inputs_[p]);
     p += sensor->inputs();
@@ -105,11 +105,11 @@ ExtNNController::getGenome()
   //weights
   std::vector<double> ret(connections_.size(),
                           0);
-  for (unsigned int i = 0; i < connections_.size(); i++) {
+  for (size_t i = 0; i < connections_.size(); i++) {
     ret[i] = connections_[i]->GetWeight();
   }
   //neuron_parameters
-  for (unsigned int i = 0; i < allNeurons_.size(); i++) {
+  for (size_t i = 0; i < allNeurons_.size(); i++) {
     //iterator over map is ordered, therefore we always return the same parameter in the same place
     std::map<std::string, double> params = allNeurons_[i]->getNeuronParameters();
     for (auto it = params.begin(); it != params.end(); ++it) {
@@ -123,12 +123,12 @@ void
 ExtNNController::setGenome(std::vector<double> weights)
 {
 
-  unsigned int matches = connections_.size();
-  for (unsigned int i = 0; i < connections_.size(); i++) {
+  size_t matches = connections_.size();
+  for (size_t i = 0; i < connections_.size(); i++) {
     connections_[i]->SetWeight(weights[i]);
   }
   //neuron_parameters
-  for (unsigned int i = 0; i < allNeurons_.size(); i++) {
+  for (size_t i = 0; i < allNeurons_.size(); i++) {
     //iterator over map is ordered, therefore we always return the same parameter in the same place
     std::map<std::string, double> params = allNeurons_[i]->getNeuronParameters();
     for (auto it = params.begin(); it != params.end(); ++it) {
@@ -150,7 +150,7 @@ void
 ExtNNController::writeNetwork(std::ofstream &write_to)
 {
   boost::adjacency_list<> graph(allNeurons_.size());
-  for (unsigned int i = 0; i < allNeurons_.size(); i++) {
+  for (size_t i = 0; i < allNeurons_.size(); i++) {
     std::vector<std::pair<std::string, NeuralConnectionPtr>> connectionsToAdd = allNeurons_[i]->getIncomingConnections();
     for (std::pair<std::string, NeuralConnectionPtr> connectionToAdd : connectionsToAdd) {
       NeuronPtr input = connectionToAdd.second
