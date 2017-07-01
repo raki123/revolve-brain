@@ -1,9 +1,10 @@
 from setuptools import setup, find_packages
 
-requires = [
-    'revolve-communication',
-    'revolve-hal'
-]
+# Left for later inclusion
+# requires = [
+#    'revolve-communication',
+#    'revolve-hal'
+# ]
 
 # check links for native code bits of the library
 # https://docs.python.org/3.5/extending/building.html#distributing-your-extension-modules
@@ -16,7 +17,7 @@ setup(
     author='Matteo De Carlo',
     author_email='matteo.dek@gmail.com',
     packages=find_packages(),
-    install_requires=requires,
+    install_requires='', # requires,
     entry_points={
         # TODO: Add endpoints to main() in control_servos.py and main.py
         'console_scripts': [
