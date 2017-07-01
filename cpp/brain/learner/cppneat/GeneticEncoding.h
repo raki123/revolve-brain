@@ -4,8 +4,8 @@
 #include <vector>
 #include <utility>
 
-#include "Types.h"
-#include "Neuron.h"
+#include "types.h"
+#include "neuron.h"
 #include "ConnectionGenome.h"
 #include "NeuronGenome.h"
 
@@ -83,7 +83,7 @@ public:
     min_max_innov_numer();
 
     GenePtr
-    find_gene_by_in(int innov_number);
+    find_gene_by_in(const size_t innov_number);
 
     //non-layered
     void
@@ -111,7 +111,7 @@ public:
                        int index);
 
     bool
-    neuron_exists(int innov_number);
+    neuron_exists(const size_t innov_number);
 
 #ifdef CPPNEAT_DEBUG
     bool is_valid();
@@ -121,7 +121,7 @@ public:
     convert_index_to_layer_index(size_t index);
 
     std::pair<size_t, size_t>
-    convert_in_to_layer_index(int innov_number);
+    convert_in_to_layer_index(const size_t innov_number);
 
 public:
     //non-layered

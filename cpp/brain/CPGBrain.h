@@ -30,8 +30,8 @@ public:
      */
     CPGBrain(std::string robot_name,
              EvaluatorPtr evaluator,
-             unsigned int n_actuators,
-             unsigned int n_sensors);
+             size_t n_actuators,
+             size_t n_sensors);
 
     virtual ~CPGBrain();
 
@@ -61,7 +61,7 @@ protected:
     {
         // Read sensor data and feed the neural network
         double *inputs = new double[n_inputs];
-        unsigned int p = 0;
+        size_t p = 0;
         for (auto sensor : sensors) {
             sensor->read(&inputs[p]);
             p += sensor->inputs();

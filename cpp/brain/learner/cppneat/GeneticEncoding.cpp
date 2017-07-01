@@ -369,7 +369,7 @@ GeneticEncoding::min_max_innov_numer()
 }
 
 GenePtr
-GeneticEncoding::find_gene_by_in(int innov_number)
+GeneticEncoding::find_gene_by_in(const size_t innov_number)
 {
   get_sorted_genes();
   for (GenePtr gene : all_genes_sorted) {
@@ -470,7 +470,7 @@ GeneticEncoding::remove_connection_gene(int index)
 }
 
 bool
-GeneticEncoding::neuron_exists(int innov_number)
+GeneticEncoding::neuron_exists(const size_t innov_number)
 {
   if (!layered) {
     for (NeuronGenePtr gene : neuron_genes) {
@@ -547,7 +547,7 @@ GeneticEncoding::convert_index_to_layer_index(size_t index)
 }
 
 std::pair<size_t, size_t>
-GeneticEncoding::convert_in_to_layer_index(int innov_number)
+GeneticEncoding::convert_in_to_layer_index(const size_t innov_number)
 {
   size_t layer = 0;
   size_t in_layer = 0;
