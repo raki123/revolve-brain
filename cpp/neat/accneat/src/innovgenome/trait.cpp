@@ -21,7 +21,7 @@ using namespace NEAT;
 
 Trait::Trait()
 {
-  for (int count = 0; count < NUM_TRAIT_PARAMS; count++)
+  for (size_t count = 0; count < NUM_TRAIT_PARAMS; count++)
     params[count] = 0;
   trait_id = 0;
 }

@@ -87,7 +87,7 @@ public:
       vector<size_t> nlinks;
       vector<real_t> fitness;
 
-      for (int expcount = 1; expcount <= env->num_runs; expcount++) {
+      for (size_t expcount = 1; expcount <= env->num_runs; expcount++) {
         mkdir(get_dir_path(expcount));
 
         //Create a unique rng sequence for this experiment

@@ -28,12 +28,12 @@ CPGBrain::CPGBrain(std::string robot_name,
 {
     size_t n_connections = n_actuators-1;
 
-    for(int i=0; i<n_actuators; i++) {
+    for(size_t i=0; i<n_actuators; i++) {
         cpgs[i] = new cpg::CPGNetwork(n_sensors, n_connections);
     }
 
-    for(int i=0; i<n_actuators; i++) {
-        for(int j=0; j<n_actuators; j++) {
+    for(size_t i=0; i<n_actuators; i++) {
+        for(size_t j=0; j<n_actuators; j++) {
             if (i == j) continue;
             cpgs[i]->addConnection(cpgs[j]);
         }

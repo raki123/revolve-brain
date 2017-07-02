@@ -100,7 +100,7 @@ ExtNNController1::update(const std::vector<ActuatorPtr> &actuators,
     p += actuator->outputs();
   }
 // 	std::cout << p << std::endl;
-// 	for(int i = 0; i < p; i++) {
+// 	for(size_t i = 0; i < p; i++) {
 // 		std::cout << outputs_[i] << " ";
 // 	}
 // 	std::cout << std::endl;
@@ -141,7 +141,7 @@ void
 ExtNNController1::writeNetwork(std::ofstream &write_to)
 {
   boost::adjacency_list<> graph(allNeurons_.size());
-  for ( int i = 0; i < allNeurons_.size(); i++) {
+  for (size_t i = 0; i < allNeurons_.size(); i++) {
     std::vector<std::pair<std::string, NeuralConnectionPtr>> connectionsToAdd = allNeurons_[i]->getIncomingConnections();
     for (std::pair<std::string, NeuralConnectionPtr> connectionToAdd : connectionsToAdd) {
       NeuronPtr input = connectionToAdd.second

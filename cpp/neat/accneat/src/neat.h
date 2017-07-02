@@ -108,7 +108,7 @@ struct NeatEnv
     int dropoff_age = 15;  // Age where Species starts to be penalized
     int newlink_tries = 20;  // Number of tries mutate_add_link will attempt to find an open link
     int print_every = 1000; // Tells to print population to file every n generations
-    int num_runs = 1;
+    size_t num_runs = 1;
 };
 
 extern NeatEnv *env;
