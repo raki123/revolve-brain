@@ -3,6 +3,8 @@
 //
 
 #include <ctime>
+#include <fstream>
+
 #include "brain/controller/AccNEATCPPNController.h"
 #include "AccNEATLearner.h"
 
@@ -57,13 +59,17 @@ BaseController *AccNEATLearner::update(const std::vector<SensorPtr> &sensors, do
       std::exit(0);
     }
     generation_counter++;
-    std::cout
-        << "#AccNEATLearner::update() EVALUATING NEW BRAIN (generation "
-        << generation_counter
-        << " )"
-        << std::endl;
+//    std::cout
+//        << "#AccNEATLearner::update() EVALUATING NEW BRAIN (generation "
+//        << generation_counter
+//        << " )"
+//        << std::endl;
 
-    BaseController *new_controller = this->create_new_controller(getFitness());
+    double_t fitness = getFitness();
+    std::cout << robot_name << " : " << generation_counter << ": fitness " << fitness << std::endl;
+    this->writeCurrent(fitness);
+
+    BaseController *new_controller = this->create_new_controller(fitness);
     if (new_controller != active_controller.get()) {
       this->active_controller.reset(new_controller);
     }
@@ -95,6 +101,17 @@ float AccNEATLearner::getFitness()
 {
   //Calculate fitness for current policy
   float fitness = (float) evaluator->fitness();
-  std::cout << "#AccNEATLearner::getFitness() Evaluating gait, fitness = " << fitness << std::endl;
+//  std::cout << "#AccNEATLearner::getFitness() Evaluating gait, fitness = " << fitness << std::endl;
   return fitness;
+}
+
+void AccNEATLearner::writeCurrent(double fitness)
+{
+  std::ofstream outputFile;
+  outputFile.open(this->robot_name + ".log",
+                  std::ios::app | std::ios::out | std::ios::ate);
+  outputFile << "- generation: " << this->generation_counter << std::endl;
+  outputFile << "  velocity: " << fitness << std::endl;
+  // TODO: Should we record an entire generation?
+  outputFile.close();
 }

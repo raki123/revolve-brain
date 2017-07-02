@@ -36,7 +36,10 @@ namespace revolve { namespace brain {
     private:
         void initAsyncNeat();
 
+    void writeCurrent(double fitness);
+
     protected: // VARIABLES
+
         EvaluatorPtr evaluator;
         size_t n_inputs, n_outputs;
 
