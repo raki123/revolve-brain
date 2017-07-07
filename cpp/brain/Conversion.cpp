@@ -10,7 +10,7 @@
 namespace revolve {
 namespace brain {
 
-std::map<boost::shared_ptr<ExtNNConfig>, CPPNEAT::GeneticEncodingPtr> known;
+std::map<boost::shared_ptr<CPPNConfig>, CPPNEAT::GeneticEncodingPtr> known;
 
 std::map<CPPNEAT::Neuron::Ntype, CPPNEAT::Neuron::NeuronTypeSpec> brain_spec;
 
@@ -210,7 +210,7 @@ set_brain_spec(bool hyperneat)
 }
 
 
-boost::shared_ptr<ExtNNConfig>
+boost::shared_ptr<CPPNConfig>
 convertForController(CPPNEAT::GeneticEncodingPtr genotype)
 {
   assert(genotype->layered == false);
@@ -219,7 +219,7 @@ convertForController(CPPNEAT::GeneticEncodingPtr genotype)
 
   std::map<int, NeuronPtr> innov_number_to_neuron;
 
-  boost::shared_ptr<ExtNNConfig> config(new ExtNNConfig());
+  boost::shared_ptr<CPPNConfig> config(new CPPNConfig());
   for (CPPNEAT::NeuronGenePtr neuron_gene : neuron_genes) {
     NeuronPtr newNeuron;
     std::string neuronId = neuron_gene->neuron
@@ -349,7 +349,7 @@ convertForController(CPPNEAT::GeneticEncodingPtr genotype)
 }
 
 CPPNEAT::GeneticEncodingPtr
-convertForLearner(boost::shared_ptr<ExtNNConfig> config)
+convertForLearner(boost::shared_ptr<CPPNConfig> config)
 {
   return known[config];
 }
@@ -367,7 +367,7 @@ forLearner(std::vector<double> toConvert)
 }
 
 
-boost::shared_ptr<ExtNNConfig> cpg_network;
+boost::shared_ptr<CPPNConfig> cpg_network;
 
 std::map<std::string, std::tuple<int, int, int>> neuron_coordinates;
 
@@ -510,7 +510,7 @@ convertForLayeredExtNN(CPPNEAT::GeneticEncodingPtr genotype)
 }
 
 void
-dbg_plot(boost::shared_ptr<ExtNNConfig> conf,
+dbg_plot(boost::shared_ptr<CPPNConfig> conf,
          bool include_coordinates)
 {
   std::ofstream write_to("debug_plot_extnn.dot");
@@ -556,7 +556,7 @@ dbg_plot(boost::shared_ptr<ExtNNConfig> conf,
 }
 
 
-boost::shared_ptr<ExtNNConfig>
+boost::shared_ptr<CPPNConfig>
 convertForExtNNFromHyper(CPPNEAT::GeneticEncodingPtr genotype)
 {
   boost::shared_ptr<LayeredExtNNConfig> hyper_config = convertForLayeredExtNN(genotype);
@@ -653,7 +653,7 @@ convertForExtNNFromHyper(CPPNEAT::GeneticEncodingPtr genotype)
 }
 
 CPPNEAT::GeneticEncodingPtr
-convertForHyperFromExtNN(boost::shared_ptr<ExtNNConfig> config)
+convertForHyperFromExtNN(boost::shared_ptr<CPPNConfig> config)
 {
   return last;
 }

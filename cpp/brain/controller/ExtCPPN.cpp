@@ -1,4 +1,4 @@
-#include "ExtendedANN.h"
+#include "ExtCPPN.h"
 
 #include <fstream>
 #include <iostream>
@@ -10,8 +10,8 @@ namespace revolve {
 namespace brain {
 
 
-ExtNNController1::ExtNNController1(std::string modelName,
-                                   boost::shared_ptr<ExtNNConfig> Config,
+CPPNController::CPPNController(std::string modelName,
+                                   boost::shared_ptr<CPPNConfig> Config,
                                    const std::vector<ActuatorPtr> &actuators,
                                    const std::vector<SensorPtr> &sensors)
 {
@@ -39,7 +39,7 @@ ExtNNController1::ExtNNController1(std::string modelName,
 }
 
 
-ExtNNController1::~ExtNNController1()
+CPPNController::~CPPNController()
 {
   delete[] inputs_;
   delete[] outputs_;
@@ -47,7 +47,7 @@ ExtNNController1::~ExtNNController1()
 
 
 void
-ExtNNController1::update(const std::vector<ActuatorPtr> &actuators,
+CPPNController::update(const std::vector<ActuatorPtr> &actuators,
                          const std::vector<SensorPtr> &sensors,
                          double t,
                          double step)
@@ -106,10 +106,10 @@ ExtNNController1::update(const std::vector<ActuatorPtr> &actuators,
 // 	std::cout << std::endl;
 }
 
-boost::shared_ptr<ExtNNConfig>
-ExtNNController1::getGenome()
+boost::shared_ptr<CPPNConfig>
+CPPNController::getGenome()
 {
-  boost::shared_ptr<ExtNNConfig> Config(new ExtNNConfig());
+  boost::shared_ptr<CPPNConfig> Config(new CPPNConfig());
   Config->allNeurons_ = allNeurons_;
   Config->inputNeurons_ = inputNeurons_;
   Config->outputNeurons_ = outputNeurons_;
@@ -122,7 +122,7 @@ ExtNNController1::getGenome()
 }
 
 void
-ExtNNController1::setGenome(boost::shared_ptr<ExtNNConfig> Config)
+CPPNController::setGenome(boost::shared_ptr<CPPNConfig> Config)
 {
   allNeurons_ = Config->allNeurons_;
   for (NeuronPtr neuron: allNeurons_) {
@@ -138,7 +138,7 @@ ExtNNController1::setGenome(boost::shared_ptr<ExtNNConfig> Config)
 }
 
 void
-ExtNNController1::writeNetwork(std::ofstream &write_to)
+CPPNController::writeNetwork(std::ofstream &write_to)
 {
   boost::adjacency_list<> graph(allNeurons_.size());
   for (size_t i = 0; i < allNeurons_.size(); i++) {

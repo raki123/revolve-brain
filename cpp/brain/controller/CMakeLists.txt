@@ -1,9 +1,9 @@
 add_library(revolve-brain-controller
             SplineController.cpp
             PolicyController.cpp
-            ExtendedANN.cpp
-            ExtendedANNWeights.cpp
-            LayeredExtendedANN.cpp
+            ExtCPPN.cpp
+            ExtCPPNWeights.cpp
+            LayeredExtCPPN.cpp
             AccNEATCPPNController.cpp
             CPGController.cpp
             )

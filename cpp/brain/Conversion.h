@@ -1,8 +1,8 @@
 #ifndef REVOLVEBRAIN_BRAIN_CONVERSION_H_
 #define REVOLVEBRAIN_BRAIN_CONVERSION_H_
 
-#include "brain/controller/ExtendedANN.h"
-#include "brain/controller/LayeredExtendedANN.h"
+#include "brain/controller/ExtCPPN.h"
+#include "brain/controller/LayeredExtCPPN.h"
 #include "brain/learner/NEATLearner.h"
 #include "brain/learner/RLPowerLearner.h"
 #include "brain/learner/cppneat/GeneticEncoding.h"
@@ -21,11 +21,11 @@ extern std::map<int, unsigned int> output_map;
 void
 set_brain_spec(bool hyperneat);
 
-boost::shared_ptr<ExtNNConfig>
+boost::shared_ptr<CPPNConfig>
 convertForController(CPPNEAT::GeneticEncodingPtr genotype);
 
 CPPNEAT::GeneticEncodingPtr
-convertForLearner(boost::shared_ptr<ExtNNConfig> config);
+convertForLearner(boost::shared_ptr<CPPNConfig> config);
 
 
 //used for communication between rlpower learner and ext nn weights controller
@@ -36,7 +36,7 @@ PolicyPtr
 forLearner(std::vector<double> toConvert);
 
 //used for communication between hyperneat learner and ext nn net controller
-extern boost::shared_ptr<ExtNNConfig> cpg_network;
+extern boost::shared_ptr<CPPNConfig> cpg_network;
 
 extern std::map<std::string, std::tuple<int, int, int>> neuron_coordinates;
 
@@ -47,11 +47,11 @@ extern CPPNEAT::GeneticEncodingPtr last;
 boost::shared_ptr<LayeredExtNNConfig>
 convertForLayeredExtNN(CPPNEAT::GeneticEncodingPtr genotype);
 
-boost::shared_ptr<ExtNNConfig>
+boost::shared_ptr<CPPNConfig>
 convertForExtNNFromHyper(CPPNEAT::GeneticEncodingPtr genotype);
 
 CPPNEAT::GeneticEncodingPtr
-convertForHyperFromExtNN(boost::shared_ptr<ExtNNConfig> config);
+convertForHyperFromExtNN(boost::shared_ptr<CPPNConfig> config);
 
 //used for communication between spline controller and hyperneat learner
 //contains the coordinates of the actuators matching the order the actuators are given in the update method

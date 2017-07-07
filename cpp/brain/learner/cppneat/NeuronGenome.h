@@ -2,8 +2,8 @@
 #define REVOLVEBRAIN_BRAIN_LEARNER_CPPNNEAT_NEURONGENOME_H_
 
 #include "Genome.h"
-#include "neuron.h"
-#include "types.h"
+#include "CPPNNeuron.h"
+#include "CPPNTypes.h"
 
 //class combining meta and normal informations for neurons
 namespace CPPNEAT {

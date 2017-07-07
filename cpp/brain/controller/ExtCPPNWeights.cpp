@@ -1,4 +1,4 @@
-#include "ExtendedANNWeights.h"
+#include "ExtCPPNWeights.h"
 
 #include <fstream>
 #include <iostream>
@@ -10,7 +10,7 @@ namespace brain {
 
 
 ExtNNController::ExtNNController(std::string modelName,
-                                 boost::shared_ptr<ExtNNConfig> Config,
+                                 boost::shared_ptr<CPPNConfig> Config,
                                  const std::vector<ActuatorPtr> &actuators,
                                  const std::vector<SensorPtr> &sensors)
 {

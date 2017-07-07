@@ -1,4 +1,4 @@
-#include "LayeredExtendedANN.h"
+#include "LayeredExtCPPN.h"
 
 #include <fstream>
 #include <iostream>

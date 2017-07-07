@@ -1,4 +1,4 @@
-#include "mutator.h"
+#include "CPPNMutator.h"
 
 #include <iostream>
 #include <fstream>

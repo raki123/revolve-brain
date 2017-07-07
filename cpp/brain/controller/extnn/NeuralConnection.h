@@ -1,7 +1,7 @@
 #ifndef REVOLVEBRAIN_BRAIN_CONTROLLER_EXTNN_NEURALCONNECTION_H_
 #define REVOLVEBRAIN_BRAIN_CONTROLLER_EXTNN_NEURALCONNECTION_H_
 
-#include "neuron.h"
+#include "ENeuron.h"
 
 namespace revolve {
 namespace brain {

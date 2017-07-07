@@ -1,14 +1,13 @@
-#ifndef REVOLVEBRAIN_BRAIN_CONTROLLER_LAYEREDEXTENDEDANN_H_
-#define REVOLVEBRAIN_BRAIN_CONTROLLER_LAYEREDEXTENDEDANN_H_
+#ifndef REVOLVEBRAIN_BRAIN_CONTROLLER_EXTENDEDANN_H_
+#define REVOLVEBRAIN_BRAIN_CONTROLLER_EXTENDEDANN_H_
 
 #include "Controller.h"
 #include "brain/Evaluator.h"
-#include "brain/controller/extnn/neuron.h"
+#include "brain/controller/extnn/ENeuron.h"
 #include "brain/controller/extnn/NeuralConnection.h"
 #include <map>
 #include <vector>
 #include <string>
-
 
 #include "brain/controller/extnn/LinearNeuron.h"
 #include "brain/controller/extnn/SigmoidNeuron.h"
@@ -21,14 +20,16 @@
 #include "brain/controller/extnn/InputNeuron.h"
 #include "brain/controller/extnn/InputDependentOscillatorNeuron.h"
 
-
 namespace revolve {
 namespace brain {
 
-struct LayeredExtNNConfig
+struct CPPNConfig
 {
 
-    std::vector<std::vector<NeuronPtr>> layers_; //vector containing all neurons
+    std::vector<NeuronPtr> allNeurons_; //vector containing all neurons
+    std::vector<NeuronPtr> inputNeurons_; //vector containing the input neurons
+    std::vector<NeuronPtr> outputNeurons_; //vector containing the output neurons
+    std::vector<NeuronPtr> hiddenNeurons_; //vector containing the hidden neurons
 
     std::map<NeuronPtr, int> outputPositionMap_;    // positions for indexing into the outputs_ buffer for each output neuron
     std::map<NeuronPtr, int> inputPositionMap_;    // positions for indexing into the inputs_ buffer for each input neuron
@@ -39,8 +40,8 @@ struct LayeredExtNNConfig
 };
 
 //extended neural network controller usable with standard neat or hyper neat (use different conversion methods)
-class LayeredExtNNController
-        : public Controller<boost::shared_ptr<LayeredExtNNConfig>>
+class CPPNController
+        : public Controller<boost::shared_ptr<CPPNConfig>>
 {
 public:
     /**
@@ -52,12 +53,12 @@ public:
      * @param sensors: vector list of robot's sensors
      * @return pointer to the neural network
      */
-    LayeredExtNNController(std::string modelName,
-                           boost::shared_ptr<LayeredExtNNConfig> Config,
-                           const std::vector<ActuatorPtr> &actuators,
-                           const std::vector<SensorPtr> &sensors);
+    CPPNController(std::string modelName,
+                     boost::shared_ptr<CPPNConfig> Config,
+                     const std::vector<ActuatorPtr> &actuators,
+                     const std::vector<SensorPtr> &sensors);
 
-    virtual ~LayeredExtNNController();
+    virtual ~CPPNController();
 
     /**
     * Method for updating sensors readings, actuators positions
@@ -76,7 +77,7 @@ public:
      * Gets the weight of all the connections
      * @return weights of all neural connections
      */
-    virtual boost::shared_ptr<LayeredExtNNConfig>
+    virtual boost::shared_ptr<CPPNConfig>
     getGenome();
 
     /**
@@ -84,7 +85,7 @@ public:
      * @param weights: new weights to be assigned
      */
     virtual void
-    setGenome(boost::shared_ptr<LayeredExtNNConfig> config);
+    setGenome(boost::shared_ptr<CPPNConfig> config);
 
     void
     writeNetwork(std::ofstream &write_to);
@@ -98,8 +99,10 @@ protected:
     double *inputs_;    // buffer of input values from the sensors
     double *outputs_;     // buffer of output values for the actuators
 
-    std::vector<std::vector<NeuronPtr>> layers_; //vector containing all neurons
-
+    std::vector<NeuronPtr> allNeurons_; //vector containing all neurons
+    std::vector<NeuronPtr> inputNeurons_; //vector containing the input neurons
+    std::vector<NeuronPtr> outputNeurons_; //vector containing the output neurons
+    std::vector<NeuronPtr> hiddenNeurons_; //vector containing the hidden neurons
 
     std::map<NeuronPtr, int> outputPositionMap_;    // positions for indexing into the outputs_ buffer for each output neuron
     std::map<NeuronPtr, int> inputPositionMap_;    // positions for indexing into the inputs_ buffer for each input neuron
@@ -108,13 +111,10 @@ protected:
 
     std::vector<NeuralConnectionPtr> connections_; //vector of all the neural connections
 
-
-
-
 };
 
 
 }
 }
 
-#endif // REVOLVEBRAIN_BRAIN_CONTROLLER_LAYEREDEXTENDEDANN_H_
+#endif // REVOLVEBRAIN_BRAIN_CONTROLLER_EXTENDEDANN_H_

@@ -1,7 +1,7 @@
 #ifndef REVOLVE_GAZEBO_BRAIN_XOSCILLATOR_H_
 #define REVOLVE_GAZEBO_BRAIN_XOSCILLATOR_H_
 
-#include "neuron.h"
+#include "ENeuron.h"
 #include "NeuralConnection.h"
 
 namespace revolve {

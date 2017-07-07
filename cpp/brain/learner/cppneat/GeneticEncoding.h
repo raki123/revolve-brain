@@ -4,8 +4,8 @@
 #include <vector>
 #include <utility>
 
-#include "types.h"
-#include "neuron.h"
+#include "CPPNTypes.h"
+#include "CPPNNeuron.h"
 #include "ConnectionGenome.h"
 #include "NeuronGenome.h"
 

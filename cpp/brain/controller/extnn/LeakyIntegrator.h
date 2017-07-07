@@ -1,7 +1,7 @@
 #ifndef REVOLVEBRAIN_BRAIN_CONTROLLER_EXTNN_LEAKYINTEGRATOR_H_
 #define REVOLVEBRAIN_BRAIN_CONTROLLER_EXTNN_LEAKYINTEGRATOR_H_
 
-#include "neuron.h"
+#include "ENeuron.h"
 #include "NeuralConnection.h"
 
 

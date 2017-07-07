@@ -1,6 +1,6 @@
 
 add_library(extnn STATIC
-            Neuron.cpp
+            ENeuron.cpp
             DifferentialCPG.cpp
             BiasNeuron.cpp
             InputNeuron.cpp
