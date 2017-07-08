@@ -14,9 +14,9 @@ std::map<boost::shared_ptr<CPPNConfig>, CPPNEAT::GeneticEncodingPtr> known;
 
 std::map<CPPNEAT::Neuron::Ntype, CPPNEAT::Neuron::NeuronTypeSpec> brain_spec;
 
-std::map<int, unsigned int> input_map;
+std::map<int, size_t > input_map;
 
-std::map<int, unsigned int> output_map;
+std::map<int, size_t > output_map;
 
 
 void
@@ -516,7 +516,7 @@ dbg_plot(boost::shared_ptr<CPPNConfig> conf,
   std::ofstream write_to("debug_plot_extnn.dot");
   boost::adjacency_list<> graph(conf->allNeurons_
                                     .size());
-  for (unsigned int i = 0; i < conf->allNeurons_
+  for (size_t i = 0; i < conf->allNeurons_
                                    .size(); i++) {
     std::vector<std::pair<std::string, NeuralConnectionPtr>> connectionsToAdd = conf->allNeurons_[i]->getIncomingConnections();
     for (std::pair<std::string, NeuralConnectionPtr> connectionToAdd : connectionsToAdd) {
@@ -535,7 +535,7 @@ dbg_plot(boost::shared_ptr<CPPNConfig> conf,
   }
   std::string *names = new std::string[conf->allNeurons_
                                            .size()];
-  for (unsigned int i = 0; i < conf->allNeurons_
+  for (size_t i = 0; i < conf->allNeurons_
                                    .size(); i++) {
     std::stringstream nodeName;
     nodeName << conf->allNeurons_[i]->Id() + " of type: " + conf->allNeurons_[i]->getType() << std::endl;
@@ -714,11 +714,11 @@ get_hyper_neat_net_splines()
 
 PolicyPtr policy;
 
-unsigned int spline_size;
+size_t spline_size;
 
-unsigned int update_rate;
+size_t update_rate;
 
-unsigned int cur_step = 0;
+size_t cur_step = 0;
 
 PolicyPtr
 convertForSplinesFromHyper(CPPNEAT::GeneticEncodingPtr genotype)
@@ -737,8 +737,8 @@ convertForSplinesFromHyper(CPPNEAT::GeneticEncodingPtr genotype)
                                   Spline(spline_size,
                                          0)));
   }
-  for (unsigned int j = 0; j < sorted_coordinates.size(); j++) {
-    for (unsigned int i = 0; i < spline_size; i++) {
+  for (size_t j = 0; j < sorted_coordinates.size(); j++) {
+    for (size_t i = 0; i < spline_size; i++) {
       std::tuple<double, double, double> coord(sorted_coordinates[j].first,
                                                sorted_coordinates[j].second,
                                                i / ((double)spline_size));

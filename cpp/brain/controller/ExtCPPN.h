@@ -9,6 +9,7 @@
 #include <vector>
 #include <string>
 
+#include "brain/Types.h"
 #include "brain/controller/extnn/LinearNeuron.h"
 #include "brain/controller/extnn/SigmoidNeuron.h"
 #include "brain/controller/extnn/OscillatorNeuron.h"
@@ -25,7 +26,6 @@ namespace brain {
 
 struct CPPNConfig
 {
-
     std::vector<NeuronPtr> allNeurons_; //vector containing all neurons
     std::vector<NeuronPtr> inputNeurons_; //vector containing the input neurons
     std::vector<NeuronPtr> outputNeurons_; //vector containing the output neurons
@@ -41,9 +41,9 @@ struct CPPNConfig
 
 //extended neural network controller usable with standard neat or hyper neat (use different conversion methods)
 class CPPNController
-        : public Controller<boost::shared_ptr<CPPNConfig>>
+        : public Controller<CPPNConfigPtr>
 {
-public:
+    public:
     /**
      * Constructor for a neural network including neurons that are of a different type than the usual ones.
      * @param modelName: name of the model
@@ -54,9 +54,9 @@ public:
      * @return pointer to the neural network
      */
     CPPNController(std::string modelName,
-                     boost::shared_ptr<CPPNConfig> Config,
-                     const std::vector<ActuatorPtr> &actuators,
-                     const std::vector<SensorPtr> &sensors);
+                   CPPNConfigPtr Config,
+                   const std::vector<ActuatorPtr> &actuators,
+                   const std::vector<SensorPtr> &sensors);
 
     virtual ~CPPNController();
 
@@ -67,30 +67,26 @@ public:
     * @param t: current time
     * @param step:
     */
-    virtual void
-    update(const std::vector<ActuatorPtr> &actuators,
-           const std::vector<SensorPtr> &sensors,
-           double t,
-           double step);
+    virtual void update(const std::vector<ActuatorPtr> &actuators,
+                        const std::vector<SensorPtr> &sensors,
+                        double t,
+                        double step);
 
     /**
      * Gets the weight of all the connections
      * @return weights of all neural connections
      */
-    virtual boost::shared_ptr<CPPNConfig>
-    getGenome();
+    virtual CPPNConfigPtr getGenome();
 
     /**
      * Changes the weights of the neural connections
      * @param weights: new weights to be assigned
      */
-    virtual void
-    setGenome(boost::shared_ptr<CPPNConfig> config);
+    virtual void setGenome(CPPNConfigPtr config);
 
-    void
-    writeNetwork(std::ofstream &write_to);
+    void writeNetwork(std::ofstream &write_to);
 
-protected:
+    protected:
 
 
     std::string modelName_; //name of the robot

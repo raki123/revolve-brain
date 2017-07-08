@@ -11,7 +11,7 @@ namespace brain {
 
 
 CPPNController::CPPNController(std::string modelName,
-                                   boost::shared_ptr<CPPNConfig> Config,
+                                   CPPNConfigPtr Config,
                                    const std::vector<ActuatorPtr> &actuators,
                                    const std::vector<SensorPtr> &sensors)
 {

@@ -14,9 +14,9 @@ namespace brain {
 //the conversion methods work only when using standard neat
 extern std::map<CPPNEAT::Neuron::Ntype, CPPNEAT::Neuron::NeuronTypeSpec> brain_spec;
 
-extern std::map<int, unsigned int> input_map;
+extern std::map<int, size_t > input_map;
 
-extern std::map<int, unsigned int> output_map;
+extern std::map<int, size_t > output_map;
 
 void
 set_brain_spec(bool hyperneat);
@@ -58,11 +58,11 @@ convertForHyperFromExtNN(boost::shared_ptr<CPPNConfig> config);
 //coordinate of actuators[0] is in sorted_coordinates[0]
 extern std::vector<std::pair<int, int>> sorted_coordinates;
 
-extern unsigned int spline_size;
+extern size_t spline_size;
 
-extern unsigned int update_rate;
+extern size_t update_rate;
 
-extern unsigned int cur_step;
+extern size_t cur_step;
 
 //returns the starting network for hyperneat on splines
 CPPNEAT::GeneticEncodingPtr

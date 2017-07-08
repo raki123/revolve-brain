@@ -24,15 +24,13 @@ public:
      * Get method for the genome
      * @return current genome
      */
-    virtual Phenotype
-    getGenome() = 0;
+    virtual Phenotype getGenome() = 0;
 
     /**
      * Set method for the genome
      * @param newGenome: new genome to use instead of the old one
      */
-    virtual void
-    setGenome(Phenotype newGenome) = 0;
+    virtual void setGenome(Phenotype newGenome) = 0;
 
     /**
      * Update step called for the controller.

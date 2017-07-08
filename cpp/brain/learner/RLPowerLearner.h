@@ -41,15 +41,15 @@ public:
      */
     RLPowerLearner(std::string modelName,
                    Config brain,
-                   unsigned int n_weight_vectors);
+                   size_t n_weight_vectors);
 
     virtual ~RLPowerLearner();
 
-    static const unsigned int MAX_EVALUATIONS;// = 1000; // max number of evaluations
-    static const unsigned int MAX_RANKED_POLICIES;// = 10; // max length of policies vector
-    static const unsigned int INTERPOLATION_CACHE_SIZE;// = 100; // number of data points for the interpolation cache
-    static const unsigned int INITIAL_SPLINE_SIZE;// = 3; // number of initially sampled spline points
-    static const unsigned int UPDATE_STEP;// = 100; // after # generations, it increases the number of spline points
+    static const size_t MAX_EVALUATIONS;// = 1000; // max number of evaluations
+    static const size_t MAX_RANKED_POLICIES;// = 10; // max length of policies vector
+    static const size_t INTERPOLATION_CACHE_SIZE;// = 100; // number of data points for the interpolation cache
+    static const size_t INITIAL_SPLINE_SIZE;// = 3; // number of initially sampled spline points
+    static const size_t UPDATE_STEP;// = 100; // after # generations, it increases the number of spline points
     static const double EVALUATION_RATE;// = 30.0; // evaluation time for each policy
     static const double SIGMA_START_VALUE;// = 0.8; // starting value for sigma
     static const double SIGMA_TAU_CORRECTION;// = 0.2;
@@ -60,14 +60,14 @@ public:
     struct Config
     {
         std::string algorithm_type;
-        unsigned int interpolation_spline_size;
+        size_t interpolation_spline_size;
         double evaluation_rate;
-        unsigned int max_evaluations;
-        unsigned int max_ranked_policies;
+        size_t max_evaluations;
+        size_t max_ranked_policies;
         double noise_sigma;
         double sigma_tau_correction;
-        unsigned int source_y_size;
-        unsigned int update_step;
+        size_t source_y_size;
+        size_t update_step;
         std::string policy_load_path;
     };
 
@@ -152,14 +152,14 @@ private:
 
     PolicyPtr current_policy_ = NULL; // Pointer to the current policy
 
-    unsigned int interpolation_spline_size_; // Number of 'interpolation_cache_' sample points
-    unsigned int generation_counter_; // Number of current generation
-    unsigned int max_ranked_policies_; // Maximal number of stored ranked policies
-    unsigned int max_evaluations_; // Maximal number of evaluations
-    unsigned int n_weight_vectors_; // Number of actuators
-    unsigned int source_y_size_; //
-    unsigned int step_rate_; //
-    unsigned int update_step_; // Number of evaluations after which sampling size increases
+    size_t interpolation_spline_size_; // Number of 'interpolation_cache_' sample points
+    size_t generation_counter_; // Number of current generation
+    size_t max_ranked_policies_; // Maximal number of stored ranked policies
+    size_t max_evaluations_; // Maximal number of evaluations
+    size_t n_weight_vectors_; // Number of actuators
+    size_t source_y_size_; //
+    size_t step_rate_; //
+    size_t update_step_; // Number of evaluations after which sampling size increases
 
     double cycle_start_time_;
     double noise_sigma_; // Noise in generatePolicy() function
