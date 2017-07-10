@@ -23,8 +23,8 @@ public:
 
     SimpleSplitBrain(const std::string model_name)
             : ConverterSplitBrain<Genotype, Genotype>
-                      (&convertGenotypeToGenotype,
-                       &convertGenotypeToGenotype,
+                      (&convertPolicyToPolicy,
+                       &convertPolicyToPolicy,
                        model_name)
     {};
 
