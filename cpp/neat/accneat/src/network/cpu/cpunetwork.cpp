@@ -100,9 +100,7 @@ CpuNetwork::activate(size_t ncycles)
         //cout << "from=" << (link.in_node_index+1) << ", to=" << (i+1) << ", weight=" << link.weight << ", act[from]=" << act_curr[link.in_node_index] << ", partial=" << link.weight * act_curr[link.in_node_index] << ", sum=" << sum << endl;
       }
 
-      act_new[i] = NEAT::fsigmoid(sum,
-                                  4.924273,
-                                  2.4621365);  //Sigmoidal activation- see comments under fsigmoid
+      act_new[i] = NEAT::fsigmoid(sum, 4.924273, 2.4621365);  //Sigmoidal activation- see comments under fsigmoid
     }
 
     std::swap(act_curr,

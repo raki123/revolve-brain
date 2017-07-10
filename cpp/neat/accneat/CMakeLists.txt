@@ -16,12 +16,12 @@ endif ()
 #TODO enable cuda
 
 set(accneat_sources
-    src/experiments/experiment.cpp
-    src/experiments/maze/maze.cpp
-    src/experiments/static/cfg.cpp
-    src/experiments/static/regex.cpp
-    src/experiments/static/sequence.cpp
-    src/experiments/static/xor.cpp
+#    src/experiments/experiment.cpp
+#    src/experiments/maze/maze.cpp
+#    src/experiments/static/cfg.cpp
+#    src/experiments/static/regex.cpp
+#    src/experiments/static/sequence.cpp
+#    src/experiments/static/xor.cpp
     src/genomemanager.cpp
     src/innovgenome/innovation.cpp
     src/innovgenome/innovgenome.cpp
@@ -48,15 +48,14 @@ set(accneat_sources
     src/util/util.cpp
     )
 
-set(accneat_cxx_sources
-    src/experiments/static/staticevaluator.cxx
-    src/experiments/maze/mazeevaluator.cxx
-    )
+#set(accneat_cxx_sources
+#    src/experiments/static/staticevaluator.cxx
+#    src/experiments/maze/mazeevaluator.cxx
+#    )
 
 include_directories("src")
 
-add_library(accneat ${accneat_sources} ${accneat_cxx_sources})
-
+add_library(accneat ${accneat_sources}) # ${accneat_cxx_sources})
 target_link_libraries( accneat ${YAML_CPP_LIBRARIES})
 
 if (NOT ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
@@ -65,8 +64,5 @@ if (NOT ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   set_target_properties(accneat PROPERTIES COMPILE_FLAGS "${OpenMP_CXX_FLAGS}")
 endif ()
 
-
-add_executable(neat src/main.cpp)
-target_link_libraries(neat accneat)
-
-
+#add_executable(neat src/main.cpp)
+#target_link_libraries(neat accneat)

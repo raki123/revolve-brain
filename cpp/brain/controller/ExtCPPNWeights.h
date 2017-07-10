@@ -54,28 +54,24 @@ public:
     * @param t: current time
     * @param step:
     */
-    virtual void
-    update(const std::vector<ActuatorPtr> &actuators,
-           const std::vector<SensorPtr> &sensors,
-           double t,
-           double step);
+    virtual void update(const std::vector<ActuatorPtr> &actuators,
+                        const std::vector<SensorPtr> &sensors,
+                        double t,
+                        double step);
 
     /**
      * Gets the weight of all the connections and all parameters of all neurons
      * @return weights of all neural connections and parameters for all neurons
      */
-    virtual std::vector<double>
-    getGenome();
+    virtual std::vector<double> getPhenotype();
 
     /**
      * Changes the weights of the neural connections
      * @param weights: new weights to be assigned
      */
-    virtual void
-    setGenome(std::vector<double> weights);
+    virtual void setPhenotype(std::vector<double> weights);
 
-    void
-    writeNetwork(std::ofstream &write_to);
+    void writeNetwork(std::ofstream &write_to);
 
 protected:
 

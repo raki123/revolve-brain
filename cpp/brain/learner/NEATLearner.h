@@ -72,23 +72,18 @@ public:
     static const int INITIAL_STRUCTURAL_MUTATIONS;
     static const double INTERSPECIES_MATE_PROBABILITY;
 private:
-    virtual void
-    reportFitness(std::string id,
-                  GeneticEncodingPtr genotype,
-                  double fitness);
+    virtual void reportFitness(std::string id,
+                               GeneticEncodingPtr genotype,
+                               double fitness);
 
-    virtual GeneticEncodingPtr
-    getNewGenome(std::string id);
+    virtual GeneticEncodingPtr currentGenotype();
 
-    void
-    writeGenome(std::string robot_name,
-                GeneticEncodingPtr genome);
+    void writeGenome(std::string robot_name,
+                     GeneticEncodingPtr genome);
 
-    void
-    share_fitness();
+    void share_fitness();
 
-    void
-    produce_new_generation();
+    void produce_new_generation();
 
     GeneticEncodingPtr
     produce_child(GeneticEncodingPtr parent1,
@@ -100,7 +95,7 @@ private:
 
 
     GeneticEncodingPtr active_brain;
-    double fitness;
+//    double fitness;
     std::vector<GeneticEncodingPtr> evaluation_queue;
     std::vector<GeneticEncodingPtr> brain_population;
     std::map<GeneticEncodingPtr, double> brain_fitness;

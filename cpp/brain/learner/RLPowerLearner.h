@@ -98,22 +98,18 @@ private:
     /**
      * Generate new policy
      */
-    void
-    generateInitPolicy();
+    void generateInitPolicy();
 
-    virtual void
-    reportFitness(std::string id,
-                  PolicyPtr genome,
-                  double fitness);
+    virtual void reportFitness(std::string id,
+                               PolicyPtr genotype,
+                               double fitness);
 
-    virtual PolicyPtr
-    getNewGenome(std::string id);
+    virtual PolicyPtr currentGenotype();
 
     /**
      * Load saved policy from JSON file
      */
-    void
-    loadPolicy(std::string const policy_path);
+    void loadPolicy(std::string const policy_path);
 
     /**
          * Generate interpolated spline based on number of sampled control points in 'source_y'
@@ -161,7 +157,6 @@ private:
     size_t step_rate_; //
     size_t update_step_; // Number of evaluations after which sampling size increases
 
-    double cycle_start_time_;
     double noise_sigma_; // Noise in generatePolicy() function
     double sigma_tau_correction_; // Tau deviation for self-adaptive sigma
 

@@ -14,8 +14,10 @@ using namespace revolve::brain;
 
 RLPowerLearner::RLPowerLearner(std::string modelName,
                                Config brain,
-                               size_t n_weight_vectors) :
-        generation_counter_(0), n_weight_vectors_(n_weight_vectors), cycle_start_time_(-1), robot_name_(modelName)
+                               size_t n_weight_vectors)
+        : generation_counter_(0)
+        , n_weight_vectors_(n_weight_vectors)
+        , robot_name_(modelName)
 {
 
 
@@ -103,10 +105,9 @@ RLPowerLearner::loadPolicy(std::string const policy_path)
   }
 }
 
-void
-RLPowerLearner::reportFitness(std::string id,
-                              PolicyPtr genome,
-                              double curr_fitness)
+void RLPowerLearner::reportFitness(std::string id,
+                                   PolicyPtr genotype,
+                                   double curr_fitness)
 {
   // Insert ranked policy in list
   PolicyPtr policy_copy = std::make_shared<Policy>(n_weight_vectors_);
@@ -253,7 +254,7 @@ RLPowerLearner::reportFitness(std::string id,
 }
 
 PolicyPtr
-RLPowerLearner::getNewGenome(std::string id)
+RLPowerLearner::currentGenotype()
 {
   return current_policy_;
 }

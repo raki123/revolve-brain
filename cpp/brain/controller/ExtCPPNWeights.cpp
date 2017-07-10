@@ -99,8 +99,7 @@ ExtNNController::update(const std::vector<ActuatorPtr> &actuators,
   }
 }
 
-std::vector<double>
-ExtNNController::getGenome()
+std::vector<double> ExtNNController::getPhenotype()
 {
   //weights
   std::vector<double> ret(connections_.size(),
@@ -119,8 +118,7 @@ ExtNNController::getGenome()
   return ret;
 }
 
-void
-ExtNNController::setGenome(std::vector<double> weights)
+void ExtNNController::setPhenotype(std::vector<double> weights)
 {
 
   size_t matches = connections_.size();
@@ -146,8 +144,7 @@ ExtNNController::setGenome(std::vector<double> weights)
   }
 }
 
-void
-ExtNNController::writeNetwork(std::ofstream &write_to)
+void ExtNNController::writeNetwork(std::ofstream &write_to)
 {
   boost::adjacency_list<> graph(allNeurons_.size());
   for (size_t i = 0; i < allNeurons_.size(); i++) {

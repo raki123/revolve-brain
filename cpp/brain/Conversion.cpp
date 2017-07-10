@@ -177,35 +177,17 @@ set_brain_spec(bool hyperneat)
     brain_spec[CPPNEAT::Neuron::INPUT_OSCILLATOR] = input_oscillator;
   }
 
-
-
-//         # these neurons are for the nonlinear oscillator CPG model found in Ijspeert (2005):
-//         "V-Neuron": NeuronSpec(
-//             params=[
-//                 ParamSpec("alpha", min_value = 0.05, max_value = 10.0, epsilon = epsilon),
-//                 ParamSpec("tau", min_value = 1.0, max_value = 50.0, epsilon = epsilon),
-//                 ParamSpec("energy", min_value = 0.0, max_value = 25.0, epsilon = epsilon)
-//             ],
-//             layers = ["output", "hidden"]
-//         ),
-// 
-//         "X-Neuron": NeuronSpec(
-//             params=[
-//                 ParamSpec("tau", min_value = 0.01, max_value = 5.0, epsilon = epsilon),
-//             ],
-//             layers = ["output", "hidden"]
-//         ),
   if (!hyperneat) {
-    CPPNEAT::Neuron::NeuronTypeSpec diff;
-    diff.param_specs
+    CPPNEAT::Neuron::NeuronTypeSpec differential_neuron;
+    differential_neuron.param_specs
         .push_back(bias_spec);
-    diff.possible_layers
+    differential_neuron.possible_layers
         .push_back(CPPNEAT::Neuron::HIDDEN_LAYER);
-    diff.possible_layers
+    differential_neuron.possible_layers
         .push_back(CPPNEAT::Neuron::OUTPUT_LAYER);
 
 
-    brain_spec[CPPNEAT::Neuron::DIFFERENTIAL_CPG] = diff;
+    brain_spec[CPPNEAT::Neuron::DIFFERENTIAL_CPG] = differential_neuron;
   }
 }
 
@@ -354,24 +336,29 @@ convertForLearner(boost::shared_ptr<CPPNConfig> config)
   return known[config];
 }
 
-std::vector<double>
-forController(PolicyPtr toConvert)
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+/// RLPower_CPG~RLPower_CPPN
+///////////////////////////////////////////////////////////////////////////////
+std::vector<double> convertPolicyToDouble(PolicyPtr genotype)
 {
-  return (*toConvert)[0];
+  return (*genotype)[0];
 }
 
-PolicyPtr
-forLearner(std::vector<double> toConvert)
+PolicyPtr convertDoubleToNull(std::vector<double> phenotype)
 {
   return nullptr; //input is not taken into account
 }
+///////////////////////////////////////////////////////////////////////////////
 
 
 boost::shared_ptr<CPPNConfig> cpg_network;
 
 std::map<std::string, std::tuple<int, int, int>> neuron_coordinates;
 
-CPPNEAT::GeneticEncodingPtr last;
+CPPNEAT::GeneticEncodingPtr last_genotype;
 
 boost::shared_ptr<LayeredExtNNConfig>
 convertForLayeredExtNN(CPPNEAT::GeneticEncodingPtr genotype)
@@ -509,34 +496,26 @@ convertForLayeredExtNN(CPPNEAT::GeneticEncodingPtr genotype)
   return config;
 }
 
-void
-dbg_plot(boost::shared_ptr<CPPNConfig> conf,
-         bool include_coordinates)
+void dbg_plot(boost::shared_ptr<CPPNConfig> conf,
+              bool include_coordinates)
 {
   std::ofstream write_to("debug_plot_extnn.dot");
-  boost::adjacency_list<> graph(conf->allNeurons_
-                                    .size());
-  for (size_t i = 0; i < conf->allNeurons_
-                                   .size(); i++) {
-    std::vector<std::pair<std::string, NeuralConnectionPtr>> connectionsToAdd = conf->allNeurons_[i]->getIncomingConnections();
+  boost::adjacency_list<> graph(conf->allNeurons_.size());
+  for (size_t i = 0; i < conf->allNeurons_.size(); i++) {
+    std::vector<std::pair<std::string, NeuralConnectionPtr>> connectionsToAdd =
+            conf->allNeurons_[i]->getIncomingConnections();
+
     for (std::pair<std::string, NeuralConnectionPtr> connectionToAdd : connectionsToAdd) {
-      NeuronPtr input = connectionToAdd.second
-                                       ->GetInputNeuron();
-      int indexInput = std::find(conf->allNeurons_
-                                     .begin(),
-                                 conf->allNeurons_
-                                     .end(),
-                                 input) - conf->allNeurons_
-                                              .begin();
-      boost::add_edge(indexInput,
-                      i,
-                      graph);
+      NeuronPtr input = connectionToAdd.second->GetInputNeuron();
+      long indexInput = std::find(conf->allNeurons_.begin(),
+                                 conf->allNeurons_.end(),
+                                 input) - conf->allNeurons_.begin();
+      boost::add_edge(indexInput, i, graph);
     }
   }
-  std::string *names = new std::string[conf->allNeurons_
-                                           .size()];
-  for (size_t i = 0; i < conf->allNeurons_
-                                   .size(); i++) {
+
+  std::string *names = new std::string[conf->allNeurons_.size()];
+  for (size_t i = 0; i < conf->allNeurons_.size(); i++) {
     std::stringstream nodeName;
     nodeName << conf->allNeurons_[i]->Id() + " of type: " + conf->allNeurons_[i]->getType() << std::endl;
     for (std::pair<std::string, double> param : conf->allNeurons_[i]->getNeuronParameters()) {
@@ -544,20 +523,22 @@ dbg_plot(boost::shared_ptr<CPPNConfig> conf,
     }
     if (include_coordinates) {
       std::tuple<int, int, int> coord = neuron_coordinates[conf->allNeurons_[i]->Id()];
-      nodeName << "(x,y,z) = (" << std::get<0>(coord) << "," << std::get<1>(coord) << "," << std::get<2>(coord) << ")"
-               << std::endl;
+      nodeName << "(x,y,z) = (" << std::get<0>(coord)
+               << "," << std::get<1>(coord)
+               << "," << std::get<2>(coord)
+               << ")" << std::endl;
     }
     names[i] = nodeName.str();
   }
-  boost::write_graphviz(write_to,
-                        graph,
-                        boost::make_label_writer(names));
+  boost::write_graphviz(write_to, graph, boost::make_label_writer(names));
   delete[] names;
 }
 
-
+//////////////////////////////////////////////////////////////////////////////
+/// HyperNEAT_CPG
+///////////////////////////////////////////////////////////////////////////////
 boost::shared_ptr<CPPNConfig>
-convertForExtNNFromHyper(CPPNEAT::GeneticEncodingPtr genotype)
+convertGeneticEncodingToCPPNConfig(CPPNEAT::GeneticEncodingPtr genotype)
 {
   boost::shared_ptr<LayeredExtNNConfig> hyper_config = convertForLayeredExtNN(genotype);
   for (NeuralConnectionPtr connection : cpg_network->connections_) {
@@ -646,18 +627,18 @@ convertForExtNNFromHyper(CPPNEAT::GeneticEncodingPtr genotype)
     }
     neuron->setNeuronParameters(params);
   }
-  last = genotype;
+  last_genotype = genotype;
   dbg_plot(cpg_network,
            true);
   return cpg_network;
 }
 
 CPPNEAT::GeneticEncodingPtr
-convertForHyperFromExtNN(boost::shared_ptr<CPPNConfig> config)
+convertCPPNConfigToGeneticEncoding(boost::shared_ptr<CPPNConfig> config)
 {
-  return last;
+  return last_genotype;
 }
-
+///////////////////////////////////////////////////////////////////////////////
 
 //hyperneat::splines
 
@@ -774,14 +755,14 @@ convertForSplinesFromHyper(CPPNEAT::GeneticEncodingPtr genotype)
       }
     }
   }
-  last = genotype;
+  last_genotype = genotype;
   return policy;
 }
 
 CPPNEAT::GeneticEncodingPtr
 convertForHyperFromSplines(PolicyPtr policy)
 {
-  return last;
+  return last_genotype;
 }
 
 

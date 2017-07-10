@@ -374,21 +374,14 @@ Learner::get_init_brains()
   return init_pop;
 }
 
-void
-Learner::reportFitness(std::string id,
+void Learner::reportFitness(std::string id,
                        GeneticEncodingPtr genotype,
                        double fitness)
 {
-  std::cout
-          << "Evalutation over\n"
-          << "Evaluated "
-          << ++total_brains_evaluated
-          << " brains \n"
-          << "Last fitness: "
-          << fitness
-          << std::endl;
-  this->writeGenome(id,
-                    genotype);
+  std::cout << "Evalutation over\n"
+            << "Evaluated " << ++total_brains_evaluated << " brains \n"
+            << "Last fitness: " << fitness << std::endl;
+  this->writeGenome(id, genotype);
 
   fitness_buffer.push_back(fitness);
   if (fitness_buffer.size() == repeat_evaluations) {
@@ -421,15 +414,13 @@ Learner::reportFitness(std::string id,
   }
 }
 
-GeneticEncodingPtr
-Learner::getNewGenome(std::string id)
+GeneticEncodingPtr Learner::currentGenotype()
 {
   return active_brain;
 }
 
-void
-Learner::writeGenome(std::string robot_name,
-                     GeneticEncodingPtr genome)
+void Learner::writeGenome(std::string robot_name,
+                          GeneticEncodingPtr genome)
 {
   std::ofstream outputFile;
   outputFile.open(robot_name + ".policy",
@@ -473,8 +464,7 @@ Learner::writeGenome(std::string robot_name,
   outputFile.close();
 }
 
-void
-Learner::share_fitness()
+void Learner::share_fitness()
 {
   //speciate
   std::map<GeneticEncodingPtr, std::vector<GeneticEncodingPtr>> old_species = species;

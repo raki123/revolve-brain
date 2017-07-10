@@ -76,13 +76,13 @@ class CPPNController
      * Gets the weight of all the connections
      * @return weights of all neural connections
      */
-    virtual CPPNConfigPtr getGenome();
+    virtual CPPNConfigPtr getPhenotype();
 
     /**
      * Changes the weights of the neural connections
      * @param weights: new weights to be assigned
      */
-    virtual void setGenome(CPPNConfigPtr config);
+    virtual void setPhenotype(CPPNConfigPtr config);
 
     void writeNetwork(std::ofstream &write_to);
 

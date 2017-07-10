@@ -6,24 +6,28 @@
 #define REVOLVEBRAIN_BRAIN_SPLITBRAIN_H_
 
 #include "Brain.h"
+
 #include "brain/controller/Controller.h"
 #include "brain/learner/Learner.h"
 
 namespace revolve {
 namespace brain {
 
-template <typename G, typename H>
+template <typename Phenotype, typename Genotype>
 class SplitBrain
         : public Brain
 {
 public:
-    virtual ~SplitBrain()
-    {};
 
+    virtual ~SplitBrain() {};
 
 protected:
-    boost::shared_ptr<Controller<G>> controller;    //control unit responsible for the movement of the robot
-    boost::shared_ptr<Learner<H>> learner;        //learner used to get new genomes
+
+    /// control responsible for the movement of the robot
+    boost::shared_ptr<Controller<Phenotype>> controller_;
+
+    /// learner used to get new genomes
+    boost::shared_ptr<Learner<Genotype>> learner_;
 };
 
 }

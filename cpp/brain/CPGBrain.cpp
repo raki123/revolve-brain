@@ -83,8 +83,7 @@ void CPGBrain::update(const std::vector<ActuatorPtr> &actuators,
 
 void CPGBrain::learner(double t)
 {
-    if (offline)
-        return;
+    if (is_offline_) return;
 
     if (start_eval_time_ < 0)
         start_eval_time_ = t;

@@ -89,7 +89,7 @@ LayeredExtNNController::update(const std::vector<ActuatorPtr> &actuators,
 }
 
 boost::shared_ptr<LayeredExtNNConfig>
-LayeredExtNNController::getGenome()
+LayeredExtNNController::getGenotype()
 {
   boost::shared_ptr<LayeredExtNNConfig> Config(new LayeredExtNNConfig());
   Config->layers_ = layers_;
@@ -101,7 +101,7 @@ LayeredExtNNController::getGenome()
 }
 
 void
-LayeredExtNNController::setGenome(boost::shared_ptr<LayeredExtNNConfig> Config)
+LayeredExtNNController::setGenotype(boost::shared_ptr<LayeredExtNNConfig> Config)
 {
   layers_ = Config->layers_;
   outputPositionMap_ = Config->outputPositionMap_;

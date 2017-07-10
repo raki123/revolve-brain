@@ -257,6 +257,9 @@ protected:
      * 30 seconds is usually a good value
      */
     double EVALUATION_TIME;
+
+    private:
+    using BaseLearner::update;
 };
 
 }

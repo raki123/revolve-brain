@@ -17,6 +17,7 @@ template <typename Phenotype>
 class Controller
 {
 public:
+
     virtual ~Controller()
     {};
 
@@ -24,13 +25,13 @@ public:
      * Get method for the genome
      * @return current genome
      */
-    virtual Phenotype getGenome() = 0;
+    virtual Phenotype getPhenotype() = 0;
 
     /**
-     * Set method for the genome
+     * Set method for the phenome
      * @param newGenome: new genome to use instead of the old one
      */
-    virtual void setGenome(Phenotype newGenome) = 0;
+    virtual void setPhenotype(Phenotype phenotype) = 0;
 
     /**
      * Update step called for the controller.
@@ -40,11 +41,10 @@ public:
      * @param t Current simulation time
      * @param step Actuation step size in seconds
      */
-    virtual void
-    update(const std::vector<ActuatorPtr> &actuators,
-           const std::vector<SensorPtr> &sensors,
-           double t,
-           double step) = 0;
+    virtual void update(const std::vector<ActuatorPtr> &actuators,
+                        const std::vector<SensorPtr> &sensors,
+                        double t,
+                        double step) = 0;
 
 
 };

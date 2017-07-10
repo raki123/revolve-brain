@@ -93,7 +93,7 @@ public:
 
     virtual void
     execute(class Network **nets_,
-            class OrganismEvaluation *results,
+            struct OrganismEvaluation *results,
             size_t nnets) = 0;
 };
 

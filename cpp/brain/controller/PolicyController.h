@@ -17,39 +17,32 @@ class PolicyController
 {
 public:
     static const double CYCLE_LENGTH; // = 5 seconds
-    static const unsigned int INTERPOLATION_CACHE_SIZE; // = 100 points
+    static const size_t INTERPOLATION_CACHE_SIZE; // = 100 points
+
+    explicit PolicyController(size_t n_actuators,
+                              size_t interpolation_cache_size);
 
     explicit
-    PolicyController(unsigned int n_actuators,
-                     unsigned int interpolation_cache_size);
+    PolicyController(size_t n_actuators);
 
-    explicit
-    PolicyController(unsigned int n_actuators);
+    virtual ~PolicyController() override;
 
-    virtual
-    ~PolicyController() override;
+    void update(const std::vector<ActuatorPtr> &actuators,
+                const std::vector<SensorPtr> &sensors,
+                double t,
+                double step) override;
 
-    void
-    update(const std::vector<ActuatorPtr> &actuators,
-           const std::vector<SensorPtr> &sensors,
-           double t,
-           double step) override;
+    void generateOutput(const double time,
+                        double *output_vector);
 
-    void
-    generateOutput(const double time,
-                   double *output_vector);
+    PolicyPtr getPhenotype() override;
 
-    PolicyPtr
-    getGenome() override;
-
-    void
-    setGenome(PolicyPtr policy) override;
+    void setPhenotype(PolicyPtr policy) override;
 
     /**
      * Generate cache policy
      */
-    void
-    update_cache();
+    void update_cache();
 
 // STATIC METHODS -----
 
@@ -59,14 +52,14 @@ public:
 
     static PolicyController *
     GenerateRandomController(double noise_sigma,
-                             unsigned int n_actuators,
-                             unsigned int n_spline_points,
-                             unsigned int interpolation_cache_size);
+                             size_t n_actuators,
+                             size_t n_spline_points,
+                             size_t interpolation_cache_size);
 
     static PolicyController *
     GenerateRandomController(double noise_sigma,
-                             unsigned int n_actuators,
-                             unsigned int n_spline_points)
+                             size_t n_actuators,
+                             size_t n_spline_points)
     {
       return GenerateRandomController(noise_sigma,
                                       n_actuators,
@@ -76,9 +69,9 @@ public:
 
 protected:
     // number of actuators the controller is expecting to send signal
-    const unsigned int n_actuators_;
+    const size_t n_actuators_;
     // number of `interpolation_cache` data points
-    const unsigned int interpolation_cache_size_;
+    const size_t interpolation_cache_size_;
     // pointer to the current policy
     PolicyPtr policy_;
     // pointer to the interpolated current_policy_ (default 100 points)

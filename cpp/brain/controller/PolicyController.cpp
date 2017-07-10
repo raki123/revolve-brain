@@ -6,12 +6,11 @@ using namespace revolve::brain;
 #include <random>
 
 const double PolicyController::CYCLE_LENGTH = 5; // seconds
-const unsigned int PolicyController::INTERPOLATION_CACHE_SIZE = 100; // number of data
+const size_t PolicyController::INTERPOLATION_CACHE_SIZE = 100; // number of data
 
-PolicyController::PolicyController(unsigned int n_actuators,
-                                   unsigned int interpolation_cache_size)
-        :
-        n_actuators_(n_actuators)
+PolicyController::PolicyController(size_t n_actuators,
+                                   size_t interpolation_cache_size)
+        : n_actuators_(n_actuators)
         , interpolation_cache_size_(interpolation_cache_size)
         , interpolation_cache_(nullptr)
         , cycle_start_time_(-1)
@@ -19,14 +18,14 @@ PolicyController::PolicyController(unsigned int n_actuators,
   // Init of empty cache
   interpolation_cache_ = std::make_shared<Policy>(n_actuators);
 
-  for (unsigned int i = 0; i < n_actuators; i++) {
+  for (size_t i = 0; i < n_actuators; i++) {
     interpolation_cache_->at(i)
                         .resize(interpolation_cache_size_,
                                 0);
   }
 }
 
-PolicyController::PolicyController(unsigned int n_actuators)
+PolicyController::PolicyController(size_t n_actuators)
         :
         PolicyController(n_actuators,
                          INTERPOLATION_CACHE_SIZE)
@@ -47,7 +46,7 @@ PolicyController::update(const std::vector<ActuatorPtr> &actuators,
                        output_vector);
 
   // Send new signals to the actuators
-  unsigned int p = 0;
+  size_t p = 0;
   for (auto actuator: actuators) {
     actuator->update(&output_vector[p],
                      step);
@@ -79,7 +78,7 @@ PolicyController::generateOutput(const double time,
   int x_b = (x_a + 1) % interpolation_cache_size_;
 
   // linear interpolation for every actuator
-  for (unsigned int i = 0; i < n_actuators_; i++) {
+  for (size_t i = 0; i < n_actuators_; i++) {
     double y_a = interpolation_cache_->at(i)[x_a];
     double y_b = interpolation_cache_->at(i)[x_b];
 
@@ -89,13 +88,13 @@ PolicyController::generateOutput(const double time,
 }
 
 PolicyPtr
-PolicyController::getGenome()
+PolicyController::getPhenotype()
 {
   return policy_;
 }
 
 void
-PolicyController::setGenome(PolicyPtr policy)
+PolicyController::setPhenotype(PolicyPtr policy)
 {
   policy_ = policy;
   update_cache();
@@ -114,12 +113,12 @@ void
 PolicyController::InterpolateCubic(Policy *const source_y,
                                    Policy *destination_y)
 {
-  const unsigned int source_y_internal_size = (*source_y)[0].size();
-  const unsigned int destination_y_internal_size = (*destination_y)[0].size();
-  const unsigned int n_actuators = source_y->size();
+  const size_t source_y_internal_size = (*source_y)[0].size();
+  const size_t destination_y_internal_size = (*destination_y)[0].size();
+  const size_t n_actuators = source_y->size();
   assert(n_actuators == destination_y->size());
 
-  const unsigned int N = source_y_internal_size + 1;
+  const size_t N = source_y_internal_size + 1;
   double *x = new double[N];
   double *y = new double[N];
   double *x_new = new double[destination_y_internal_size];
@@ -131,23 +130,23 @@ PolicyController::InterpolateCubic(Policy *const source_y,
 
   // init x
   double step_size = CYCLE_LENGTH / source_y_internal_size;
-  for (unsigned int i = 0; i < N; i++) {
+  for (size_t i = 0; i < N; i++) {
     x[i] = step_size * i;
   }
 
   // init x_new
   step_size = CYCLE_LENGTH / destination_y_internal_size;
-  for (unsigned int i = 0; i < destination_y_internal_size; i++) {
+  for (size_t i = 0; i < destination_y_internal_size; i++) {
     x_new[i] = step_size * i;
   }
 
-  for (unsigned int j = 0; j < n_actuators; j++) {
+  for (size_t j = 0; j < n_actuators; j++) {
     Spline &source_y_line = source_y->at(j);
     Spline &destination_y_line = destination_y->at(j);
 
     // init y
     // TODO use memcpy
-    for (unsigned int i = 0; i < source_y_internal_size; i++) {
+    for (size_t i = 0; i < source_y_internal_size; i++) {
       y[i] = source_y_line[i];
     }
 
@@ -159,7 +158,7 @@ PolicyController::InterpolateCubic(Policy *const source_y,
                     y,
                     N);
 
-    for (unsigned int i = 0; i < destination_y_internal_size; i++) {
+    for (size_t i = 0; i < destination_y_internal_size; i++) {
       destination_y_line[i] = gsl_spline_eval(spline,
                                               x_new[i],
                                               acc);
@@ -176,9 +175,9 @@ PolicyController::InterpolateCubic(Policy *const source_y,
 
 PolicyController *
 PolicyController::GenerateRandomController(double noise_sigma,
-                                           unsigned int n_actuators,
-                                           unsigned int n_spline_points,
-                                           unsigned int interpolation_cache_size)
+                                           size_t n_actuators,
+                                           size_t n_spline_points,
+                                           size_t interpolation_cache_size)
 {
   std::random_device rd;
   std::mt19937 mt(rd());
@@ -192,9 +191,9 @@ PolicyController::GenerateRandomController(double noise_sigma,
   if (!controller->policy_)
     controller->policy_ = std::make_shared<Policy>(n_actuators);
 
-  for (unsigned int i = 0; i < n_actuators; i++) {
+  for (size_t i = 0; i < n_actuators; i++) {
     Spline spline(n_spline_points);
-    for (unsigned int j = 0; j < n_spline_points; j++) {
+    for (size_t j = 0; j < n_spline_points; j++) {
       spline[j] = dist(mt);
     }
     controller->policy_
@@ -205,7 +204,7 @@ PolicyController::GenerateRandomController(double noise_sigma,
   if (!controller->interpolation_cache_)
     controller->interpolation_cache_ = std::make_shared<Policy>(n_actuators);
 
-  for (unsigned int i = 0; i < n_actuators; i++) {
+  for (size_t i = 0; i < n_actuators; i++) {
     controller->interpolation_cache_
               ->at(i)
               .resize(controller->interpolation_cache_size_,

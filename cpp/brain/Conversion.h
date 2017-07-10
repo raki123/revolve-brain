@@ -27,31 +27,36 @@ convertForController(CPPNEAT::GeneticEncodingPtr genotype);
 CPPNEAT::GeneticEncodingPtr
 convertForLearner(boost::shared_ptr<CPPNConfig> config);
 
-
+///////////////////////////////////////////////////////////////////////////////
+/// HyperNEAT_CPG
+///////////////////////////////////////////////////////////////////////////////
 //used for communication between rlpower learner and ext nn weights controller
-std::vector<double>
-forController(PolicyPtr toConvert);
+std::vector<double> convertPolicyToDouble(PolicyPtr genotype);
 
-PolicyPtr
-forLearner(std::vector<double> toConvert);
+PolicyPtr convertDoubleToNull(std::vector<double> phenotype);
+///////////////////////////////////////////////////////////////////////////////
 
 //used for communication between hyperneat learner and ext nn net controller
 extern boost::shared_ptr<CPPNConfig> cpg_network;
 
 extern std::map<std::string, std::tuple<int, int, int>> neuron_coordinates;
 
-extern CPPNEAT::GeneticEncodingPtr last;
+extern CPPNEAT::GeneticEncodingPtr last_genotype;
 
 //converts a layered genotype to a layered phenotype
 //only works if genotype->layered == true
 boost::shared_ptr<LayeredExtNNConfig>
 convertForLayeredExtNN(CPPNEAT::GeneticEncodingPtr genotype);
 
+///////////////////////////////////////////////////////////////////////////////
+/// RLPower_CPG~RLPower_CPPN
+///////////////////////////////////////////////////////////////////////////////
 boost::shared_ptr<CPPNConfig>
-convertForExtNNFromHyper(CPPNEAT::GeneticEncodingPtr genotype);
+convertGeneticEncodingToCPPNConfig(CPPNEAT::GeneticEncodingPtr genotype);
 
 CPPNEAT::GeneticEncodingPtr
-convertForHyperFromExtNN(boost::shared_ptr<CPPNConfig> config);
+convertCPPNConfigToGeneticEncoding(boost::shared_ptr<CPPNConfig> config);
+///////////////////////////////////////////////////////////////////////////////
 
 //used for communication between spline controller and hyperneat learner
 //contains the coordinates of the actuators matching the order the actuators are given in the update method

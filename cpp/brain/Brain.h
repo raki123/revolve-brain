@@ -17,9 +17,10 @@ namespace brain {
 
 class Brain
 {
+
 public:
-    Brain() :
-            offline(false)
+    Brain()
+      : is_offline_(false)
     {};
 
     virtual ~Brain()
@@ -33,21 +34,19 @@ public:
      * @param t Current simulation time
      * @param step Actuation step size in seconds
      */
-    virtual void
-    update(const std::vector<ActuatorPtr> &actuators,
-           const std::vector<SensorPtr> &sensors,
-           double t,
-           double step) = 0;
+    virtual void update(const std::vector<ActuatorPtr> &actuators,
+                        const std::vector<SensorPtr> &sensors,
+                        double t,
+                        double step) = 0;
 
     /**
      * If offline, the robot won't update his controller. This is delegated to
      * a supervisor.
      * @return true if the brain is offline
      */
-    bool
-    isOffline() const
+    bool isOffline() const
     {
-      return this->offline;
+      return this->is_offline_;
     }
 
     /**
@@ -55,14 +54,14 @@ public:
      * a supervisor
      * @param offline set offline mode on or off
      */
-    virtual void
-    setOffline(bool offline)
+    virtual void setOffline(const bool is_offline)
     {
-      this->offline = offline;
+      this->is_offline_ = is_offline;
     }
 
 protected:
-    bool offline;
+
+    bool is_offline_;
 };
 
 }

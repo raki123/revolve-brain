@@ -3,26 +3,29 @@
 
 #include <iostream>
 
-#include "ConvertingSplitBrain.h"
+#include "ConverterSplitBrain.h"
 #include "Evaluator.h"
 
 namespace revolve {
 namespace brain {
 
-template <typename Genome>
-Genome
-idem(Genome g)
-{ return g; }
+template <typename Genotype>
+Genotype convertPolicyToPolicy(Genotype genotype)
+{
+    return genotype;
+}
 
-template <typename Genome>
+template <typename Genotype>
 class SimpleSplitBrain
-        : public ConvSplitBrain<Genome, Genome>
+        : public ConverterSplitBrain<Genotype, Genotype>
 {
 public:
-    SimpleSplitBrain(std::string modelName) :
-            ConvSplitBrain<Genome, Genome>(&idem,
-                                           &idem,
-                                           modelName)
+
+    SimpleSplitBrain(const std::string model_name)
+            : ConverterSplitBrain<Genotype, Genotype>
+                      (&convertGenotypeToGenotype,
+                       &convertGenotypeToGenotype,
+                       model_name)
     {};
 
     virtual ~SimpleSplitBrain()

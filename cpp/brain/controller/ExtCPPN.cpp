@@ -38,13 +38,11 @@ CPPNController::CPPNController(std::string modelName,
   outputs_ = new double[p];
 }
 
-
 CPPNController::~CPPNController()
 {
   delete[] inputs_;
   delete[] outputs_;
 }
-
 
 void
 CPPNController::update(const std::vector<ActuatorPtr> &actuators,
@@ -106,8 +104,7 @@ CPPNController::update(const std::vector<ActuatorPtr> &actuators,
 // 	std::cout << std::endl;
 }
 
-boost::shared_ptr<CPPNConfig>
-CPPNController::getGenome()
+boost::shared_ptr<CPPNConfig> CPPNController::getPhenotype()
 {
   boost::shared_ptr<CPPNConfig> Config(new CPPNConfig());
   Config->allNeurons_ = allNeurons_;
@@ -121,8 +118,7 @@ CPPNController::getGenome()
   return Config;
 }
 
-void
-CPPNController::setGenome(boost::shared_ptr<CPPNConfig> Config)
+void CPPNController::setPhenotype(boost::shared_ptr<CPPNConfig> Config)
 {
   allNeurons_ = Config->allNeurons_;
   for (NeuronPtr neuron: allNeurons_) {
@@ -137,8 +133,7 @@ CPPNController::setGenome(boost::shared_ptr<CPPNConfig> Config)
   connections_ = Config->connections_;
 }
 
-void
-CPPNController::writeNetwork(std::ofstream &write_to)
+void CPPNController::writeNetwork(std::ofstream &write_to)
 {
   boost::adjacency_list<> graph(allNeurons_.size());
   for (size_t i = 0; i < allNeurons_.size(); i++) {

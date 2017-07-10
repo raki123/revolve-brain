@@ -77,14 +77,14 @@ public:
      * @return weights of all neural connections
      */
     virtual boost::shared_ptr<LayeredExtNNConfig>
-    getGenome();
+    getGenotype();
 
     /**
      * Changes the weights of the neural connections
      * @param weights: new weights to be assigned
      */
     virtual void
-    setGenome(boost::shared_ptr<LayeredExtNNConfig> config);
+    setGenotype(boost::shared_ptr<LayeredExtNNConfig> config);
 
     void
     writeNetwork(std::ofstream &write_to);
