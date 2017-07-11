@@ -10,7 +10,7 @@
 namespace revolve {
 namespace brain {
 
-std::map<boost::shared_ptr<CPPNConfig>, CPPNEAT::GeneticEncodingPtr> known;
+std::map<boost::shared_ptr<CPPNConfig>, CPPNEAT::GeneticEncodingPtr> known_genotypes;
 
 std::map<CPPNEAT::Neuron::Ntype, CPPNEAT::Neuron::NeuronTypeSpec> brain_spec;
 
@@ -193,7 +193,7 @@ set_brain_spec(bool hyperneat)
 boost::shared_ptr<CPPNConfig>
 convertForController(CPPNEAT::GeneticEncodingPtr genotype)
 {
-  assert(genotype->is_layered_ == false);
+  assert(!genotype->is_layered_);
   std::vector<CPPNEAT::NeuronGenePtr> neuron_genes = genotype->neuron_genes_;
   std::vector<CPPNEAT::ConnectionGenePtr> connection_genes = genotype->connection_genes_;
 
@@ -202,114 +202,92 @@ convertForController(CPPNEAT::GeneticEncodingPtr genotype)
   boost::shared_ptr<CPPNConfig> config(new CPPNConfig());
   for (CPPNEAT::NeuronGenePtr neuron_gene : neuron_genes) {
     NeuronPtr newNeuron;
-    std::string neuronId = neuron_gene->neuron
-                                      ->neuron_id;
-    std::map<std::string, double> neuron_params = neuron_gene->neuron
-                                                             ->neuron_params;
+    std::string neuronId = neuron_gene->neuron->neuron_id;
+    std::map<std::string, double> neuron_params = neuron_gene->neuron->neuron_params;
 
-    switch (neuron_gene->neuron
-                       ->layer) {
+    switch (neuron_gene->neuron->layer) {
       case CPPNEAT::Neuron::INPUT_LAYER: {
-        newNeuron.reset(new InputNeuron(neuronId,
-                                        neuron_params));
-        config->inputNeurons_
-              .push_back(newNeuron);
+        newNeuron.reset(new InputNeuron(neuronId, neuron_params));
+        config->inputNeurons_.push_back(newNeuron);
         config->inputPositionMap_[newNeuron] = input_map[neuron_gene->getInnovNumber()];
         break;
       }
       case CPPNEAT::Neuron::HIDDEN_LAYER: {
         switch (neuron_gene->neuron->neuron_type) {
+          case CPPNEAT::Neuron::INPUT:
           case CPPNEAT::Neuron::SIMPLE: {
-            newNeuron.reset(new LinearNeuron(neuronId,
-                                             neuron_params));
+            newNeuron.reset(new LinearNeuron(neuronId, neuron_params));
             break;
           }
           case CPPNEAT::Neuron::SIGMOID: {
-            newNeuron.reset(new SigmoidNeuron(neuronId,
-                                              neuron_params));
+            newNeuron.reset(new SigmoidNeuron(neuronId, neuron_params));
             break;
           }
           case CPPNEAT::Neuron::DIFFERENTIAL_CPG: {
-            newNeuron.reset(new DifferentialCPG(neuronId,
-                                                neuron_params));
+            newNeuron.reset(new DifferentialCPG(neuronId, neuron_params));
             break;
           }
           case CPPNEAT::Neuron::BIAS: {
-            newNeuron.reset(new BiasNeuron(neuronId,
-                                           neuron_params));
+            newNeuron.reset(new BiasNeuron(neuronId, neuron_params));
             break;
           }
           case CPPNEAT::Neuron::OSCILLATOR: {
-            newNeuron.reset(new OscillatorNeuron(neuronId,
-                                                 neuron_params));
+            newNeuron.reset(new OscillatorNeuron(neuronId, neuron_params));
             break;
           }
           case CPPNEAT::Neuron::INPUT_OSCILLATOR: {
-            newNeuron.reset(new InputDependentOscillatorNeuron(neuronId,
-                                                               neuron_params));
+            newNeuron.reset(new InputDependentOscillatorNeuron(neuronId, neuron_params));
             break;
           }
           default: {
             throw std::runtime_error("Unkown neuron type to be converted");
-            break;
           }
 
         }
-        config->hiddenNeurons_
-              .push_back(newNeuron);
+        config->hiddenNeurons_.push_back(newNeuron);
         break;
       }
       case CPPNEAT::Neuron::OUTPUT_LAYER: {
-        switch (neuron_gene->neuron
-                           ->neuron_type) {
+        switch (neuron_gene->neuron->neuron_type) {
+          case CPPNEAT::Neuron::INPUT:
           case CPPNEAT::Neuron::SIMPLE: {
-            newNeuron.reset(new LinearNeuron(neuronId,
-                                             neuron_params));
+            newNeuron.reset(new LinearNeuron(neuronId, neuron_params));
             break;
           }
           case CPPNEAT::Neuron::SIGMOID: {
-            newNeuron.reset(new SigmoidNeuron(neuronId,
-                                              neuron_params));
+            newNeuron.reset(new SigmoidNeuron(neuronId, neuron_params));
             break;
           }
           case CPPNEAT::Neuron::DIFFERENTIAL_CPG: {
-            newNeuron.reset(new DifferentialCPG(neuronId,
-                                                neuron_params));
+            newNeuron.reset(new DifferentialCPG(neuronId, neuron_params));
             break;
           }
           case CPPNEAT::Neuron::BIAS: {
-            newNeuron.reset(new BiasNeuron(neuronId,
-                                           neuron_params));
+            newNeuron.reset(new BiasNeuron(neuronId, neuron_params));
             break;
           }
           case CPPNEAT::Neuron::OSCILLATOR: {
-            newNeuron.reset(new OscillatorNeuron(neuronId,
-                                                 neuron_params));
+            newNeuron.reset(new OscillatorNeuron(neuronId, neuron_params));
             break;
           }
           case CPPNEAT::Neuron::INPUT_OSCILLATOR: {
-            newNeuron.reset(new InputDependentOscillatorNeuron(neuronId,
-                                                               neuron_params));
+            newNeuron.reset(new InputDependentOscillatorNeuron(neuronId, neuron_params));
             break;
           }
           default: {
             throw std::runtime_error("Unknown neuron type to be converted");
-            break;
           }
 
         }
-        config->outputNeurons_
-              .push_back(newNeuron);
+        config->outputNeurons_.push_back(newNeuron);
         config->outputPositionMap_[newNeuron] = output_map[neuron_gene->getInnovNumber()];
         break;
       }
       default: {
         throw std::runtime_error("Robot brain error");
-        break;
       }
     }
-    config->allNeurons_
-          .push_back(newNeuron);
+    config->allNeurons_.push_back(newNeuron);
     config->idToNeuron_[neuronId] = newNeuron;
     innov_number_to_neuron[neuron_gene->getInnovNumber()] = newNeuron;
   }
@@ -318,12 +296,10 @@ convertForController(CPPNEAT::GeneticEncodingPtr genotype)
     NeuralConnectionPtr newConnection(new NeuralConnection(innov_number_to_neuron[connection_gene->mark_from],
                                                            dst,
                                                            connection_gene->weight));
-    dst->AddIncomingConnection(dst->GetSocketId(),
-                               newConnection);
-    config->connections_
-          .push_back(newConnection);
+    dst->AddIncomingConnection(dst->GetSocketId(), newConnection);
+    config->connections_.push_back(newConnection);
   }
-  known[config] = genotype;
+  known_genotypes[config] = genotype;
   return config;
 
 }
@@ -331,7 +307,7 @@ convertForController(CPPNEAT::GeneticEncodingPtr genotype)
 CPPNEAT::GeneticEncodingPtr
 convertForLearner(boost::shared_ptr<CPPNConfig> config)
 {
-  return known[config];
+  return known_genotypes[config];
 }
 
 
@@ -385,6 +361,7 @@ convertForLayeredExtNN(CPPNEAT::GeneticEncodingPtr genotype)
         }
         case CPPNEAT::Neuron::HIDDEN_LAYER: {
           switch (neuron_gene->neuron->neuron_type) {
+            case CPPNEAT::Neuron::INPUT:
             case CPPNEAT::Neuron::SIMPLE: {
               new_neuron.reset(new LinearNeuron(neuronId, neuron_params));
               break;
@@ -418,6 +395,7 @@ convertForLayeredExtNN(CPPNEAT::GeneticEncodingPtr genotype)
         }
         case CPPNEAT::Neuron::OUTPUT_LAYER: {
           switch (neuron_gene->neuron->neuron_type) {
+            case CPPNEAT::Neuron::INPUT:
             case CPPNEAT::Neuron::SIMPLE: {
               new_neuron.reset(new LinearNeuron(neuronId, neuron_params));
               break;
