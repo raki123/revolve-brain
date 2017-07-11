@@ -19,13 +19,15 @@ public:
     static const double CYCLE_LENGTH; // = 5 seconds
     static const size_t INTERPOLATION_CACHE_SIZE; // = 100 points
 
-    explicit PolicyController(size_t n_actuators,
-                              size_t interpolation_cache_size);
+  /// \brief Constructor
+  explicit PolicyController(size_t n_actuators,
+                            size_t interpolation_cache_size);
 
-    explicit
-    PolicyController(size_t n_actuators);
+  /// \brief Constructor
+  explicit PolicyController(size_t n_actuators);
 
-    virtual ~PolicyController() override;
+  /// \brief Destructor
+  virtual ~PolicyController() override;
 
     void update(const std::vector<ActuatorPtr> &actuators,
                 const std::vector<SensorPtr> &sensors,
@@ -39,9 +41,7 @@ public:
 
     void setPhenotype(PolicyPtr policy) override;
 
-    /**
-     * Generate cache policy
-     */
+    /// \brief Generate cache policy
     void update_cache();
 
 // STATIC METHODS -----

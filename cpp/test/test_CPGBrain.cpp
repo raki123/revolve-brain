@@ -13,7 +13,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/make_shared.hpp>
 
-int main(int argc, char *argv[]) {
+int main() {
     std::cout << "testing supgbrain" << std::endl;
 
     revolve::brain::EvaluatorPtr testEvaluator = boost::make_shared<TestEvaluator>();

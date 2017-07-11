@@ -67,10 +67,7 @@ RLPower::update(const std::vector<ActuatorPtr> &actuators,
                 double t,
                 double step)
 {
-  this->update<std::vector<ActuatorPtr>, std::vector<SensorPtr>>(actuators,
-                                                                 sensors,
-                                                                 t,
-                                                                 step);
+  this->update<std::vector<ActuatorPtr>, std::vector<SensorPtr>>(actuators, sensors, t, step);
 }
 
 void
@@ -78,8 +75,7 @@ RLPower::generateInitPolicy()
 {
   std::random_device rd;
   std::mt19937 mt(rd());
-  std::normal_distribution<double> dist(0,
-                                        this->noise_sigma_);
+  std::normal_distribution<double> dist(0, noise_sigma_);
 
   // Init first random controller
   if (!current_policy_)
@@ -98,9 +94,7 @@ RLPower::generateInitPolicy()
     interpolation_cache_ = std::make_shared<Policy>(n_actuators_);
 
   for (unsigned int i = 0; i < n_actuators_; i++) {
-    interpolation_cache_->at(i)
-                        .resize(interpolation_spline_size_,
-                                0);
+    interpolation_cache_->at(i).resize(interpolation_spline_size_, 0);
   }
 
   this->generateCache();

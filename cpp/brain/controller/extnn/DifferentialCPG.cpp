@@ -33,12 +33,9 @@ DifferentialCPG::CalculateOutput(double t)
 
   double inputValue = 0;
 
-  for (auto it = this->incomingConnections_
-                     .begin(); it != this->incomingConnections_
-                                         .end(); ++it) {
+  for (auto it = this->incomingConnections_.begin(); it != this->incomingConnections_.end(); ++it) {
     auto inConnection = it->second;
-    inputValue += inConnection->GetInputNeuron()
-                              ->GetOutput() * inConnection->GetWeight();
+    inputValue += inConnection->GetInputNeuron()->GetOutput() * inConnection->GetWeight();
   }
 
   double state_deriv = inputValue - this->bias_;

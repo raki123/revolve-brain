@@ -14,7 +14,7 @@
 
 //crossover between genotypes
 namespace CPPNEAT {
-class Learner
+class NEATLearner
         : public revolve::brain::Learner<GeneticEncodingPtr>
 {
 public:
@@ -38,12 +38,11 @@ public:
         double interspecies_mate_probability;
     };
 
-    Learner(MutatorPtr mutator,
+    NEATLearner(MutatorPtr mutator,
             std::string mutator_path,
             LearningConfiguration conf);
 
-    void
-    initialise(std::vector<GeneticEncodingPtr> init_genotypes);
+    void initialise(std::vector<GeneticEncodingPtr> init_genotypes);
 
     std::vector<GeneticEncodingPtr>
     get_init_brains();
@@ -94,10 +93,10 @@ private:
                           unsigned int tourn_size);
 
 
-    GeneticEncodingPtr active_brain;
+    GeneticEncodingPtr active_brain_;
 //    double fitness;
-    std::vector<GeneticEncodingPtr> evaluation_queue;
-    std::vector<GeneticEncodingPtr> brain_population;
+    std::vector<GeneticEncodingPtr> evaluation_queue_;
+    std::vector<GeneticEncodingPtr> brain_population_;
     std::map<GeneticEncodingPtr, double> brain_fitness;
     std::map<GeneticEncodingPtr, double> brain_velocity;
     std::map<GeneticEncodingPtr, std::vector<GeneticEncodingPtr>> species;
@@ -108,10 +107,13 @@ private:
     MutatorPtr mutator;
     std::string mutator_path;
 
-    bool asexual;
-    int pop_size;
-    int tournament_size;
-    int num_children;
+    bool is_asexual_;
+
+    size_t initial_structural_mutations_;
+    size_t num_children_;
+    size_t population_size_;
+    size_t tournament_size_;
+
     double weight_mutation_probability;
     double weight_mutation_sigma;
     double param_mutation_probability;
@@ -121,8 +123,7 @@ private:
     int max_generations;
     double speciation_threshold;
     unsigned int repeat_evaluations;
-    GeneticEncodingPtr start_from;
-    int initial_structural_mutations;
+    GeneticEncodingPtr start_from_;
     double interspecies_mate_probability;
     std::mt19937 generator;
 

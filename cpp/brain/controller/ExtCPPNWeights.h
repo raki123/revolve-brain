@@ -5,7 +5,7 @@
 #include "brain/Evaluator.h"
 #include "brain/controller/extnn/ENeuron.h"
 #include "brain/controller/extnn/NeuralConnection.h"
-#include "ExtCPPN.h"
+#include "RafCPGController.h"
 #include <map>
 #include <vector>
 #include <string>

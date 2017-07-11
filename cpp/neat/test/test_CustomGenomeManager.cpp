@@ -14,16 +14,13 @@ const std::string test_name = "TestGenomeManager";
 
 TestCustomGenomeManager::TestCustomGenomeManager()
 {
-
 }
 
 TestCustomGenomeManager::~TestCustomGenomeManager()
 {
-
 }
 
-bool
-TestCustomGenomeManager::test()
+bool TestCustomGenomeManager::test()
 {
   if (!testXOR())
     return false;
@@ -41,10 +38,8 @@ class TestGenomeManager
         : public NEAT::InnovGenomeManager
 {
 public:
-    TestGenomeManager()
-            : NEAT::InnovGenomeManager(test_name)
+    TestGenomeManager() : NEAT::InnovGenomeManager(test_name)
     {
-
     }
 
     virtual std::vector<std::unique_ptr<NEAT::Genome>>
@@ -114,8 +109,7 @@ public:
 // 0 1 -> 1
 // 1 0 -> 1
 // 1 1 -> 0
-bool
-TestCustomGenomeManager::testXOR()
+bool TestCustomGenomeManager::testXOR()
 {
   AsyncNeat::Init(std::unique_ptr<NEAT::GenomeManager>(new TestGenomeManager()));
   AsyncNeat::SetSearchType(NEAT::GeneticSearchType::BLENDED);
@@ -177,9 +171,7 @@ TestCustomGenomeManager::testXOR()
 }
 
 
-int
-main(int argc,
-     char *argv[])
+int main()
 {
   TestCustomGenomeManager t;
   return t.test() ? 0 : 1;

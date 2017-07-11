@@ -24,54 +24,42 @@ public:
     static std::vector<Neuron::Ntype>
     get_addable_types(std::map<Neuron::Ntype, Neuron::NeuronTypeSpec> brain_spec);
 
-    void
-    make_starting_genotype_known(GeneticEncodingPtr genotype);
+    void make_starting_genotype_known(GeneticEncodingPtr genotype);
 
-    void
-    load_known_innovations(std::string yaml_path);
+    void load_known_innovations(std::string yaml_path);
 
-    void
-    write_known_innovations(std::string yaml_path);
+    void write_known_innovations(std::string yaml_path);
 
-    void
-    mutate_neuron_params(GeneticEncodingPtr genotype,
-                         double probability,
-                         double sigma);
+    void mutate_neuron_params(GeneticEncodingPtr genotype,
+                              double probability,
+                              double sigma);
 
-    void
-    mutate_weights(GeneticEncodingPtr genotype,
-                   double probability,
-                   double sigma);
-
-    void
-    mutate_structure(GeneticEncodingPtr genotype,
-                     double probability);
-
-    bool
-    add_connection_mutation(GeneticEncodingPtr genotype,
-                            double sigma);
-
-    void
-    add_neuron_mutation(GeneticEncodingPtr genotype,
+    void mutate_weights(GeneticEncodingPtr genotype,
+                        double probability,
                         double sigma);
 
-    void
-    remove_connection_mutation(GeneticEncodingPtr genotype);
+    void mutate_structure(GeneticEncodingPtr genotype,
+                          double probability);
 
-    void
-    remove_neuron_mutation(GeneticEncodingPtr genotype);
+    bool add_connection_mutation(GeneticEncodingPtr genotype,
+                                 double sigma);
 
-    int
-    add_neuron(NeuronPtr neuron,
-               GeneticEncodingPtr genotype,
-               ConnectionGenePtr split);
+    void add_neuron_mutation(GeneticEncodingPtr genotype,
+                             double sigma);
 
-    int
-    add_connection(int mark_from,
-                   int mark_to,
-                   double weight,
+    void remove_connection_mutation(GeneticEncodingPtr genotype);
+
+    void remove_neuron_mutation(GeneticEncodingPtr genotype);
+
+    int add_neuron(NeuronPtr neuron,
                    GeneticEncodingPtr genotype,
-                   std::string socket);
+                   ConnectionGenePtr split);
+
+    int add_connection(int mark_from,
+                       int mark_to,
+                       double weight,
+                       GeneticEncodingPtr genotype,
+                       std::string socket);
 
 
     std::map<Neuron::Ntype, Neuron::NeuronTypeSpec>
@@ -81,7 +69,6 @@ public:
     void
     set_current_innovation_number(int innov_numb)
     { this->innovation_number = innov_numb; };
-
 
 private:
     std::map<std::pair<int, int>, int> connection_innovations;            //<mark_from, mark_to> -> innovation_number
@@ -100,7 +87,7 @@ private:
     int innovation_number;
     int max_attempts;
     std::vector<Neuron::Ntype> addable_neurons;
-    bool layered;
+//    bool is_layered_;
     std::mt19937 generator;
 };
 }

@@ -8,7 +8,7 @@ GeneticEncodingPtr
 Crossover::crossover(GeneticEncodingPtr genotype_more_fit,
                      GeneticEncodingPtr genotype_less_fit)
 {
-  assert(genotype_less_fit->layered == genotype_more_fit->layered);
+  assert(genotype_less_fit->is_layered_ == genotype_more_fit->is_layered_);
   std::random_device rd;
   std::mt19937 mt(rd());
   std::uniform_real_distribution<double> uniform(0,
@@ -33,7 +33,7 @@ Crossover::crossover(GeneticEncodingPtr genotype_more_fit,
       child_genes.push_back(pair.first);
     }
   }
-  if (!genotype_less_fit->layered) {
+  if (!genotype_less_fit->is_layered_) {
     GeneticEncodingPtr child_genotype(new GeneticEncoding(false));
     for (GenePtr gene : child_genes) {
       if (gene->gene_type == Gene::NEURON_GENE) {
@@ -46,12 +46,12 @@ Crossover::crossover(GeneticEncodingPtr genotype_more_fit,
   } else {
     //what helps us tremendously here is the fact that a gene is only in the child if it is in the more fit parent
     //therefore we can use the same layer structure as in the more fit parent here
-    genotype_more_fit->connection_genes
+    genotype_more_fit->connection_genes_
                      .clear();
     for (GenePtr gene : child_genes) {
       if (gene->gene_type == Gene::NEURON_GENE) {
         std::pair<unsigned int, unsigned int> index = genotype_more_fit->convert_in_to_layer_index(gene->getInnovNumber());
-        genotype_more_fit->layers[index.first][index.second] = boost::dynamic_pointer_cast<NeuronGene>(gene);
+        genotype_more_fit->layers_[index.first][index.second] = boost::dynamic_pointer_cast<NeuronGene>(gene);
       } else if (gene->gene_type == Gene::CONNECTION_GENE) {
         genotype_more_fit->add_connection_gene(boost::dynamic_pointer_cast<ConnectionGene>(gene));
       }

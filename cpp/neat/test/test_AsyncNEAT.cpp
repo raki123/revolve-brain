@@ -88,9 +88,7 @@ TestAsyncNeat::testXOR()
 }
 
 
-int
-main(int argc,
-     char *argv[])
+int main()
 {
   TestAsyncNeat t;
   return t.test() ? 0 : 1;

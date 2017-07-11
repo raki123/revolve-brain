@@ -20,6 +20,8 @@ namespace brain {
 
 class CPGBrain : public revolve::brain::Brain {
 public:
+
+  using revolve::brain::Brain::update;
     /**
      * @brief CPGBrain constructor
      *

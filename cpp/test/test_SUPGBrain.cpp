@@ -14,7 +14,7 @@
 
 const std::string test_name = "TestSUPGBrain";
 
-int main(int argc, char *argv[]) {
+int main() {
     std::cout << "testing supgbrain" << std::endl;
     AsyncNeat::Init(test_name);
 

@@ -12,6 +12,9 @@ namespace revolve { namespace brain {
 
     class GenericLearnerBrain : public Brain {
     public:
+
+      using Brain::update;
+
         GenericLearnerBrain(std::unique_ptr<BaseLearner> learner);
         GenericLearnerBrain(BaseLearner *learner);
 

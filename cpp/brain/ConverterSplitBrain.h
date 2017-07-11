@@ -42,8 +42,8 @@ public:
                         double step)
     {
       if (is_first_run_) {
-        this->controller_->setPhenotype(convertForController_(
-                this->learner_->currentGenotype())
+        this->controller_->setPhenotype(
+                convertForController_(this->learner_->currentGenotype())
         );
 
         start_eval_time_ = t;

@@ -28,50 +28,53 @@ namespace brain {
 
 class SUPGBrainPhototaxis : protected SUPGBrain
 {
-public:
-    /**
-     * Light sensor constructors are passed the coordinates with already the offset included
-     */
-    SUPGBrainPhototaxis(const std::string &robot_name,
-                        EvaluatorPtr evaluator,
-                        std::function<boost::shared_ptr<FakeLightSensor> (std::vector<float> coordinates)> _light_constructor_left,
-                        std::function<boost::shared_ptr<FakeLightSensor> (std::vector<float> coordinates)> _light_constructor_right,
-                        double light_radius_distance,
-                        const std::vector< std::vector< float > >& neuron_coordinates,
-                        const std::vector< ActuatorPtr >& actuators,
-                        const std::vector< SensorPtr >& sensors);
+  public:
+  /**
+   * Light sensor constructors are passed the coordinates with already the offset included
+   */
+  SUPGBrainPhototaxis(const std::string &robot_name,
+                      EvaluatorPtr evaluator,
+                      std::function<boost::shared_ptr<FakeLightSensor>(std::vector<float> coordinates)> _light_constructor_left,
+                      std::function<boost::shared_ptr<FakeLightSensor>(std::vector<float> coordinates)> _light_constructor_right,
+                      double light_radius_distance,
+                      const std::vector<std::vector<float> > &neuron_coordinates,
+                      const std::vector<ActuatorPtr> &actuators,
+                      const std::vector<SensorPtr> &sensors);
 
-    virtual void update(const std::vector< ActuatorPtr >& actuators,
-                        const std::vector< SensorPtr >& sensors,
-                        double t, double step) override;
+  using SUPGBrain::update;
+  virtual void update(const std::vector<ActuatorPtr> &actuators,
+                      const std::vector<SensorPtr> &sensors,
+                      double t, double step) override;
 
-protected:
-    SUPGBrainPhototaxis(EvaluatorPtr evaluator);
+  protected:
+  SUPGBrainPhototaxis(EvaluatorPtr evaluator);
 
-    virtual double getFitness() override;
-    virtual double getPhaseFitness();
-    virtual void learner(double t) override;
+  virtual double getFitness() override;
 
-    //// Templates ---------------------------------------------------------
+  virtual double getPhaseFitness();
 
-    enum PHASE {
-        CENTER = 0,
-        LEFT = 1,
-        MORELEFT = 2,
-        RIGHT = 3,
-        MORERIGHT = 4,
-        END = 5,
-    } phase;
+  virtual void learner(double t) override;
 
-    std::function<boost::shared_ptr<FakeLightSensor> (std::vector<float> coordinates)>
-        light_constructor_left,
-        light_constructor_right;
+  //// Templates ---------------------------------------------------------
 
-    boost::shared_ptr<FakeLightSensor> current_light_left,
-                                       current_light_right;
+  enum PHASE
+  {
+    CENTER = 0,
+    LEFT = 1,
+    MORELEFT = 2,
+    RIGHT = 3,
+    MORERIGHT = 4,
+    END = 5,
+  } phase;
 
-    double light_radius_distance;
-    double partial_fitness;
+  std::function<boost::shared_ptr<FakeLightSensor>(std::vector<float> coordinates)>
+          light_constructor_left,
+          light_constructor_right;
+
+  boost::shared_ptr<FakeLightSensor> current_light_left, current_light_right;
+
+  double light_radius_distance;
+  double partial_fitness;
 };
 
 }

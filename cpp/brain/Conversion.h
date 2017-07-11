@@ -1,7 +1,7 @@
 #ifndef REVOLVEBRAIN_BRAIN_CONVERSION_H_
 #define REVOLVEBRAIN_BRAIN_CONVERSION_H_
 
-#include "brain/controller/ExtCPPN.h"
+#include "brain/controller/RafCPGController.h"
 #include "brain/controller/LayeredExtCPPN.h"
 #include "brain/learner/NEATLearner.h"
 #include "brain/learner/RLPowerLearner.h"
@@ -41,7 +41,7 @@ extern boost::shared_ptr<CPPNConfig> cpg_network;
 
 extern std::map<std::string, std::tuple<int, int, int>> neuron_coordinates;
 
-extern CPPNEAT::GeneticEncodingPtr last_genotype;
+extern CPPNEAT::GeneticEncodingPtr last_genotype_;
 
 //converts a layered genotype to a layered phenotype
 //only works if genotype->layered == true
@@ -70,8 +70,7 @@ extern size_t update_rate;
 extern size_t cur_step;
 
 //returns the starting network for hyperneat on splines
-CPPNEAT::GeneticEncodingPtr
-get_hyper_neat_net_splines();
+CPPNEAT::GeneticEncodingPtr get_hyper_neat_net_splines();
 
 PolicyPtr
 convertForSplinesFromHyper(CPPNEAT::GeneticEncodingPtr genotype);

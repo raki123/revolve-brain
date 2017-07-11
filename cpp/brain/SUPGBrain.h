@@ -25,6 +25,7 @@ public:
               const std::vector< SensorPtr >& sensors);
     ~SUPGBrain() {}
 
+    using Brain::update;
     virtual void update(const std::vector< ActuatorPtr >& actuators,
                         const std::vector< SensorPtr >& sensors,
                         double t, double step) override;

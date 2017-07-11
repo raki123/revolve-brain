@@ -10,10 +10,10 @@ namespace brain {
 
 struct CPPNConfig;
 
-class CPPNController;
+class RafCPGController;
 
 typedef boost::shared_ptr<revolve::brain::CPPNConfig> CPPNConfigPtr;
-typedef boost::shared_ptr<revolve::brain::CPPNController> CPPNControllerPtr;
+typedef boost::shared_ptr<revolve::brain::RafCPGController> RafCPGControllerPtr;
 
 }
 }

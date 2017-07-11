@@ -7,19 +7,19 @@
 #include <yaml-cpp/yaml.h>
 
 namespace CPPNEAT {
-Learner::Learner(MutatorPtr mutator,
+NEATLearner::NEATLearner(MutatorPtr mutator,
                  std::string mutator_path,
-                 Learner::LearningConfiguration conf)
-        :
-        active_brain(nullptr)
+                 NEATLearner::LearningConfiguration conf)
+        : active_brain_(nullptr)
         , generation_number(0)
         , total_brains_evaluated(0)
         , mutator(mutator)
         , mutator_path(mutator_path)
-        , asexual(conf.asexual)
-        , pop_size(conf.pop_size)
-        , tournament_size(conf.tournament_size)
-        , num_children(conf.num_children)
+        , is_asexual_(conf.asexual)
+        , initial_structural_mutations_(conf.initial_structural_mutations)
+        , num_children_(conf.num_children)
+        , population_size_(conf.pop_size)
+        , tournament_size_(conf.tournament_size)
         , weight_mutation_probability(conf.weight_mutation_probability)
         , weight_mutation_sigma(conf.weight_mutation_sigma)
         , param_mutation_probability(conf.param_mutation_probability)
@@ -29,31 +29,30 @@ Learner::Learner(MutatorPtr mutator,
         , max_generations(conf.max_generations)
         , speciation_threshold(conf.speciation_threshold)
         , repeat_evaluations(conf.repeat_evaluations)
-        , start_from(conf.start_from)
-        , initial_structural_mutations(conf.initial_structural_mutations)
+        , start_from_(conf.start_from)
         , interspecies_mate_probability(conf.interspecies_mate_probability)
 {
   std::random_device rd;
   generator.seed(rd());
-  if (pop_size < 2) {
-    pop_size = 2;
+  if (population_size_ < 2) {
+    population_size_ = 2;
   }
-  if (tournament_size > pop_size) {
-    tournament_size = pop_size;
+  if (tournament_size_ > population_size_) {
+    tournament_size_ = population_size_;
   }
-  if (tournament_size < 2) {
-    tournament_size = 2;
+  if (tournament_size_ < 2) {
+    tournament_size_ = 2;
   }
   if (mutator_path != "none") {
     mutator->load_known_innovations(mutator_path);
   }
-  if (start_from != nullptr) {
+  if (start_from_ != nullptr) {
     std::cout << "generating inital population from starting network" << std::endl;
     initialise(std::vector<GeneticEncodingPtr>());
   } else {
     std::cout << "no starting network given, initialise has to be called" << std::endl;
   }
-  this->mutator->make_starting_genotype_known(start_from);
+  this->mutator->make_starting_genotype_known(start_from_);
   std::cout
           << "\033[1;33m"
           << "-----------------------------------------------------------------------------------------------------------"
@@ -67,15 +66,15 @@ Learner::Learner(MutatorPtr mutator,
           << "\033[0m"
           << std::endl;
   std::cout.width(100);
-  std::cout << std::right << "Asexual reproduction: " << "\033[1;36m" << asexual << "\033[0m" << std::endl;
+  std::cout << std::right << "Asexual reproduction: " << "\033[1;36m" << is_asexual_ << "\033[0m" << std::endl;
   std::cout.width(100);
-  std::cout << std::right << "Population size: " << "\033[1;36m" << pop_size << "\033[0m" << std::endl;
+  std::cout << std::right << "Population size: " << "\033[1;36m" << population_size_ << "\033[0m" << std::endl;
   std::cout.width(100);
   std::cout
           << std::right
           << "Tournament size: (currently not applicable, always 2) "
           << "\033[1;36m"
-          << tournament_size
+          << tournament_size_
           << "\033[0m"
           << std::endl;
   std::cout.width(100);
@@ -83,7 +82,7 @@ Learner::Learner(MutatorPtr mutator,
           << std::right
           << "Number of children: (rest of new individuals are elite of previous generation) "
           << "\033[1;36m"
-          << num_children
+          << num_children_
           << "\033[0m"
           << std::endl;
   std::cout.width(100);
@@ -151,7 +150,7 @@ Learner::Learner(MutatorPtr mutator,
           << std::right
           << "How many initial structural mutations do we apply in case a starting genome was given: "
           << "\033[1;36m"
-          << initial_structural_mutations
+          << initial_structural_mutations_
           << "\033[0m"
           << std::endl;
   std::cout.width(100);
@@ -169,26 +168,25 @@ Learner::Learner(MutatorPtr mutator,
           << std::endl;
 }
 
-void
-Learner::initialise(std::vector<GeneticEncodingPtr> init_genotypes)
+void NEATLearner::initialise(std::vector<GeneticEncodingPtr> init_genotypes)
 {
   if (init_genotypes.empty()) {
-    brain_population = get_init_brains();
+    brain_population_ = get_init_brains();
   } else {
     std::cout << "initialised with starting population" << std::endl;
     std::cout << "overwriting current population if present" << std::endl;
-    brain_population = init_genotypes;
+    brain_population_ = init_genotypes;
   }
-  evaluation_queue.clear();
-  for (GeneticEncodingPtr brain : brain_population) {
-    evaluation_queue.push_back(brain);
+  evaluation_queue_.clear();
+  for (GeneticEncodingPtr brain : brain_population_) {
+    evaluation_queue_.push_back(brain);
   }
-  active_brain = evaluation_queue.back();
-  evaluation_queue.pop_back();
+  active_brain_ = evaluation_queue_.back();
+  evaluation_queue_.pop_back();
 }
 
 std::vector<GeneticEncodingPtr>
-Learner::get_brains_from_yaml(std::string yaml_path,
+NEATLearner::get_brains_from_yaml(std::string yaml_path,
                               int offset)
 {
   if (offset != -1) {
@@ -347,36 +345,32 @@ Learner::get_brains_from_yaml(std::string yaml_path,
 }
 
 std::vector<GeneticEncodingPtr>
-Learner::get_init_brains()
+NEATLearner::get_init_brains()
 {
   std::vector<GeneticEncodingPtr> init_pop;
-  int i = 0;
-  while (i++ < pop_size) {
-    GeneticEncodingPtr mutated_genotype = start_from->copy();
+  size_t i = 0;
+  while (i++ < population_size_) {
+    GeneticEncodingPtr mutated_genotype = start_from_->copy();
 #ifdef CPPNEAT_DEBUG
     if(!mutated_genotype->is_valid()) {
         std::cerr << "copying caused invalid genotype" << std::endl;
     }
 #endif
-    for (int j = 0; j < initial_structural_mutations && initial_structural_mutations > 0; j++) {
+    for (size_t j = 0; j < initial_structural_mutations_ && initial_structural_mutations_ > 0; j++) {
       apply_structural_mutation(mutated_genotype);
     }
 
-    mutator->mutate_weights(mutated_genotype,
-                            1,
-                            weight_mutation_sigma);
+    mutator->mutate_weights(mutated_genotype, 1, weight_mutation_sigma);
+    mutator->mutate_neuron_params(mutated_genotype, 1, param_mutation_sigma);
 
-    mutator->mutate_neuron_params(mutated_genotype,
-                                  1,
-                                  param_mutation_sigma);
     init_pop.push_back(mutated_genotype);
   }
   return init_pop;
 }
 
-void Learner::reportFitness(std::string id,
-                       GeneticEncodingPtr genotype,
-                       double fitness)
+void NEATLearner::reportFitness(std::string id,
+                                GeneticEncodingPtr genotype,
+                                double fitness)
 {
   std::cout << "Evalutation over\n"
             << "Evaluated " << ++total_brains_evaluated << " brains \n"
@@ -390,19 +384,19 @@ void Learner::reportFitness(std::string id,
       sum += add;
     }
     double average_fitness = sum / repeat_evaluations;
-    brain_fitness[active_brain] = average_fitness;
-    brain_velocity[active_brain] = average_fitness;
+    brain_fitness[active_brain_] = average_fitness;
+    brain_velocity[active_brain_] = average_fitness;
 
-    if (evaluation_queue.size() == 0) {
+    if (evaluation_queue_.size() == 0) {
       share_fitness();
 
       produce_new_generation();
-      std::reverse(evaluation_queue.begin(),
-                   evaluation_queue.end());
+      std::reverse(evaluation_queue_.begin(),
+                   evaluation_queue_.end());
       generation_number++;
     }
-    active_brain = evaluation_queue.back();
-    evaluation_queue.pop_back();
+    active_brain_ = evaluation_queue_.back();
+    evaluation_queue_.pop_back();
     fitness_buffer.clear();
     if (generation_number >= max_generations) {
       std::cout << "Maximum number of generations reached" << std::endl;
@@ -414,12 +408,12 @@ void Learner::reportFitness(std::string id,
   }
 }
 
-GeneticEncodingPtr Learner::currentGenotype()
+GeneticEncodingPtr NEATLearner::currentGenotype()
 {
-  return active_brain;
+  return active_brain_;
 }
 
-void Learner::writeGenome(std::string robot_name,
+void NEATLearner::writeGenome(std::string robot_name,
                           GeneticEncodingPtr genome)
 {
   std::ofstream outputFile;
@@ -428,7 +422,7 @@ void Learner::writeGenome(std::string robot_name,
   outputFile << "- evaluation: " << total_brains_evaluated << std::endl;
   outputFile << "  brain:" << std::endl;
   outputFile << "    connection_genes:" << std::endl;
-  auto connection_genes = genome->connection_genes;
+  auto connection_genes = genome->connection_genes_;
   int n_cons = 1;
   for (auto it = connection_genes.begin(); it != connection_genes.end(); it++) {
     auto connection = it->get();
@@ -441,7 +435,7 @@ void Learner::writeGenome(std::string robot_name,
     outputFile << "            parent_index: " << connection->get_parent_index() << std::endl;
   }
   outputFile << "    layers:" << std::endl;
-  auto layers = genome->layers;
+  auto layers = genome->layers_;
   int n_layer = 1;
   for (auto it = layers.begin(); it != layers.end(); it++) {
     outputFile << "      - layer_" << n_layer << ":" << std::endl;
@@ -464,7 +458,7 @@ void Learner::writeGenome(std::string robot_name,
   outputFile.close();
 }
 
-void Learner::share_fitness()
+void NEATLearner::share_fitness()
 {
   //speciate
   std::map<GeneticEncodingPtr, std::vector<GeneticEncodingPtr>> old_species = species;
@@ -525,8 +519,7 @@ fitness_cmp(std::pair<GeneticEncodingPtr, double> genotype1,
   return genotype1.second > genotype2.second;
 }
 
-void
-Learner::produce_new_generation()
+void NEATLearner::produce_new_generation()
 {
   //calculate number of children for each species
   double overall_fitness = 0;
@@ -540,8 +533,8 @@ Learner::produce_new_generation()
     overall_fitness += cur_sum;
   }
   std::map<GeneticEncodingPtr, int> species_offspring;
-  int cur_children = 0;
-  double average_fitness = overall_fitness / num_children;
+  size_t cur_children = 0;
+  double average_fitness = overall_fitness / num_children_;
   GeneticEncodingPtr best = species_fitness.begin()->first;
   double treshold = 0;
   for (auto it = species_fitness.begin(); it != species_fitness.end(); ++it) {
@@ -555,8 +548,8 @@ Learner::produce_new_generation()
     }
   }
   //should not happen, but might (>= for double flawed)
-  if (cur_children < num_children) {
-    assert(cur_children == num_children - 1);
+  if (cur_children < num_children_) {
+    assert(cur_children == num_children_ - 1);
     species_offspring[best]++;
   }
   //reproduce
@@ -565,23 +558,18 @@ Learner::produce_new_generation()
   for (std::pair<GeneticEncodingPtr, std::vector<GeneticEncodingPtr>> sppair : species) {
     std::vector<std::pair<GeneticEncodingPtr, double>> fitness_pairs;
     for (GeneticEncodingPtr brain : sppair.second) {
-      fitness_pairs.push_back(std::pair<GeneticEncodingPtr, double>(brain,
-                                                                    brain_fitness[brain]));
+      fitness_pairs.push_back(std::pair<GeneticEncodingPtr, double>(brain, brain_fitness[brain]));
     }
-    std::sort(fitness_pairs.begin(),
-              fitness_pairs.end(),
-              fitness_cmp);
+    std::sort(fitness_pairs.begin(), fitness_pairs.end(), fitness_cmp);
 
     std::vector<std::pair<GeneticEncodingPtr, GeneticEncodingPtr>> parent_pairs;
     int i = 0;
     while (i++ < species_offspring[sppair.first]) {
       if (sppair.second.size() == 1 || uniform(generator) < interspecies_mate_probability) {
         //if there is only one individual in species or we are below threshold probability we want interspecies mating
-        std::uniform_int_distribution<int> choose(0,
-                                                  sppair.second.size() - 1);
+        std::uniform_int_distribution<int> choose(0, sppair.second.size() - 1);
         GeneticEncodingPtr mom = sppair.second[choose(generator)];
-        std::uniform_int_distribution<int> chooose(0,
-                                                   species.size() - 1);
+        std::uniform_int_distribution<int> chooose(0, species.size() - 1);
         int until = chooose(generator);
         auto species_iterator = species.begin();
         for (int k = 0; k < until; k++) {
@@ -590,42 +578,35 @@ Learner::produce_new_generation()
         std::vector<GeneticEncodingPtr> bachelors = (species_iterator)->second;
         std::vector<std::pair<GeneticEncodingPtr, double>> to_sort;
         for (GeneticEncodingPtr brain : bachelors) {
-          to_sort.push_back(std::pair<GeneticEncodingPtr, double>(brain,
-                                                                  brain_fitness[brain]));
+          to_sort.push_back(std::pair<GeneticEncodingPtr, double>(brain, brain_fitness[brain]));
         }
-        std::sort(to_sort.begin(),
-                  to_sort.end(),
-                  fitness_cmp);
+        std::sort(to_sort.begin(), to_sort.end(), fitness_cmp);
+
         GeneticEncodingPtr dad = to_sort[0].first;
         parent_pairs.push_back(brain_fitness[mom] > brain_fitness[dad] ?
-                               std::make_pair(mom,
-                                              dad) :
-                               std::make_pair(dad,
-                                              mom));
+                               std::make_pair(mom, dad) :
+                               std::make_pair(dad, mom));
       } else {
-        std::pair<GeneticEncodingPtr, GeneticEncodingPtr> selected = select_for_tournament(fitness_pairs,
-                                                                                           2);
+        std::pair<GeneticEncodingPtr, GeneticEncodingPtr> selected = select_for_tournament(fitness_pairs, 2);
         parent_pairs.push_back(selected);
       }
     }
     for (std::pair<GeneticEncodingPtr, GeneticEncodingPtr> parents : parent_pairs) {
-      GeneticEncodingPtr child_genotype = produce_child(parents.first,
-                                                        parents.second);
-      evaluation_queue.push_back(child_genotype);
+      GeneticEncodingPtr child_genotype = produce_child(parents.first, parents.second);
+      evaluation_queue_.push_back(child_genotype);
     }
   }
   //elitism
   std::vector<std::pair<GeneticEncodingPtr, double>> velocity_pairs;
   for (auto it : brain_velocity) {
-    velocity_pairs.push_back(std::pair<GeneticEncodingPtr, double>(it.first,
-                                                                   it.second));
+    velocity_pairs.push_back(std::pair<GeneticEncodingPtr, double>(it.first, it.second));
   }
   std::sort(velocity_pairs.begin(),
             velocity_pairs.end(),
             fitness_cmp);
-  int i = 0;
-  while (i < (pop_size - num_children)) {
-    evaluation_queue.push_back(velocity_pairs[i].first);
+  size_t i = 0;
+  while (i < (population_size_ - num_children_)) {
+    evaluation_queue_.push_back(velocity_pairs[i].first);
     i++;
   }
   //remove old fitness
@@ -638,15 +619,15 @@ Learner::produce_new_generation()
   for (unsigned int j = 0; j < species.size(); j++) {
     std::cout << "** " << (species_iterator++)->second.size() << std::endl;
   }
-  std::cout << "* overall number of individuals in queue: " << evaluation_queue.size() << std::endl;
+  std::cout << "* overall number of individuals in queue: " << evaluation_queue_.size() << std::endl;
 }
 
 GeneticEncodingPtr
-Learner::produce_child(GeneticEncodingPtr parent1,
+NEATLearner::produce_child(GeneticEncodingPtr parent1,
                        GeneticEncodingPtr parent2)
 {
   GeneticEncodingPtr child_genotype;
-  if (asexual) {
+  if (is_asexual_) {
     child_genotype = parent1->copy();
   } else {
     child_genotype = Crossover::crossover(parent1,
@@ -667,7 +648,7 @@ Learner::produce_child(GeneticEncodingPtr parent1,
 }
 
 void
-Learner::apply_structural_mutation(GeneticEncodingPtr genotype)
+NEATLearner::apply_structural_mutation(GeneticEncodingPtr genotype)
 {
   std::uniform_real_distribution<double> uniform(0,
                                                  1);
@@ -684,7 +665,7 @@ Learner::apply_structural_mutation(GeneticEncodingPtr genotype)
 }
 
 std::pair<GeneticEncodingPtr, GeneticEncodingPtr>
-Learner::select_for_tournament(std::vector<std::pair<GeneticEncodingPtr, double> > candidates,
+NEATLearner::select_for_tournament(std::vector<std::pair<GeneticEncodingPtr, double> > candidates,
                                unsigned int tourn_size)
 {
   std::shuffle(candidates.begin(),
@@ -699,34 +680,34 @@ Learner::select_for_tournament(std::vector<std::pair<GeneticEncodingPtr, double>
                                                            candidates[1].first);
 }
 
-const bool Learner::ASEXUAL = false;
+const bool NEATLearner::ASEXUAL = false;
 
-const int Learner::POP_SIZE = 50;
+const int NEATLearner::POP_SIZE = 50;
 
-const int Learner::TOURNAMENT_SIZE = 40;
+const int NEATLearner::TOURNAMENT_SIZE = 40;
 
-const int Learner::NUM_CHILDREN = 45;
+const int NEATLearner::NUM_CHILDREN = 45;
 
-const double Learner::WEIGHT_MUTATION_PROBABILITY = 0.8;
+const double NEATLearner::WEIGHT_MUTATION_PROBABILITY = 0.8;
 
-const double Learner::WEIGHT_MUTATION_SIGMA = 5.0;
+const double NEATLearner::WEIGHT_MUTATION_SIGMA = 5.0;
 
-const double Learner::PARAM_MUTATION_PROBABILITY = 0.8;
+const double NEATLearner::PARAM_MUTATION_PROBABILITY = 0.8;
 
-const double Learner::PARAM_MUTATION_SIGMA = 0.25;
+const double NEATLearner::PARAM_MUTATION_SIGMA = 0.25;
 
-const double Learner::STRUCTURAL_AUGMENTATION_PROBABILITY = 0.8;
+const double NEATLearner::STRUCTURAL_AUGMENTATION_PROBABILITY = 0.8;
 
-const double Learner::STRUCTURAL_REMOVAL_PROBABILITY = 0;
+const double NEATLearner::STRUCTURAL_REMOVAL_PROBABILITY = 0;
 
-const int Learner::MAX_GENERATIONS = 20;
+const int NEATLearner::MAX_GENERATIONS = 20;
 
-const double Learner::SPECIATION_TRESHOLD = 0.03;
+const double NEATLearner::SPECIATION_TRESHOLD = 0.03;
 
-const int Learner::REPEAT_EVALUATIONS = 1;
+const int NEATLearner::REPEAT_EVALUATIONS = 1;
 
-const int Learner::INITIAL_STRUCTURAL_MUTATIONS = 1;
+const int NEATLearner::INITIAL_STRUCTURAL_MUTATIONS = 1;
 
-const double Learner::INTERSPECIES_MATE_PROBABILITY = 0.001;
+const double NEATLearner::INTERSPECIES_MATE_PROBABILITY = 0.001;
 
 }

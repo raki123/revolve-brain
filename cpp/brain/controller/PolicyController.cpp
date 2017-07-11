@@ -19,46 +19,38 @@ PolicyController::PolicyController(size_t n_actuators,
   interpolation_cache_ = std::make_shared<Policy>(n_actuators);
 
   for (size_t i = 0; i < n_actuators; i++) {
-    interpolation_cache_->at(i)
-                        .resize(interpolation_cache_size_,
-                                0);
+    interpolation_cache_->at(i).resize(interpolation_cache_size_, 0);
   }
 }
 
 PolicyController::PolicyController(size_t n_actuators)
-        :
-        PolicyController(n_actuators,
-                         INTERPOLATION_CACHE_SIZE)
+        : PolicyController(n_actuators, INTERPOLATION_CACHE_SIZE)
 {}
 
 PolicyController::~PolicyController()
 {}
 
-void
-PolicyController::update(const std::vector<ActuatorPtr> &actuators,
-                         const std::vector<SensorPtr> &sensors,
-                         double t,
-                         double step)
+void PolicyController::update(const std::vector<ActuatorPtr> &actuators,
+                              const std::vector<SensorPtr> &sensors,
+                              double t,
+                              double step)
 {
   // generate outputs
   double *output_vector = new double[n_actuators_];
-  this->generateOutput(t,
-                       output_vector);
+  this->generateOutput(t, output_vector);
 
   // Send new signals to the actuators
   size_t p = 0;
   for (auto actuator: actuators) {
-    actuator->update(&output_vector[p],
-                     step);
+    actuator->update(&output_vector[p], step);
     p += actuator->outputs();
   }
 
   delete[] output_vector;
 }
 
-void
-PolicyController::generateOutput(const double time,
-                                 double *output_vector)
+void PolicyController::generateOutput(const double time,
+                                      double *output_vector)
 {
   if (cycle_start_time_ < 0) {
     cycle_start_time_ = time;
@@ -87,14 +79,12 @@ PolicyController::generateOutput(const double time,
   }
 }
 
-PolicyPtr
-PolicyController::getPhenotype()
+PolicyPtr PolicyController::getPhenotype()
 {
   return policy_;
 }
 
-void
-PolicyController::setPhenotype(PolicyPtr policy)
+void PolicyController::setPhenotype(PolicyPtr policy)
 {
   policy_ = policy;
   update_cache();
@@ -102,16 +92,14 @@ PolicyController::setPhenotype(PolicyPtr policy)
   //TODO:: make sure the current time in cycle is correct.
 }
 
-void
-PolicyController::update_cache()
+void PolicyController::update_cache()
 {
   this->InterpolateCubic(policy_.get(),
                          interpolation_cache_.get());
 }
 
-void
-PolicyController::InterpolateCubic(Policy *const source_y,
-                                   Policy *destination_y)
+void PolicyController::InterpolateCubic(Policy *const source_y,
+                                        Policy *destination_y)
 {
   const size_t source_y_internal_size = (*source_y)[0].size();
   const size_t destination_y_internal_size = (*destination_y)[0].size();

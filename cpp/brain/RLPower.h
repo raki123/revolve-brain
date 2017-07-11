@@ -50,6 +50,7 @@ public:
 
     virtual ~RLPower() override;
 
+      using revolve::brain::Brain::update;
     /**
      * Method for updating sensors readings, actuators positions, ranked list of policies and generating new policy
      * @param actuators: vector list of robot's actuators

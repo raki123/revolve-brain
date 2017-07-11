@@ -17,11 +17,7 @@ public:
                    std::string parent_name = "",
                    int parent_index = -1,
                    std::string socket = "")
-            :
-            Gene(innov_number,
-                 enabled,
-                 parent_name,
-                 parent_index)
+            : Gene(innov_number, enabled, parent_name, parent_index)
             , mark_to(mark_to)
             , mark_from(mark_from)
             , weight(weight)
