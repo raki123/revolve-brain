@@ -18,7 +18,7 @@ TestAsyncNeat::~TestAsyncNeat()
 bool
 TestAsyncNeat::test()
 {
-  if (!testXOR())
+  if (not testXOR())
     return false;
 
   return true;

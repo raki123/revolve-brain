@@ -352,7 +352,7 @@ NEATLearner::get_init_brains()
   while (i++ < population_size_) {
     GeneticEncodingPtr mutated_genotype = start_from_->copy();
 #ifdef CPPNEAT_DEBUG
-    if(!mutated_genotype->is_valid()) {
+    if (not mutated_genotype->is_valid()) {
         std::cerr << "copying caused invalid genotype" << std::endl;
     }
 #endif
@@ -488,7 +488,7 @@ void NEATLearner::share_fitness()
       }
     }
     //add new species in case of no matches
-    if (!added) {
+    if (not added) {
       species.insert(std::make_pair(cur_brain.first,
                                     std::vector<GeneticEncodingPtr>(1,
                                                                     cur_brain.first)));

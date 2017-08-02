@@ -13,7 +13,7 @@ std::map<std::string, Experiment *> *Experiment::experiments = nullptr;
 Experiment *
 Experiment::get(const char *name)
 {
-  if (!experiments) {
+  if (not experiments) {
     experiments = new std::map<std::string, Experiment *>();
   }
   auto it = experiments->find(name);

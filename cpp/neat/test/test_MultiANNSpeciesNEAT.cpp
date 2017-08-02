@@ -23,7 +23,7 @@ TestMultiNNSpeciesNeat::~TestMultiNNSpeciesNeat()
 bool
 TestMultiNNSpeciesNeat::test()
 {
-  if (!testXOR())
+  if (not testXOR())
     return false;
 
   return true;

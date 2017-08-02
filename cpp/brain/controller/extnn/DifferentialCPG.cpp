@@ -74,7 +74,7 @@ namespace revolve
 
     void DifferentialCPG::setNeuronParameters(std::map<std::string, double> params)
     {
-      if (!params.count("rv:bias"))
+      if (not params.count("rv:bias"))
       {
         std::cerr
                 << "A `"

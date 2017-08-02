@@ -64,7 +64,7 @@ private:
                     &gene)) {
           //But skip links that are already recurrent
           //(We want to check back through the forward flow of signals only
-          if (!(*gene)->is_recurrent()) {
+          if (not (*gene)->is_recurrent()) {
             if (is_recur((*gene)->in_node_id(),
                          out_id,
                          count,

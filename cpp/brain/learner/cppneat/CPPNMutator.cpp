@@ -91,7 +91,7 @@ void
 Mutator::load_known_innovations(std::string yaml_path)
 {
   std::ifstream outputFile(yaml_path);
-  if (!outputFile.good()) {
+  if (not outputFile.good()) {
     return;
   }
   outputFile.close();
@@ -136,7 +136,7 @@ Mutator::mutate_neuron_params(GeneticEncodingPtr genotype,
 {
   std::uniform_real_distribution<double> uniform(0,
                                                  1);
-  if (!genotype->is_layered_) {
+  if (not genotype->is_layered_) {
     for (NeuronGenePtr neuron_gene : genotype->neuron_genes_) {
       if (uniform(generator) < probability) {
         std::vector<Neuron::ParamSpec> neuron_params = brain_spec[neuron_gene->neuron
@@ -226,7 +226,7 @@ bool
 Mutator::add_connection_mutation(GeneticEncodingPtr genotype,
                                  double sigma)
 {
-  if (!genotype->is_layered_) {
+  if (not genotype->is_layered_) {
     std::uniform_int_distribution<int> choice(0,
                                               genotype->neuron_genes_
                                                       .size() - 1);
@@ -258,7 +258,7 @@ Mutator::add_connection_mutation(GeneticEncodingPtr genotype,
                    genotype,
                    "");
 #ifdef CPPNEAT_DEBUG
-    if(!genotype->is_valid()) {
+    if (not genotype->is_valid()) {
         std::cerr << "add connection mutation caused invalid genotye" << std::endl;
         throw std::runtime_error("mutation error");
     }
@@ -298,7 +298,7 @@ Mutator::add_connection_mutation(GeneticEncodingPtr genotype,
                    genotype,
                    "");
 #ifdef CPPNEAT_DEBUG
-    if(!genotype->is_valid()) {
+    if (not genotype->is_valid()) {
         std::cerr << "add connection mutation caused invalid genotye" << std::endl;
         throw std::runtime_error("mutation error");
     }
@@ -318,10 +318,10 @@ get_random_parameters(Neuron::NeuronTypeSpec param_specs,
                                           sigma);
   for (Neuron::ParamSpec spec : param_specs.param_specs) {
 // 		params[spec.name] = spec.min_value + normal(generator)*(spec.max_value - spec.min_value);
-// 		if(!spec.min_inclusive) {
+// 		if (not spec.min_inclusive) {
 // 			params[spec.name] = std::max(params[spec.name], spec.min_value + spec.epsilon);
 // 		}
-// 		if(!spec.max_inclusive) {
+// 		if (not spec.max_inclusive) {
 // 			params[spec.name] = std::min(params[spec.name], spec.max_value - spec.epsilon);
 // 		}
     params[spec.name] = normal(generator);
@@ -337,7 +337,7 @@ Mutator::add_neuron_mutation(GeneticEncodingPtr genotype,
   assert(genotype->connection_genes_
                  .size() > 0);
   assert(addable_neurons.size() > 0);
-  if (!genotype->is_layered_) {
+  if (not genotype->is_layered_) {
     std::uniform_int_distribution<int> choice1(0,
                                                genotype->connection_genes_
                                                        .size() - 1);
@@ -406,7 +406,7 @@ Mutator::add_neuron_mutation(GeneticEncodingPtr genotype,
                                  genotype,
                                  split);
 #ifdef CPPNEAT_DEBUG
-    if(!genotype->is_valid()) {
+    if (not genotype->is_valid()) {
         std::cerr << "add neuron mutation caused invalid genotye1" << std::endl;
         throw std::runtime_error("mutation error");
     }
@@ -417,7 +417,7 @@ Mutator::add_neuron_mutation(GeneticEncodingPtr genotype,
                    genotype,
                    "");
 #ifdef CPPNEAT_DEBUG
-    if(!genotype->is_valid()) {
+    if (not genotype->is_valid()) {
         std::cerr << "add neuron mutation caused invalid genotye2" << std::endl;
         throw std::runtime_error("mutation error");
     }
@@ -429,7 +429,7 @@ Mutator::add_neuron_mutation(GeneticEncodingPtr genotype,
                    "");
   }
 #ifdef CPPNEAT_DEBUG
-  if(!genotype->is_valid()) {
+  if (not genotype->is_valid()) {
       std::cerr << "add neuron mutation caused invalid genotye" << std::endl;
       throw std::runtime_error("mutation error");
   }
@@ -503,7 +503,7 @@ Mutator::add_neuron(NeuronPtr neuron,
                                                    true,
                                                    "none",
                                                    -1));
-      if (!genotype->is_layered_) {
+      if (not genotype->is_layered_) {
         genotype->add_neuron_gene(new_neuron_gene);
       } else {
         int mark_from = split->mark_from;
@@ -528,7 +528,7 @@ Mutator::add_neuron(NeuronPtr neuron,
                                                -1));
   //in base case a new vector is constructed here
   neuron_innovations[neuron_pair].push_back(innovation_number);
-  if (!genotype->is_layered_) {
+  if (not genotype->is_layered_) {
     genotype->add_neuron_gene(new_neuron_gene);
   } else {
     int mark_from = split->mark_from;

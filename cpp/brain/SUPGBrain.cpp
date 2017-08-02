@@ -142,7 +142,7 @@ void SUPGBrain::nextBrain()
 {
     bool init_supgs;
     unsigned int how_many_neurons;
-    if (!current_evalaution) {
+    if (not current_evalaution) {
         // first evaluation
         init_supgs = true;
         how_many_neurons = neuron_coordinates.size();
@@ -183,7 +183,7 @@ void SUPGBrain::nextBrain()
 void SUPGBrain::learner(double t)
 {
     // Evaluate policy on certain time limit
-    if (!this->isOffline()
+    if (not this->isOffline()
             && (t-start_eval_time) > SUPGBrain::FREQUENCY_RATE)
     {
         // check if to stop the experiment. Negative value for MAX_EVALUATIONS will never stop the experiment

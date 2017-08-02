@@ -125,7 +125,7 @@ bool YAML::convert<NEAT::Trait>::decode(const YAML::Node &node, NEAT::Trait &rhs
   rhs.trait_id = node["id"].as<int>();
   Node yaml_params = node["params"];
 
-  if (!yaml_params.IsSequence() || yaml_params.size() != NUM_TRAIT_PARAMS) {
+  if (not yaml_params.IsSequence() || yaml_params.size() != NUM_TRAIT_PARAMS) {
     return false;
   }
 

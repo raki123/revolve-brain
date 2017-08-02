@@ -107,7 +107,7 @@ InnovGenomeManager::mate(Genome &genome1,
                          real_t fitness2)
 {
 
-  if (!is_mate_allowed()) {
+  if (not is_mate_allowed()) {
     if (fitness1 > fitness2) {
       clone(genome1,
             offspring);
@@ -126,7 +126,7 @@ InnovGenomeManager::mate(Genome &genome1,
 
     //Determine whether to mutate the baby's InnovGenome
     //This is done randomly or if the genome1 and genome2 are the same organism
-    if (!offspring.rng.under(env->mate_only_prob) ||
+    if (not offspring.rng.under(env->mate_only_prob) ||
         (genome2.genome_id == genome1.genome_id) ||
         (to_innov(genome2)->compatibility(to_innov(genome1)) == 0.0)) {
 
@@ -151,11 +151,11 @@ InnovGenomeManager::mutate(Genome &genome_,
                                   GAUSSIAN);
       break;
     case MUTATE_OP_STRUCTURE: {
-      if (!allow_add && !allow_del) {
+      if (not allow_add && !allow_del) {
         mutate(genome_,
                MUTATE_OP_WEIGHTS);
       } else {
-        if (!allow_del || genome_.rng.boolean()) {
+        if (not allow_del || genome_.rng.boolean()) {
           genome->mutate_add_link(create_innov_func(genome_),
                                   env->newlink_tries);
         } else {

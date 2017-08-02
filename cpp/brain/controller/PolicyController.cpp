@@ -176,7 +176,7 @@ PolicyController::GenerateRandomController(double noise_sigma,
                                                       interpolation_cache_size);
 
   // Init first random controller
-  if (!controller->policy_)
+  if (not controller->policy_)
     controller->policy_ = std::make_shared<Policy>(n_actuators);
 
   for (size_t i = 0; i < n_actuators; i++) {
@@ -189,7 +189,7 @@ PolicyController::GenerateRandomController(double noise_sigma,
   }
 
   // Init of empty cache
-  if (!controller->interpolation_cache_)
+  if (not controller->interpolation_cache_)
     controller->interpolation_cache_ = std::make_shared<Policy>(n_actuators);
 
   for (size_t i = 0; i < n_actuators; i++) {

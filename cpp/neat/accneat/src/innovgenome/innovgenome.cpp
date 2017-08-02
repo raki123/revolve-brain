@@ -320,7 +320,7 @@ InnovGenome::mutate_link_trait(int times)
     int trait_id = 1 + rng.index(traits);
     InnovLinkGene &gene = rng.element(links);
 
-    if (!gene.frozen) {
+    if (not gene.frozen) {
       gene.set_trait_id(trait_id);
     }
   }
@@ -333,7 +333,7 @@ InnovGenome::mutate_node_trait(int times)
     int trait_id = 1 + rng.index(traits);
     InnovNodeGene &node = rng.element(nodes);
 
-    if (!node.frozen) {
+    if (not node.frozen) {
       node.set_trait_id(trait_id);
     }
   }
@@ -371,7 +371,7 @@ InnovGenome::mutate_link_weights(real_t power,
     //which a random float will signify that kind of mutation.
 
     //Don't mutate weights of frozen links
-    if (!(gene.frozen)) {
+    if (not (gene.frozen)) {
       real_t gausspoint;
       real_t coldgausspoint;
 
@@ -422,7 +422,7 @@ InnovGenome::mutate_toggle_enable(int times)
   for (int i = 0; i < times; i++) {
     InnovLinkGene &gene = rng.element(links);
 
-    if (!gene.enable) {
+    if (not gene.enable) {
       gene.enable = true;
     } else {
       //We need to make sure that another gene connects out of the in-node
@@ -449,7 +449,7 @@ InnovGenome::mutate_gene_reenable()
 {
   //Search for a disabled gene
   for (InnovLinkGene &g: links) {
-    if (!g.enable) {
+    if (not g.enable) {
       g.enable = true;
       break;
     }
@@ -470,7 +470,7 @@ InnovGenome::mutate_add_node(CreateInnovationFunc create_innov,
       }
     }
     //We couldn't find anything, so say goodbye!
-    if (!splitlink) {
+    if (not splitlink) {
       return false;
     }
   }
@@ -639,7 +639,7 @@ InnovGenome::mutate_add_link(CreateInnovationFunc create_innov,
     assert(!is_input(out_node->type));
 
     //Continue only if an open link was found
-    if (!found_nodes) {
+    if (not found_nodes) {
       return false;
     }
   }
@@ -819,7 +819,7 @@ InnovGenome::mate_multipoint(InnovGenome *genome1,
       protogene.set_gene(genome1,
                          &*p1gene);
       ++p1gene;
-      if (!p1better) skip = true; //Skip excess from the worse genome
+      if (not p1better) skip = true; //Skip excess from the worse genome
     } else {
       //Extract current innovation numbers
       p1innov = p1gene->innovation_num;
@@ -847,7 +847,7 @@ InnovGenome::mate_multipoint(InnovGenome *genome1,
                            &*p1gene);
         ++p1gene;
 
-        if (!p1better) skip = true;
+        if (not p1better) skip = true;
 
       } else if (p2innov < p1innov) {
         protogene.set_gene(genome2,
@@ -874,7 +874,7 @@ InnovGenome::mate_multipoint(InnovGenome *genome1,
 
     if (curgene2 != newlinks.end()) skip = true;  //Links conflicts, abort adding
 
-    if (!skip) {
+    if (not skip) {
       //Next check for the nodes, add them if not in the baby InnovGenome already
       InnovNodeGene *inode = protogene.in();
       InnovNodeGene *onode = protogene.out();
@@ -1067,7 +1067,7 @@ InnovGenome::mate_multipoint_avg(InnovGenome *genome1,
                          &*p1gene);
       ++p1gene;
 
-      if (!p1better) skip = true;
+      if (not p1better) skip = true;
     } else {
       //Extract current innovation numbers
       p1innov = p1gene->innovation_num;
@@ -1116,7 +1116,7 @@ InnovGenome::mate_multipoint_avg(InnovGenome *genome1,
                            &*p1gene);
         ++p1gene;
 
-        if (!p1better) skip = true;
+        if (not p1better) skip = true;
       } else if (p2innov < p1innov) {
         protogene.set_gene(genome2,
                            &*p2gene);
@@ -1144,7 +1144,7 @@ InnovGenome::mate_multipoint_avg(InnovGenome *genome1,
       ++curgene2;
     }
 
-    if (!skip) {
+    if (not skip) {
       //Now add the chosengene to the baby
 
       //Next check for the nodes, add them if not in the baby InnovGenome already
@@ -1519,7 +1519,7 @@ InnovGenome::delete_if_orphaned_hidden_node(int node_id)
     }
   }
 
-  if (!found_link) {
+  if (not found_link) {
     auto iterator = nodes.begin() + (node - nodes.data());
     assert(iterator->node_id == node_id);
     nodes.erase(iterator);

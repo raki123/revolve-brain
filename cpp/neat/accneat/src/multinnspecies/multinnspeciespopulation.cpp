@@ -103,7 +103,7 @@ MultiNNSpeciesPopulation::speciate()
         break;
       }
     }
-    if (!org.species) {
+    if (not org.species) {
       MultiNNSpecies *s = new MultiNNSpecies(++last_species);
       species.push_back(s);
       org.species = s;
@@ -394,7 +394,7 @@ MultiNNSpeciesPopulation::next_generation()
     size_t index_new_species = species.size();
 
     for (MultiNNSpeciesOrganism &org: orgs.curr()) {
-      if (!org.species) {
+      if (not org.species) {
         //It didn't fit into any of the existing species. Check if it fits
         //into one we've just created.
         for (size_t i = index_new_species, n = species.size();
@@ -409,7 +409,7 @@ MultiNNSpeciesPopulation::next_generation()
           }
         }
         //It didn't fit into a newly created species, so make one for it.
-        if (!org.species) {
+        if (not org.species) {
           org.species = new MultiNNSpecies(++last_species,
                                            true);
           species.push_back(org.species);

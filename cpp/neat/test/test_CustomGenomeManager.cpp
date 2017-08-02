@@ -22,7 +22,7 @@ TestCustomGenomeManager::~TestCustomGenomeManager()
 
 bool TestCustomGenomeManager::test()
 {
-  if (!testXOR())
+  if (not testXOR())
     return false;
 
   return true;

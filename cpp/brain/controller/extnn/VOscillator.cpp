@@ -11,7 +11,7 @@ VOscillator::VOscillator(const std::string &id,
                          const std::map<std::string, double> &params) :
         Neuron(id)
 {
-  if (!params.count("rv:alpha") || !params.count("rv:tau") || !params.count("rv:energy")) {
+  if (not params.count("rv:alpha") || not params.count("rv:tau") || not params.count("rv:energy")) {
     std::cerr << "A `" << "V-Oscillator" <<
               "` neuron requires `rv:alpha`, `rv:tau` and `rv:energy` elements." << std::endl;
     throw std::runtime_error("Robot brain error");
@@ -90,7 +90,7 @@ VOscillator::getNeuronParameters()
 void
 VOscillator::setNeuronParameters(std::map<std::string, double> params)
 {
-  if (!params.count("rv:alpha") || !params.count("rv:tau") || !params.count("rv:energy")) {
+  if (not params.count("rv:alpha") || not params.count("rv:tau") || not params.count("rv:energy")) {
     std::cerr << "A `" << "V-Oscillator" <<
               "` neuron requires `rv:alpha`, `rv:tau` and `rv:energy` elements." << std::endl;
     throw std::runtime_error("Robot brain error");

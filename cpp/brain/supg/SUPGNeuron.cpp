@@ -159,7 +159,7 @@ SUPGNeuron::get_timer(float global_time)
 //     if (coordinates[0] == 0)
 //     std::cout << "#### (" << coordinates[0] << ", " << coordinates[1] << ") ####" << std::endl;
 
-  if (!started_timer_flag) {
+  if (not started_timer_flag) {
     init_timer(global_time);
     started_timer_flag = true;
   }

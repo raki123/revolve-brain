@@ -45,7 +45,7 @@ CPGBrain::CPGBrain(std::string robot_name,
     std::normal_distribution<float> dist(0, (float) this->noise_sigma_);
 
     // Init first random controller
-    if (!current_policy_)
+    if (not current_policy_)
         current_policy_ = std::make_shared<Policy>(n_actuators);
 
     // init with random connections
@@ -88,7 +88,7 @@ void CPGBrain::learner(double t)
     if (start_eval_time_ < 0)
         start_eval_time_ = t;
 
-    if (!evaluator_started && (t - start_eval_time_) > (evaluation_rate_ / 10)) {
+    if (not evaluator_started && (t - start_eval_time_) > (evaluation_rate_ / 10)) {
         evaluator->start();
         evaluator_started = true;
     }

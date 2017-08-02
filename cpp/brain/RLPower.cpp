@@ -78,7 +78,7 @@ RLPower::generateInitPolicy()
   std::normal_distribution<double> dist(0, noise_sigma_);
 
   // Init first random controller
-  if (!current_policy_)
+  if (not current_policy_)
     current_policy_ = std::make_shared<Policy>(n_actuators_);
 
   for (unsigned int i = 0; i < n_actuators_; i++) {
@@ -90,7 +90,7 @@ RLPower::generateInitPolicy()
   }
 
   // Init of empty cache
-  if (!interpolation_cache_)
+  if (not interpolation_cache_)
     interpolation_cache_ = std::make_shared<Policy>(n_actuators_);
 
   for (unsigned int i = 0; i < n_actuators_; i++) {
@@ -110,7 +110,7 @@ RLPower::loadPolicy(std::string const policy_path)
   }
 
   // Init first random controller
-  if (!current_policy_)
+  if (not current_policy_)
     current_policy_ = std::make_shared<Policy>(n_actuators_);
 
   std::cout << "evaluation: " << policy_file[0]["evaluation"] << std::endl;
@@ -135,7 +135,7 @@ RLPower::loadPolicy(std::string const policy_path)
   }
 
   // Init of empty cache
-  if (!interpolation_cache_)
+  if (not interpolation_cache_)
     interpolation_cache_ = std::make_shared<Policy>(n_actuators_);
 
   for (unsigned int i = 0; i < n_actuators_; i++) {

@@ -124,7 +124,7 @@ public:
           Timer::report();
 
           //Don't print on success because we'll exit the loop and print then.
-//          if (!success && (gen % env->print_every == 0))
+//          if (not success && (gen % env->print_every == 0))
 //            print(expcount,
 //                  gen);
         }
@@ -191,14 +191,14 @@ private:
       for (size_t i = 0; i < norgs; i++) {
         Organism *org = pop->get(i);
         org->eval = evaluations[i];
-        if (!best || (org->eval.fitness > best->eval.fitness)) {
+        if (not best || (org->eval.fitness > best->eval.fitness)) {
           best = org;
         }
       }
 
       timer.stop();
 
-      if (!fittest || (best->eval.fitness > fittest->eval.fitness)) {
+      if (not fittest || (best->eval.fitness > fittest->eval.fitness)) {
         fittest = pop->make_copy(best->population_index);
       }
 

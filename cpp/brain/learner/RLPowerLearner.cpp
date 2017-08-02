@@ -58,7 +58,7 @@ RLPowerLearner::generateInitPolicy()
                                         this->noise_sigma_);
 
   // Init first random controller
-  if (!current_policy_)
+  if (not current_policy_)
     current_policy_ = std::make_shared<Policy>(n_weight_vectors_);
 
   for (size_t i = 0; i < n_weight_vectors_; i++) {
@@ -80,7 +80,7 @@ RLPowerLearner::loadPolicy(std::string const policy_path)
   }
 
   // Init first random controller
-  if (!current_policy_)
+  if (not current_policy_)
     current_policy_ = std::make_shared<Policy>(n_weight_vectors_);
 
   std::cout << "evaluation: " << policy_file[0]["evaluation"] << std::endl;

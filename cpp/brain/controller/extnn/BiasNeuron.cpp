@@ -9,7 +9,7 @@ BiasNeuron::BiasNeuron(const std::string &id,
                        const std::map<std::string, double> &params) :
         Neuron(id)
 {
-  if (!params.count("rv:bias")) {
+  if (not params.count("rv:bias")) {
     std::cerr << "A `" << "Bias" << "` neuron requires `rv:bias` element." << std::endl;
     throw std::runtime_error("Robot brain error");
   }
@@ -35,7 +35,7 @@ BiasNeuron::getNeuronParameters()
 void
 BiasNeuron::setNeuronParameters(std::map<std::string, double> params)
 {
-  if (!params.count("rv:bias")) {
+  if (not params.count("rv:bias")) {
     std::cerr << "A `" << "Bias" << "` neuron requires `rv:bias` element." << std::endl;
     throw std::runtime_error("Robot brain error");
   }

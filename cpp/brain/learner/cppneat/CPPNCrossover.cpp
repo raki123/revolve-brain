@@ -33,7 +33,7 @@ Crossover::crossover(GeneticEncodingPtr genotype_more_fit,
       child_genes.push_back(pair.first);
     }
   }
-  if (!genotype_less_fit->is_layered_) {
+  if (not genotype_less_fit->is_layered_) {
     GeneticEncodingPtr child_genotype(new GeneticEncoding(false));
     for (GenePtr gene : child_genes) {
       if (gene->gene_type == Gene::NEURON_GENE) {

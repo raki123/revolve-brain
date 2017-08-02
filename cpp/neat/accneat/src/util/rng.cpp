@@ -25,7 +25,7 @@ equals(real_t x,
 
 #define assert_nequals_vec(x, y)                                        \
     for(size_t i = 0; i < x.size(); i++) {                              \
-        if(!equals(x[i], y[i])) break;                                  \
+        if (not equals(x[i], y[i])) break;                                  \
         if(i == x.size() - 1) {                                         \
             cerr << __FILE__ << ":" << __LINE__ << ": vectors equal" << endl; \
             exit(1);                                                    \

@@ -10,7 +10,7 @@ SigmoidNeuron::SigmoidNeuron(const std::string &id,
                              const std::map<std::string, double> &params) :
         Neuron(id)
 {
-  if (!params.count("rv:bias") || !params.count("rv:gain")) {
+  if (not params.count("rv:bias") || not params.count("rv:gain")) {
     std::cerr << "A `" << "Sigmoid" << "` neuron requires `rv:bias` and `rv:gain` elements." << std::endl;
     throw std::runtime_error("Robot brain error");
   }
@@ -44,7 +44,7 @@ SigmoidNeuron::getNeuronParameters()
 void
 SigmoidNeuron::setNeuronParameters(std::map<std::string, double> params)
 {
-  if (!params.count("rv:bias") || !params.count("rv:gain")) {
+  if (not params.count("rv:bias") || not params.count("rv:gain")) {
     std::cerr << "A `" << "Sigmoid" << "` neuron requires `rv:bias` and `rv:gain` elements." << std::endl;
     throw std::runtime_error("Robot brain error");
   }

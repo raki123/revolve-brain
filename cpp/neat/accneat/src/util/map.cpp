@@ -23,7 +23,7 @@ Glyph::str()
   out << ", attrs={";
   bool first = true;
   for (auto &kv: attrs) {
-    if (!first) {
+    if (not first) {
       out << ", ";
       first = false;
     }
@@ -79,7 +79,7 @@ static map<string, Section>
 parse_sections(string path)
 {
   ifstream in(path);
-  if (!in.good()) {
+  if (not in.good()) {
     error("Failed opening " << path);
   }
 
@@ -121,7 +121,7 @@ parse_sections(string path)
         err("Expecting ']' as final character");
       }
 
-      if (!section.name.empty()) {
+      if (not section.name.empty()) {
         result[section.name] = section;
         section = {};
       }
@@ -259,13 +259,13 @@ parse_objects_attrs(Section &section,
     }
 
     Location loc;
-    if (!map.loc_trans.try_find(coord[0],
+    if (not map.loc_trans.try_find(coord[0],
                                 coord[1],
                                 loc)) {
       line.err("Invalid coordinate");
     }
     Object *obj;
-    if (!try_find(map.objects,
+    if (not try_find(map.objects,
                   loc,
                   &obj)) {
       line.err("No object at coordinate.");
@@ -342,7 +342,7 @@ parse_objects(Section &section,
       if (c == '\t') {
         line.err("Tabs not allowed");
       } else if (c != ' ') {
-        if (!contains(glyphs,
+        if (not contains(glyphs,
                       c)) {
           line.err("Undefined glyph: '" + str(c) + "'");
         }

@@ -26,7 +26,7 @@ SplineController::GenerateRandomController(
                                                       interpolation_cache_size);
 
   // Init first random controller
-  if (!controller->policy)
+  if (not controller->policy)
     controller->policy = std::make_shared<Policy>(n_actuators);
 
   for (unsigned int i = 0; i < n_actuators; i++) {
@@ -38,7 +38,7 @@ SplineController::GenerateRandomController(
   }
 
   // Init of empty cache
-  if (!controller->interpolation_cache)
+  if (not controller->interpolation_cache)
     controller->interpolation_cache = std::make_shared<Policy>(n_actuators);
 
   for (unsigned int i = 0; i < n_actuators; i++) {

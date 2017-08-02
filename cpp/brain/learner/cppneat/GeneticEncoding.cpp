@@ -8,7 +8,7 @@ namespace CPPNEAT {
 GeneticEncodingPtr
 GeneticEncoding::copy()
 {
-  if (!is_layered_) {
+  if (not is_layered_) {
     GeneticEncodingPtr copy_gen(new GeneticEncoding(false));
     for (NeuronGenePtr neuron_gene : neuron_genes_) {
       NeuronGenePtr copy_neuron(new NeuronGene(*neuron_gene));
@@ -49,7 +49,7 @@ GeneticEncoding::copy()
 size_t
 GeneticEncoding::num_genes()
 {
-  if (!is_layered_) {
+  if (not is_layered_) {
     return neuron_genes_.size() + connection_genes_.size();
   } else {
     size_t sum = 0;
@@ -63,7 +63,7 @@ GeneticEncoding::num_genes()
 size_t
 GeneticEncoding::num_neuron_genes()
 {
-  if (!is_layered_) {
+  if (not is_layered_) {
     return neuron_genes_.size();
   } else {
     size_t sum = 0;
@@ -328,9 +328,9 @@ bool gene_cmp(GenePtr gene1,
 std::vector<GenePtr>
 GeneticEncoding::get_sorted_genes()
 {
-  if (!all_genes_valid) {
+  if (not all_genes_valid) {
     all_genes_sorted.clear();
-    if (!is_layered_) {
+    if (not is_layered_) {
       for (NeuronGenePtr neuron_gene : neuron_genes_) {
         all_genes_sorted.push_back(boost::dynamic_pointer_cast<Gene>(neuron_gene));
       }
@@ -455,7 +455,7 @@ void GeneticEncoding::remove_connection_gene(int index)
 
 bool GeneticEncoding::neuron_exists(const size_t innov_number)
 {
-  if (!is_layered_) {
+  if (not is_layered_) {
     for (NeuronGenePtr gene : neuron_genes_) {
       if (gene->getInnovNumber() == innov_number) {
         return true;
@@ -477,14 +477,14 @@ bool GeneticEncoding::neuron_exists(const size_t innov_number)
 #ifdef CPPNEAT_DEBUG
 bool GeneticEncoding::is_valid()
 {
-    if(!layered)
+    if (not layered)
     {
         for(ConnectionGenePtr connection_gene : connection_genes) {
-            if(!neuron_exists(connection_gene->mark_from) || !neuron_exists(connection_gene->mark_to)) {
-                if(!neuron_exists(connection_gene->mark_from)) {
+            if (not neuron_exists(connection_gene->mark_from) || not neuron_exists(connection_gene->mark_to)) {
+                if (not neuron_exists(connection_gene->mark_from)) {
                     std::cerr << "neuron with mark " << connection_gene->mark_from << " doesnt exist" <<std::endl;
                 }
-                if(!neuron_exists(connection_gene->mark_to)) {
+                if (not neuron_exists(connection_gene->mark_to)) {
                     std::cerr << "neuron with mark " << connection_gene->mark_to << " doesnt exist" <<std::endl;
                 }
                 return false;
@@ -492,11 +492,11 @@ bool GeneticEncoding::is_valid()
         }
     } else {
         for(ConnectionGenePtr connection_gene : connection_genes) {
-            if(!neuron_exists(connection_gene->mark_from) || !neuron_exists(connection_gene->mark_to)) {
-                if(!neuron_exists(connection_gene->mark_from)) {
+            if (not neuron_exists(connection_gene->mark_from) || not neuron_exists(connection_gene->mark_to)) {
+                if (not neuron_exists(connection_gene->mark_from)) {
                     std::cerr << "neuron with mark " << connection_gene->mark_from << " doesnt exist" <<std::endl;
                 }
-                if(!neuron_exists(connection_gene->mark_to)) {
+                if (not neuron_exists(connection_gene->mark_to)) {
                     std::cerr << "neuron with mark " << connection_gene->mark_to << " doesnt exist" <<std::endl;
                 }
                 return false;

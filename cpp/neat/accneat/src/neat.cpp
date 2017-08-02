@@ -74,7 +74,7 @@ NEAT::oldhebbian(real_t weight,
     weight = -weight;
   }
 
-  if (!(neg)) {
+  if (not (neg)) {
     //if (true) {
     delta =
             hebb_rate * (maxweight - weight) * active_in * active_out +
@@ -147,7 +147,7 @@ NEAT::hebbian(real_t weight,
   topweight = weight + 2.0;
   if (topweight > maxweight) topweight = maxweight;
 
-  if (!(neg)) {
+  if (not (neg)) {
     //if (true) {
     delta =
             hebb_rate * (maxweight - weight) * active_in * active_out +

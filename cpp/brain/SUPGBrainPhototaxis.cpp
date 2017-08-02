@@ -92,7 +92,7 @@ void SUPGBrainPhototaxis::learner(double t)
 {
 
     // Evaluate policy on certain time limit
-    if (!this->isOffline()
+    if (not this->isOffline()
             && (t-start_eval_time) > SUPGBrain::FREQUENCY_RATE)
     {
         // check if to stop the experiment. Negative value for MAX_EVALUATIONS will never stop the experiment

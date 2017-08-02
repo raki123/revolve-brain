@@ -9,7 +9,7 @@ XOscillator::XOscillator(const std::string &id,
                          const std::map<std::string, double> &params) :
         Neuron(id)
 {
-  if (!params.count("rv:tau")) {
+  if (not params.count("rv:tau")) {
     std::cerr << "A `" << "X-Oscillator" <<
               "` neuron requires an `rv:tau` element." << std::endl;
     throw std::runtime_error("Robot brain error");
@@ -69,7 +69,7 @@ XOscillator::getNeuronParameters()
 void
 XOscillator::setNeuronParameters(std::map<std::string, double> params)
 {
-  if (!params.count("rv:tau")) {
+  if (not params.count("rv:tau")) {
     std::cerr << "A `" << "X-Oscillator" <<
               "` neuron requires an `rv:tau` element." << std::endl;
     throw std::runtime_error("Robot brain error");

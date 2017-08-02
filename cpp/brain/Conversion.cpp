@@ -87,7 +87,7 @@ namespace revolve
 
       brain_spec[CPPNEAT::Neuron::BIAS] = bias;
 
-      if (!hyperneat)
+      if (not hyperneat)
       {
         CPPNEAT::Neuron::NeuronTypeSpec oscillator;
         CPPNEAT::Neuron::ParamSpec period_spec;
@@ -156,7 +156,7 @@ namespace revolve
         brain_spec[CPPNEAT::Neuron::INPUT_OSCILLATOR] = input_oscillator;
       }
 
-      if (!hyperneat)
+      if (not hyperneat)
       {
         CPPNEAT::Neuron::NeuronTypeSpec differential_neuron;
         differential_neuron.param_specs.push_back(bias_spec);

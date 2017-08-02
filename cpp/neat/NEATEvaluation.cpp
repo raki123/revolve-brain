@@ -13,7 +13,7 @@ NeatEvaluation::finish(float fitness)
   organism->eval
           .fitness = fitness;
 
-  if (!finished_callback) {
+  if (not finished_callback) {
     std::cerr << "NeatEvaluation::finish() error, finish callback not setted!" << std::endl;
     return;
   }
