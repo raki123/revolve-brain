@@ -6,40 +6,44 @@
 #include <vector>
 
 //class containg all information that is evolved for neurons
-namespace CPPNEAT {
-class Neuron
+namespace CPPNEAT
 {
-
-public:
+  class Neuron
+  {
+    public:
     enum Layer
     {
-        INPUT_LAYER,
-        OUTPUT_LAYER,
-        HIDDEN_LAYER
+      INPUT_LAYER,
+      OUTPUT_LAYER,
+      HIDDEN_LAYER
     };
+
     enum Ntype
     {
-        SIMPLE = 0,
-        SIGMOID = 1,
-        DIFFERENTIAL_CPG = 2,
-        INPUT = 3,
-        BIAS = 4,
-        OSCILLATOR = 5,
-        INPUT_OSCILLATOR = 6
+      SIMPLE = 0,
+      SIGMOID = 1,
+      DIFFERENTIAL_CPG = 2,
+      INPUT = 3,
+      BIAS = 4,
+      OSCILLATOR = 5,
+      INPUT_OSCILLATOR = 6,
+      RYTHM_GENERATOR_CPG = 7
     };
+
     struct ParamSpec
     {
-        std::string name;
-        double min_value;
-        double max_value;
-        bool max_inclusive;
-        bool min_inclusive;
-        double epsilon;
+      std::string name;
+      double min_value;
+      double max_value;
+      bool max_inclusive;
+      bool min_inclusive;
+      double epsilon;
     };
+
     struct NeuronTypeSpec
     {
-        std::vector<ParamSpec> param_specs;
-        std::vector<Layer> possible_layers;
+      std::vector<ParamSpec> param_specs;
+      std::vector<Layer> possible_layers;
     };
 
     Neuron(Neuron &copy_of);
@@ -49,9 +53,7 @@ public:
            Ntype neuron_type,
            std::map<std::string, double> neuron_params);
 
-    void
-    set_neuron_param(double value,
-                     ParamSpec param_spec);
+    void set_neuron_param(double value, ParamSpec param_spec);
 
     /**
      * tostring     def __str__(self):
@@ -59,12 +61,13 @@ public:
      */
 
     std::string neuron_id;
+
     Layer layer;
+
     Ntype neuron_type;
+
     std::map<std::string, double> neuron_params;
-
-
-};
+  };
 }
 
 #endif  // REVOLVEBRAIN_BRAIN_LEARNER_CPPNNEAT_NEURON_H_

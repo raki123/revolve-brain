@@ -12,4 +12,5 @@ add_library(extnn STATIC
             VOscillator.cpp
             XOscillator.cpp
             InputDependentOscillatorNeuron.cpp
+            RythmGenerationCPG.cpp
             )

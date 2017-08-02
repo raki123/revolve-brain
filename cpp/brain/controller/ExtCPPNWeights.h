@@ -19,6 +19,7 @@
 #include "brain/controller/extnn/LeakyIntegrator.h"
 #include "brain/controller/extnn/BiasNeuron.h"
 #include "brain/controller/extnn/DifferentialCPG.h"
+#include "brain/controller/extnn/RythmGenerationCPG.h"
 #include "brain/controller/extnn/InputNeuron.h"
 #include "brain/controller/extnn/InputDependentOscillatorNeuron.h"
 

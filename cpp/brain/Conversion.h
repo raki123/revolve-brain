@@ -18,8 +18,7 @@ extern std::map<int, size_t > InputMap;
 
 extern std::map<int, size_t > OutputMap;
 
-void
-set_brain_spec(bool hyperneat);
+void SetBrainSpec(bool hyperneat);
 
 boost::shared_ptr<CPPNConfig>
 convertForController(CPPNEAT::GeneticEncodingPtr genotype);
