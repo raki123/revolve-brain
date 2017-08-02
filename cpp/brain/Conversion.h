@@ -14,9 +14,9 @@ namespace brain {
 //the conversion methods work only when using standard neat
 extern std::map<CPPNEAT::Neuron::Ntype, CPPNEAT::Neuron::NeuronTypeSpec> brain_spec;
 
-extern std::map<int, size_t > input_map;
+extern std::map<int, size_t > InputMap;
 
-extern std::map<int, size_t > output_map;
+extern std::map<int, size_t > OutputMap;
 
 void
 set_brain_spec(bool hyperneat);
@@ -37,7 +37,7 @@ PolicyPtr convertDoubleToNull(std::vector<double> phenotype);
 ///////////////////////////////////////////////////////////////////////////////
 
 //used for communication between hyperneat learner and ext nn net controller
-extern boost::shared_ptr<CPPNConfig> cpg_network;
+extern boost::shared_ptr<CPPNConfig> RafCpgNetwork;
 
 extern std::map<std::string, std::tuple<int, int, int>> neuron_coordinates;
 
@@ -52,10 +52,10 @@ convertForLayeredExtNN(CPPNEAT::GeneticEncodingPtr genotype);
 /// RLPower_CPG~RLPower_CPPN
 ///////////////////////////////////////////////////////////////////////////////
 boost::shared_ptr<CPPNConfig>
-convertGeneticEncodingToCPPNConfig(CPPNEAT::GeneticEncodingPtr genotype);
+convertGEtoNN(CPPNEAT::GeneticEncodingPtr genotype);
 
 CPPNEAT::GeneticEncodingPtr
-convertCPPNConfigToGeneticEncoding(boost::shared_ptr<CPPNConfig> config);
+convertNNtoGE(boost::shared_ptr<CPPNConfig> config);
 ///////////////////////////////////////////////////////////////////////////////
 
 //used for communication between spline controller and hyperneat learner

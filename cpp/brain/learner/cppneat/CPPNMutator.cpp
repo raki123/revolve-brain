@@ -588,7 +588,7 @@ Mutator::add_connection(int mark_from,
 // int Mutator::add_neuron(NeuronPtr neuron, GeneticEncodingPtr genotype) {
 // 	NeuronGenePtr new_neuron_gene(new NeuronGene(neuron, ++innovation_number, true));
 // 	genotype->add_neuron_gene(new_neuron_gene);
-// 	return new_neuron_gene->getInnovNumber();
+// 	return new_neuron_gene->InnovationNumber();
 // }
 // 
 // int Mutator::add_connection(int mark_from, int mark_to, double weight, GeneticEncodingPtr genotype, std::string socket) {
@@ -599,7 +599,7 @@ Mutator::add_connection(int mark_from,
 // 							   true,
 // 						           socket));
 // 	genotype->add_connection_gene(new_conn_gene);
-// 	return new_conn_gene->getInnovNumber();
+// 	return new_conn_gene->InnovationNumber();
 // }
 
 }

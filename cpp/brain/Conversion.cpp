@@ -14,9 +14,9 @@ std::map<boost::shared_ptr<CPPNConfig>, CPPNEAT::GeneticEncodingPtr> known_genot
 
 std::map<CPPNEAT::Neuron::Ntype, CPPNEAT::Neuron::NeuronTypeSpec> brain_spec;
 
-std::map<int, size_t > input_map;
+std::map<int, size_t > InputMap;
 
-std::map<int, size_t > output_map;
+std::map<int, size_t > OutputMap;
 
 void set_param_spec(CPPNEAT::Neuron::ParamSpec &spec,
                     std::string name,
@@ -209,7 +209,7 @@ convertForController(CPPNEAT::GeneticEncodingPtr genotype)
       case CPPNEAT::Neuron::INPUT_LAYER: {
         newNeuron.reset(new InputNeuron(neuronId, neuron_params));
         config->inputNeurons_.push_back(newNeuron);
-        config->inputPositionMap_[newNeuron] = input_map[neuron_gene->getInnovNumber()];
+        config->inputPositionMap_[newNeuron] = InputMap[neuron_gene->getInnovNumber()];
         break;
       }
       case CPPNEAT::Neuron::HIDDEN_LAYER: {
@@ -280,7 +280,7 @@ convertForController(CPPNEAT::GeneticEncodingPtr genotype)
 
         }
         config->outputNeurons_.push_back(newNeuron);
-        config->outputPositionMap_[newNeuron] = output_map[neuron_gene->getInnovNumber()];
+        config->outputPositionMap_[newNeuron] = OutputMap[neuron_gene->getInnovNumber()];
         break;
       }
       default: {
@@ -328,7 +328,7 @@ PolicyPtr convertDoubleToNull(std::vector<double> phenotype)
 ///////////////////////////////////////////////////////////////////////////////
 
 
-boost::shared_ptr<CPPNConfig> cpg_network;
+boost::shared_ptr<CPPNConfig> RafCpgNetwork;
 
 std::map<std::string, std::tuple<int, int, int>> neuron_coordinates;
 
@@ -356,7 +356,7 @@ convertForLayeredExtNN(CPPNEAT::GeneticEncodingPtr genotype)
         case CPPNEAT::Neuron::INPUT_LAYER: {
           new_neuron.reset(new InputNeuron(neuronId, neuron_params));
           cppn->layers_[i].push_back(new_neuron);
-          cppn->inputPositionMap_[new_neuron] = input_map[neuron_gene->getInnovNumber()];
+          cppn->inputPositionMap_[new_neuron] = InputMap[neuron_gene->getInnovNumber()];
           break;
         }
         case CPPNEAT::Neuron::HIDDEN_LAYER: {
@@ -426,7 +426,7 @@ convertForLayeredExtNN(CPPNEAT::GeneticEncodingPtr genotype)
 
           }
           cppn->layers_[i].push_back(new_neuron);
-          cppn->outputPositionMap_[new_neuron] = output_map[neuron_gene->getInnovNumber()];
+          cppn->outputPositionMap_[new_neuron] = OutputMap[neuron_gene->getInnovNumber()];
           break;
         }
         default: {
@@ -490,10 +490,10 @@ void write_debugplot(boost::shared_ptr<CPPNConfig> conf,
 /// HyperNEAT_CPG
 ///////////////////////////////////////////////////////////////////////////////
 boost::shared_ptr<CPPNConfig>
-convertGeneticEncodingToCPPNConfig(CPPNEAT::GeneticEncodingPtr genotype)
+convertGEtoNN(CPPNEAT::GeneticEncodingPtr genotype)
 {
   boost::shared_ptr<LayeredExtNNConfig> cppn = convertForLayeredExtNN(genotype);
-  for (NeuralConnectionPtr connection : cpg_network->connections_) {
+  for (NeuralConnectionPtr connection : RafCpgNetwork->connections_) {
     NeuronPtr src_neuron = connection->GetInputNeuron();
     NeuronPtr dst_neuron = connection->GetOutputNeuron();
     std::tuple<int, int, int> coord_src = neuron_coordinates[src_neuron->Id()];
@@ -533,7 +533,7 @@ convertGeneticEncodingToCPPNConfig(CPPNEAT::GeneticEncodingPtr genotype)
       }
     }
   }
-  for (NeuronPtr neuron : cpg_network->allNeurons_) {
+  for (NeuronPtr neuron : RafCpgNetwork->allNeurons_) {
 
     // Retrieve coordinates of source and destination neuron
     std::tuple<int, int, int> coord_src = neuron_coordinates[neuron->Id()];
@@ -575,12 +575,12 @@ convertGeneticEncodingToCPPNConfig(CPPNEAT::GeneticEncodingPtr genotype)
     neuron->setNeuronParameters(params);
   }
   last_genotype_ = genotype;
-  // write_debugplot(cpg_network, true);
-  return cpg_network;
+  // write_debugplot(RafCpgNetwork, true);
+  return RafCpgNetwork;
 }
 
 CPPNEAT::GeneticEncodingPtr
-convertCPPNConfigToGeneticEncoding(boost::shared_ptr<CPPNConfig> config)
+convertNNtoGE(boost::shared_ptr<CPPNConfig> config)
 {
   return last_genotype_;
 }
