@@ -71,7 +71,8 @@ public:
     { this->innovation_number = innov_numb; };
 
 private:
-    std::map<std::pair<int, int>, int> connection_innovations;            //<mark_from, mark_to> -> innovation_number
+    std::map<std::pair<int, int>, size_t> connection_innovations;
+  //<mark_from, mark_to> -> innovation_number
     //contains all connections that ever existed!
     std::map<std::pair<int, Neuron::Ntype>, std::vector<int>> neuron_innovations;        /*<innovation_number of split connection,
 											 * neuron_type of added neuron> 
