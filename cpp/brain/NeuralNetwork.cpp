@@ -5,6 +5,7 @@
 #include "NeuralNetwork.h"
 
 #include <set>
+#include <iostream>
 
 using namespace revolve::brain;
 

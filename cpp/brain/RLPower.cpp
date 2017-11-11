@@ -5,6 +5,7 @@
 #include "RLPower.h"
 
 #include <fstream>
+#include <iostream>
 #include <random>
 
 #include <gsl/gsl_spline.h>

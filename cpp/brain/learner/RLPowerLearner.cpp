@@ -6,6 +6,7 @@
 
 #include <random>
 #include <fstream>
+#include <iostream>
 
 #include <gsl/gsl_spline.h>
 #include <yaml-cpp/yaml.h>
