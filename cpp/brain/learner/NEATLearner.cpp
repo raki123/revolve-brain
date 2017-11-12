@@ -10,13 +10,16 @@ namespace CPPNEAT
 {
   NEATLearner::NEATLearner(
           MutatorPtr mutator,
-          std::string mutator_path,
-          NEATLearner::LearningConfiguration conf)
+          const std::string &_innovations,
+          const std::string &_parent1,
+          const std::string &_parent2,
+          NEATLearner::LearningConfiguration conf
+  )
           : active_brain_(nullptr)
           , generation_number(0)
           , total_brains_evaluated(0)
           , mutator(mutator)
-          , mutator_path(mutator_path)
+          , mutator_path(_innovations)
           , is_asexual_(conf.asexual)
           , initial_structural_mutations_(conf.initial_structural_mutations)
           , num_children_(conf.num_children)
@@ -48,9 +51,13 @@ namespace CPPNEAT
     {
       tournament_size_ = 2;
     }
-    if (mutator_path != "none")
+    if (_parent1 not_eq "none")
     {
-      mutator->load_known_innovations(mutator_path);
+      mutator->load_known_innovations(_parent1);
+    }
+    if (_parent2 not_eq "none")
+    {
+      mutator->load_known_innovations(_parent2);
     }
     if (start_from_ != nullptr)
     {
@@ -209,7 +216,7 @@ namespace CPPNEAT
   {
     if (init_genotypes.empty())
     {
-      brain_population_ = get_init_brains();
+      brain_population_ = InitCppns();
     }
     else
     {
@@ -226,7 +233,7 @@ namespace CPPNEAT
     evaluation_queue_.pop_back();
   }
 
-  std::vector< GeneticEncodingPtr > NEATLearner::get_brains_from_yaml(
+  std::vector< GeneticEncodingPtr > NEATLearner::BrainsFromYaml(
           std::string yaml_path,
           int offset)
   {
@@ -420,8 +427,7 @@ namespace CPPNEAT
     }
   }
 
-  std::vector< GeneticEncodingPtr >
-  NEATLearner::get_init_brains()
+  std::vector< GeneticEncodingPtr > NEATLearner::InitCppns()
   {
     std::vector< GeneticEncodingPtr > init_pop;
     size_t i = 0;

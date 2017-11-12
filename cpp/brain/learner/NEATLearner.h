@@ -25,37 +25,40 @@ namespace CPPNEAT
       int pop_size;
       int tournament_size;
       int num_children;
+      int max_generations;
+      int repeat_evaluations;
+      int initial_structural_mutations;
+      int num_first;
+      int num_second;
+      std::string parent1;
+      std::string parent2;
       double weight_mutation_probability;
       double weight_mutation_sigma;
       double param_mutation_probability;
       double param_mutation_sigma;
       double structural_augmentation_probability;
       double structural_removal_probability;
-      int max_generations;
       double speciation_threshold;
-      int repeat_evaluations;
-      GeneticEncodingPtr start_from;
-      int initial_structural_mutations;
       double interspecies_mate_probability;
+      GeneticEncodingPtr start_from;
     };
 
     NEATLearner(
             MutatorPtr mutator,
-            std::string mutator_path,
+            const std::string &_innovations,
+            const std::string &_parent1,
+            const std::string &_parent2,
             LearningConfiguration conf);
 
     void initialise(std::vector< GeneticEncodingPtr > init_genotypes);
 
-    std::vector< GeneticEncodingPtr >
-    get_init_brains();
+    std::vector< GeneticEncodingPtr > InitCppns();
 
-    std::vector< GeneticEncodingPtr >
-    get_brains_from_yaml(
+    std::vector< GeneticEncodingPtr > BrainsFromYaml(
             std::string yaml_path,
             int offset);
 
-    void
-    apply_structural_mutation(GeneticEncodingPtr genotype);
+    void apply_structural_mutation(GeneticEncodingPtr genotype);
 
     //standard parameters
     static const bool ASEXUAL;
@@ -91,13 +94,11 @@ namespace CPPNEAT
 
     void produce_new_generation();
 
-    GeneticEncodingPtr
-    produce_child(
+    GeneticEncodingPtr produce_child(
             GeneticEncodingPtr parent1,
             GeneticEncodingPtr parent2);
 
-    std::pair< GeneticEncodingPtr, GeneticEncodingPtr >
-    select_for_tournament(
+    std::pair< GeneticEncodingPtr, GeneticEncodingPtr > select_for_tournament(
             std::vector< std::pair< GeneticEncodingPtr, double>> candidates,
             unsigned int tourn_size);
 
