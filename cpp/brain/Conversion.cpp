@@ -12,21 +12,24 @@ namespace revolve
   namespace brain
   {
 
-    std::map<boost::shared_ptr<CPPNConfig>, CPPNEAT::GeneticEncodingPtr> known_genotypes;
+    std::map< boost::shared_ptr< CPPNConfig >, CPPNEAT::GeneticEncodingPtr >
+            known_genotypes;
 
-    std::map<CPPNEAT::Neuron::Ntype, CPPNEAT::Neuron::NeuronTypeSpec> brain_spec;
+    std::map< CPPNEAT::Neuron::Ntype, CPPNEAT::Neuron::NeuronTypeSpec >
+            brain_spec;
 
-    std::map<int, size_t> InputMap;
+    std::map< int, size_t > InputMap;
 
-    std::map<int, size_t> OutputMap;
+    std::map< int, size_t > OutputMap;
 
-    void set_param_spec(CPPNEAT::Neuron::ParamSpec &spec,
-                        std::string name,
-                        double eps,
-                        double min_value,
-                        double max_value,
-                        bool min_inclusive,
-                        bool max_inclusive)
+    void set_param_spec(
+            CPPNEAT::Neuron::ParamSpec &spec,
+            std::string name,
+            double eps,
+            double min_value,
+            double max_value,
+            bool min_inclusive,
+            bool max_inclusive)
     {
       spec.name = name;
       spec.epsilon = eps;
@@ -120,7 +123,8 @@ namespace revolve
         oscillator.possible_layers.push_back(CPPNEAT::Neuron::INPUT_LAYER);
 
         brain_spec[CPPNEAT::Neuron::OSCILLATOR] = oscillator;
-      } else
+      }
+      else
       {
         CPPNEAT::Neuron::NeuronTypeSpec input_oscillator;
         CPPNEAT::Neuron::ParamSpec period_spec;
@@ -167,22 +171,21 @@ namespace revolve
       }
     }
 
-
-    boost::shared_ptr<CPPNConfig>
-    convertForController(CPPNEAT::GeneticEncodingPtr genotype)
+    boost::shared_ptr< CPPNConfig > convertForController(
+            CPPNEAT::GeneticEncodingPtr genotype)
     {
       assert(!genotype->is_layered_);
-      std::vector<CPPNEAT::NeuronGenePtr> neuron_genes = genotype->neuron_genes_;
-      std::vector<CPPNEAT::ConnectionGenePtr> connection_genes = genotype->connection_genes_;
+      auto neuron_genes = genotype->neuron_genes_;
+      auto connection_genes = genotype->connection_genes_;
 
-      std::map<int, NeuronPtr> innov_number_to_neuron;
+      std::map< int, NeuronPtr > innov_number_to_neuron;
 
-      boost::shared_ptr<CPPNConfig> config(new CPPNConfig());
-      for (CPPNEAT::NeuronGenePtr neuron_gene : neuron_genes)
+      boost::shared_ptr< CPPNConfig > config(new CPPNConfig());
+      for (const auto &neuron_gene : neuron_genes)
       {
         NeuronPtr newNeuron;
-        std::string neuronId = neuron_gene->neuron->neuron_id;
-        std::map<std::string, double> neuron_params = neuron_gene->neuron->neuron_params;
+        auto neuronId = neuron_gene->neuron->neuron_id;
+        auto neuron_params = neuron_gene->neuron->neuron_params;
 
         switch (neuron_gene->neuron->layer)
         {
@@ -190,7 +193,8 @@ namespace revolve
           {
             newNeuron.reset(new InputNeuron(neuronId, neuron_params));
             config->inputNeurons_.push_back(newNeuron);
-            config->inputPositionMap_[newNeuron] = InputMap[neuron_gene->getInnovNumber()];
+            config->inputPositionMap_[newNeuron] =
+                    InputMap[neuron_gene->getInnovNumber()];
             break;
           }
           case CPPNEAT::Neuron::HIDDEN_LAYER:
@@ -266,7 +270,8 @@ namespace revolve
               }
               case CPPNEAT::Neuron::RYTHM_GENERATOR_CPG:
               {
-                newNeuron.reset(new RythmGenerationCPG(neuronId, neuron_params));
+                newNeuron.reset(new RythmGenerationCPG(neuronId,
+                                                       neuron_params));
                 break;
               }
               case CPPNEAT::Neuron::BIAS:
@@ -281,7 +286,8 @@ namespace revolve
               }
               case CPPNEAT::Neuron::INPUT_OSCILLATOR:
               {
-                newNeuron.reset(new InputDependentOscillatorNeuron(neuronId, neuron_params));
+                newNeuron.reset(new InputDependentOscillatorNeuron(neuronId,
+                                                                   neuron_params));
                 break;
               }
               default:
@@ -291,7 +297,8 @@ namespace revolve
 
             }
             config->outputNeurons_.push_back(newNeuron);
-            config->outputPositionMap_[newNeuron] = OutputMap[neuron_gene->getInnovNumber()];
+            config->outputPositionMap_[newNeuron] =
+                    OutputMap[neuron_gene->getInnovNumber()];
             break;
           }
           default:
@@ -303,13 +310,13 @@ namespace revolve
         config->idToNeuron_[neuronId] = newNeuron;
         innov_number_to_neuron[neuron_gene->getInnovNumber()] = newNeuron;
       }
-      for (CPPNEAT::ConnectionGenePtr connection_gene : connection_genes)
+      for (const auto &connection_gene : connection_genes)
       {
-        NeuronPtr dst = innov_number_to_neuron[connection_gene->mark_to];
-        NeuralConnectionPtr newConnection(
-                new NeuralConnection(innov_number_to_neuron[connection_gene->mark_from],
-                                     dst,
-                                     connection_gene->weight)
+        auto dst = innov_number_to_neuron[connection_gene->to_];
+        NeuralConnectionPtr newConnection(new NeuralConnection(
+                innov_number_to_neuron[connection_gene->from_],
+                dst,
+                connection_gene->weight)
         );
         dst->AddIncomingConnection(dst->GetSocketId(), newConnection);
         config->connections_.push_back(newConnection);
@@ -320,7 +327,7 @@ namespace revolve
     }
 
     CPPNEAT::GeneticEncodingPtr
-    convertForLearner(boost::shared_ptr<CPPNConfig> config)
+    convertForLearner(boost::shared_ptr< CPPNConfig > config)
     {
       return known_genotypes[config];
     }
@@ -329,44 +336,46 @@ namespace revolve
 ///////////////////////////////////////////////////////////////////////////////
 /// RLPower_CPG~RLPower_CPPN
 ///////////////////////////////////////////////////////////////////////////////
-    std::vector<double> convertPolicyToDouble(PolicyPtr genotype)
+    std::vector< double > convertPolicyToDouble(PolicyPtr genotype)
     {
       return (*genotype)[0];
     }
 
-    PolicyPtr convertDoubleToNull(std::vector<double> phenotype)
+    PolicyPtr convertDoubleToNull(std::vector< double > /*phenotype*/)
     {
       return nullptr; //input is not taken into account
     }
 ///////////////////////////////////////////////////////////////////////////////
 
 
-    boost::shared_ptr<CPPNConfig> RafCpgNetwork;
+    boost::shared_ptr< CPPNConfig > RafCpgNetwork;
 
-    std::map<std::string, std::tuple<int, int, int>> neuron_coordinates;
+    std::map< std::string, std::tuple< int, int, int>> neuron_coordinates;
 
     CPPNEAT::GeneticEncodingPtr last_genotype_;
 
-    boost::shared_ptr<LayeredExtNNConfig>
+    boost::shared_ptr< LayeredExtNNConfig >
     convertForLayeredExtNN(CPPNEAT::GeneticEncodingPtr genotype)
     {
       assert(genotype->is_layered_);
-      std::vector<std::vector<CPPNEAT::NeuronGenePtr>> layers = genotype->layers_;
-      std::vector<CPPNEAT::ConnectionGenePtr> connection_genes = genotype->connection_genes_;
+      auto layers = genotype->layers_;
+      auto connection_genes = genotype->connection_genes_;
 
-      std::map<int, NeuronPtr> neuron_inovation_numbers;
+      std::map< int, NeuronPtr > neuron_inovation_numbers;
 
-      boost::shared_ptr<LayeredExtNNConfig> cppn(new LayeredExtNNConfig());
-      cppn->layers_ = std::vector<std::vector<NeuronPtr>>(layers.size(),
-                                                          std::vector<NeuronPtr>());
+      boost::shared_ptr< LayeredExtNNConfig > cppn(new LayeredExtNNConfig());
+      cppn->layers_ = std::vector< std::vector< NeuronPtr>>(
+              layers.size(),
+              std::vector< NeuronPtr >());
 
       for (size_t i = 0; i < layers.size(); i++)
       {
-        for (CPPNEAT::NeuronGenePtr neuron_gene : layers[i])
+        for (const auto &neuron_gene : layers[i])
         {
           NeuronPtr new_neuron;
           std::string neuronId = neuron_gene->neuron->neuron_id;
-          std::map<std::string, double> neuron_params = neuron_gene->neuron->neuron_params;
+          std::map< std::string, double > neuron_params =
+                  neuron_gene->neuron->neuron_params;
 
           switch (neuron_gene->neuron->layer)
           {
@@ -374,7 +383,8 @@ namespace revolve
             {
               new_neuron.reset(new InputNeuron(neuronId, neuron_params));
               cppn->layers_[i].push_back(new_neuron);
-              cppn->inputPositionMap_[new_neuron] = InputMap[neuron_gene->getInnovNumber()];
+              cppn->inputPositionMap_[new_neuron] =
+                      InputMap[neuron_gene->getInnovNumber()];
               break;
             }
             case CPPNEAT::Neuron::HIDDEN_LAYER:
@@ -384,41 +394,51 @@ namespace revolve
                 case CPPNEAT::Neuron::INPUT:
                 case CPPNEAT::Neuron::SIMPLE:
                 {
-                  new_neuron.reset(new LinearNeuron(neuronId, neuron_params));
+                  new_neuron.reset(new LinearNeuron(
+                          neuronId,
+                          neuron_params));
                   break;
                 }
                 case CPPNEAT::Neuron::SIGMOID:
                 {
-                  new_neuron.reset(new SigmoidNeuron(neuronId, neuron_params));
+                  new_neuron.reset(new SigmoidNeuron(
+                          neuronId,
+                          neuron_params));
                   break;
                 }
                 case CPPNEAT::Neuron::DIFFERENTIAL_CPG:
                 {
-                  new_neuron.reset(new DifferentialCPG(neuronId,
-                                                       neuron_params));
+                  new_neuron.reset(new DifferentialCPG(
+                          neuronId,
+                          neuron_params));
                   break;
                 }
                 case CPPNEAT::Neuron::RYTHM_GENERATOR_CPG:
                 {
-                  new_neuron.reset(new RythmGenerationCPG(neuronId,
-                                                          neuron_params));
+                  new_neuron.reset(new RythmGenerationCPG(
+                          neuronId,
+                          neuron_params));
                   break;
                 }
                 case CPPNEAT::Neuron::BIAS:
                 {
-                  new_neuron.reset(new BiasNeuron(neuronId, neuron_params));
+                  new_neuron.reset(new BiasNeuron(
+                          neuronId,
+                          neuron_params));
                   break;
                 }
                 case CPPNEAT::Neuron::OSCILLATOR:
                 {
-                  new_neuron.reset(new OscillatorNeuron(neuronId,
-                                                        neuron_params));
+                  new_neuron.reset(new OscillatorNeuron(
+                          neuronId,
+                          neuron_params));
                   break;
                 }
                 case CPPNEAT::Neuron::INPUT_OSCILLATOR:
                 {
-                  new_neuron.reset(new InputDependentOscillatorNeuron(neuronId,
-                                                                      neuron_params));
+                  new_neuron.reset(new InputDependentOscillatorNeuron(
+                          neuronId,
+                          neuron_params));
                   break;
                 }
                 default:
@@ -436,41 +456,51 @@ namespace revolve
                 case CPPNEAT::Neuron::INPUT:
                 case CPPNEAT::Neuron::SIMPLE:
                 {
-                  new_neuron.reset(new LinearNeuron(neuronId, neuron_params));
+                  new_neuron.reset(new LinearNeuron(
+                          neuronId,
+                          neuron_params));
                   break;
                 }
                 case CPPNEAT::Neuron::SIGMOID:
                 {
-                  new_neuron.reset(new SigmoidNeuron(neuronId, neuron_params));
+                  new_neuron.reset(new SigmoidNeuron(
+                          neuronId,
+                          neuron_params));
                   break;
                 }
                 case CPPNEAT::Neuron::DIFFERENTIAL_CPG:
                 {
-                  new_neuron.reset(new DifferentialCPG(neuronId,
-                                                       neuron_params));
+                  new_neuron.reset(new DifferentialCPG(
+                          neuronId,
+                          neuron_params));
                   break;
                 }
                 case CPPNEAT::Neuron::RYTHM_GENERATOR_CPG:
                 {
-                  new_neuron.reset(new RythmGenerationCPG(neuronId,
-                                                          neuron_params));
+                  new_neuron.reset(new RythmGenerationCPG(
+                          neuronId,
+                          neuron_params));
                   break;
                 }
                 case CPPNEAT::Neuron::BIAS:
                 {
-                  new_neuron.reset(new BiasNeuron(neuronId, neuron_params));
+                  new_neuron.reset(new BiasNeuron(
+                          neuronId,
+                          neuron_params));
                   break;
                 }
                 case CPPNEAT::Neuron::OSCILLATOR:
                 {
-                  new_neuron.reset(new OscillatorNeuron(neuronId,
-                                                        neuron_params));
+                  new_neuron.reset(new OscillatorNeuron(
+                          neuronId,
+                          neuron_params));
                   break;
                 }
                 case CPPNEAT::Neuron::INPUT_OSCILLATOR:
                 {
-                  new_neuron.reset(new InputDependentOscillatorNeuron(neuronId,
-                                                                      neuron_params));
+                  new_neuron.reset(new InputDependentOscillatorNeuron(
+                          neuronId,
+                          neuron_params));
                   break;
                 }
                 default:
@@ -480,7 +510,8 @@ namespace revolve
 
               }
               cppn->layers_[i].push_back(new_neuron);
-              cppn->outputPositionMap_[new_neuron] = OutputMap[neuron_gene->getInnovNumber()];
+              cppn->outputPositionMap_[new_neuron] =
+                      OutputMap[neuron_gene->getInnovNumber()];
               break;
             }
             default:
@@ -492,32 +523,37 @@ namespace revolve
           neuron_inovation_numbers[neuron_gene->getInnovNumber()] = new_neuron;
         }
       }
-      for (CPPNEAT::ConnectionGenePtr connection_gene : connection_genes)
+      for (const auto &connection_gene : connection_genes)
       {
-        NeuronPtr destination_neuron = neuron_inovation_numbers[connection_gene->mark_to];
-        NeuralConnectionPtr newConnection(
-                new NeuralConnection(neuron_inovation_numbers[connection_gene->mark_from],
-                                     destination_neuron,
-                                     connection_gene->weight)
+        NeuronPtr destination_neuron =
+                neuron_inovation_numbers[connection_gene->to_];
+        NeuralConnectionPtr newConnection(new NeuralConnection(
+                neuron_inovation_numbers[connection_gene->from_],
+                destination_neuron,
+                connection_gene->weight)
         );
-        destination_neuron->AddIncomingConnection(destination_neuron->GetSocketId(),
-                                                  newConnection);
+        destination_neuron->AddIncomingConnection(
+                destination_neuron->GetSocketId(),
+                newConnection);
         cppn->connections_.push_back(newConnection);
       }
       return cppn;
     }
 
-    void write_debugplot(boost::shared_ptr<CPPNConfig> conf,
-                         bool include_coordinates)
+    void write_debugplot(
+            boost::shared_ptr< CPPNConfig > conf,
+            bool include_coordinates)
     {
       std::ofstream write_to("debug_plot_extnn.dot");
       boost::adjacency_list<> graph(conf->allNeurons_.size());
       for (size_t i = 0; i < conf->allNeurons_.size(); i++)
       {
-        std::vector<std::pair<std::string, NeuralConnectionPtr>> connectionsToAdd =
+        std::vector< std::pair< std::string, NeuralConnectionPtr>>
+                connectionsToAdd =
                 conf->allNeurons_[i]->getIncomingConnections();
 
-        for (std::pair<std::string, NeuralConnectionPtr> connectionToAdd : connectionsToAdd)
+        for (std::pair< std::string, NeuralConnectionPtr >
+                  connectionToAdd : connectionsToAdd)
         {
           NeuronPtr input = connectionToAdd.second->GetInputNeuron();
           long indexInput = std::find(conf->allNeurons_.begin(),
@@ -527,23 +563,24 @@ namespace revolve
         }
       }
 
-      std::string *names = new std::string[conf->allNeurons_.size()];
+      auto *names = new std::string[conf->allNeurons_.size()];
       for (size_t i = 0; i < conf->allNeurons_.size(); i++)
       {
         std::stringstream nodeName;
         nodeName
                 << conf->allNeurons_[i]->Id() + " of type: " + conf->allNeurons_[i]->getType()
                 << std::endl;
-        for (std::pair<std::string, double> param : conf->allNeurons_[i]->getNeuronParameters())
+        for (std::pair< std::string, double >
+                  param : conf->allNeurons_[i]->getNeuronParameters())
         {
           nodeName << param.first << ": " << param.second << std::endl;
         }
         if (include_coordinates)
         {
-          std::tuple<int, int, int> coord = neuron_coordinates[conf->allNeurons_[i]->Id()];
-          nodeName << "(x,y,z) = (" << std::get<0>(coord)
-                   << "," << std::get<1>(coord)
-                   << "," << std::get<2>(coord)
+          auto coord = neuron_coordinates[conf->allNeurons_[i]->Id()];
+          nodeName << "(x,y,z) = (" << std::get< 0 >(coord)
+                   << "," << std::get< 1 >(coord)
+                   << "," << std::get< 2 >(coord)
                    << ")" << std::endl;
         }
         names[i] = nodeName.str();
@@ -555,57 +592,59 @@ namespace revolve
 //////////////////////////////////////////////////////////////////////////////
 /// HyperNEAT_CPG
 ///////////////////////////////////////////////////////////////////////////////
-    boost::shared_ptr<CPPNConfig>
+    boost::shared_ptr< CPPNConfig >
     convertGEtoNN(CPPNEAT::GeneticEncodingPtr genotype)
     {
-      boost::shared_ptr<LayeredExtNNConfig> cppn = convertForLayeredExtNN(
-              genotype);
-      for (NeuralConnectionPtr connection : RafCpgNetwork->connections_)
+      auto cppn = convertForLayeredExtNN(genotype);
+      for (const auto &connection : RafCpgNetwork->connections_)
       {
-        NeuronPtr src_neuron = connection->GetInputNeuron();
-        NeuronPtr dst_neuron = connection->GetOutputNeuron();
-        std::tuple<int, int, int> coord_src = neuron_coordinates[src_neuron->Id()];
-        std::tuple<int, int, int> coord_dst = neuron_coordinates[dst_neuron->Id()];
-        for (NeuronPtr neuron : cppn->layers_[0])
+        auto src_neuron = connection->GetInputNeuron();
+        auto dst_neuron = connection->GetOutputNeuron();
+        auto coord_src = neuron_coordinates[src_neuron->Id()];
+        auto coord_dst = neuron_coordinates[dst_neuron->Id()];
+        for (const auto &neuron : cppn->layers_[0])
         {
           //could be faster by neuron->Id()[6] but less easy to read
           if (neuron->Id() == "Input-0")
           {
-            neuron->SetInput(std::get<0>(coord_src));
-          } else if (neuron->Id() == "Input-1")
+            neuron->SetInput(std::get< 0 >(coord_src));
+          }
+          else if (neuron->Id() == "Input-1")
           {
-            neuron->SetInput(std::get<1>(coord_src));
-          } else if (neuron->Id() == "Input-2")
+            neuron->SetInput(std::get< 1 >(coord_src));
+          }
+          else if (neuron->Id() == "Input-2")
           {
-            neuron->SetInput(std::get<2>(coord_src));
-          } else if (neuron->Id() == "Input-3")
+            neuron->SetInput(std::get< 2 >(coord_src));
+          }
+          else if (neuron->Id() == "Input-3")
           {
-            neuron->SetInput(std::get<0>(coord_dst));
-          } else if (neuron->Id() == "Input-4")
+            neuron->SetInput(std::get< 0 >(coord_dst));
+          }
+          else if (neuron->Id() == "Input-4")
           {
-            neuron->SetInput(std::get<1>(coord_dst));
-          } else if (neuron->Id() == "Input-5")
+            neuron->SetInput(std::get< 1 >(coord_dst));
+          }
+          else if (neuron->Id() == "Input-5")
           {
-            neuron->SetInput(std::get<2>(coord_dst));
+            neuron->SetInput(std::get< 2 >(coord_dst));
           }
         }
 
-        for (std::vector<NeuronPtr> layer : cppn->layers_)
+        for (std::vector< NeuronPtr > layer : cppn->layers_)
         {
-          for (NeuronPtr neuron : layer)
+          for (const auto &neuron : layer)
           {
             neuron->Update(0);
           }
-          for (NeuronPtr neuron : layer)
+          for (const auto &neuron : layer)
           {
             neuron->FlipState();
           }
         }
 
-        for (auto it = cppn->layers_[cppn->layers_.size() - 1].begin();
-             it != cppn->layers_[cppn->layers_.size() - 1].end(); ++it)
+        for (const auto &outNeuron : cppn->layers_[cppn->layers_.size() - 1])
         {
-          auto outNeuron = *it;
           if (outNeuron->Id() == "weight")
           {
             connection->SetWeight(outNeuron->GetOutput());
@@ -613,55 +652,59 @@ namespace revolve
           }
         }
       }
-      for (NeuronPtr neuron : RafCpgNetwork->allNeurons_)
+      for (const auto &neuron : RafCpgNetwork->allNeurons_)
       {
 
         // Retrieve coordinates of source and destination neuron
-        std::tuple<int, int, int> coord_src = neuron_coordinates[neuron->Id()];
-        std::tuple<int, int, int> coord_dst = std::make_tuple(0, 0, 0);
-        for (NeuronPtr input_neuron : cppn->layers_[0])
+        std::tuple< int, int, int >
+                coord_src = neuron_coordinates[neuron->Id()];
+        std::tuple< int, int, int > coord_dst = std::make_tuple(0, 0, 0);
+        for (const auto &input_neuron : cppn->layers_[0])
         {
           //could be faster by input_neuron->Id()[6] but less easy to read
           if (input_neuron->Id() == "Input-0")
           {
-            input_neuron->SetInput(std::get<0>(coord_src));
-          } else if (input_neuron->Id() == "Input-1")
+            input_neuron->SetInput(std::get< 0 >(coord_src));
+          }
+          else if (input_neuron->Id() == "Input-1")
           {
-            input_neuron->SetInput(std::get<1>(coord_src));
-          } else if (input_neuron->Id() == "Input-2")
+            input_neuron->SetInput(std::get< 1 >(coord_src));
+          }
+          else if (input_neuron->Id() == "Input-2")
           {
-            input_neuron->SetInput(std::get<2>(coord_src));
-          } else if (input_neuron->Id() == "Input-3")
+            input_neuron->SetInput(std::get< 2 >(coord_src));
+          }
+          else if (input_neuron->Id() == "Input-3")
           {
-            input_neuron->SetInput(std::get<0>(coord_dst));
-          } else if (input_neuron->Id() == "Input-4")
+            input_neuron->SetInput(std::get< 0 >(coord_dst));
+          }
+          else if (input_neuron->Id() == "Input-4")
           {
-            input_neuron->SetInput(std::get<1>(coord_dst));
-          } else if (input_neuron->Id() == "Input-5")
+            input_neuron->SetInput(std::get< 1 >(coord_dst));
+          }
+          else if (input_neuron->Id() == "Input-5")
           {
-            input_neuron->SetInput(std::get<2>(coord_dst));
+            input_neuron->SetInput(std::get< 2 >(coord_dst));
           }
         }
 
         // Feed CPPN with input coordinates
-        for (std::vector<NeuronPtr> layer : cppn->layers_)
+        for (const auto &layer : cppn->layers_)
         {
-          for (NeuronPtr hidden_neuron : layer)
+          for (const auto &hidden_neuron : layer)
           {
             hidden_neuron->Update(0);
           }
-          for (NeuronPtr hidden_neuron : layer)
+          for (const auto &hidden_neuron : layer)
           {
             hidden_neuron->FlipState();
           }
         }
 
 
-        std::map<std::string, double> params;
-        for (auto it = cppn->layers_[cppn->layers_.size() - 1].begin();
-             it != cppn->layers_[cppn->layers_.size() - 1].end(); ++it)
+        std::map< std::string, double > params;
+        for (const auto &outNeuron : cppn->layers_[cppn->layers_.size() - 1])
         {
-          auto outNeuron = *it;
           params[outNeuron->Id()] = outNeuron->GetOutput();
         }
         neuron->setNeuronParameters(params);
@@ -672,7 +715,7 @@ namespace revolve
     }
 
     CPPNEAT::GeneticEncodingPtr
-    convertNNtoGE(boost::shared_ptr<CPPNConfig> config)
+    convertNNtoGE(boost::shared_ptr< CPPNConfig > config)
     {
       return last_genotype_;
     }
@@ -682,7 +725,7 @@ namespace revolve
 //////////////////////////////////////////////////////////////////////////////
 /// HyperNEAT_Splines
 ///////////////////////////////////////////////////////////////////////////////
-    std::vector<std::pair<int, int>> sorted_coordinates;
+    std::vector< std::pair< int, int>> sorted_coordinates;
 
     PolicyPtr policy;
 
@@ -698,7 +741,7 @@ namespace revolve
       CPPNEAT::GeneticEncodingPtr ret(new CPPNEAT::GeneticEncoding(true));
 
       // Add input layer (x, y, z) for splines
-      std::map<std::string, double> initial_neuron_params;
+      std::map< std::string, double > initial_neuron_params;
       for (int i = 0; i < 3; i++)
       {
         CPPNEAT::NeuronPtr neuron(new CPPNEAT::Neuron(
@@ -709,38 +752,39 @@ namespace revolve
                 initial_neuron_params));
 
         // Increment innovation number
-        CPPNEAT::NeuronGenePtr neuron_gene(new CPPNEAT::NeuronGene(neuron,
-                                                                   innov_number++,
-                                                                   true));
+        CPPNEAT::NeuronGenePtr neuron_gene(new CPPNEAT::NeuronGene(
+                neuron,
+                innov_number++,
+                true));
         ret->add_neuron_gene(neuron_gene, 0, i == 0);
       }
 
       // Add output layer
       initial_neuron_params["rv:bias"] = 0;
       initial_neuron_params["rv:gain"] = 0;
-      CPPNEAT::NeuronPtr weight_neuron(
-              new CPPNEAT::Neuron("weight",
-                                  CPPNEAT::Neuron::OUTPUT_LAYER,
-                                  CPPNEAT::Neuron::SIMPLE,
-                                  initial_neuron_params));
-      CPPNEAT::NeuronGenePtr weight_neuron_gene(
-              new CPPNEAT::NeuronGene(weight_neuron,
-                                      innov_number++,
-                                      true)
+      CPPNEAT::NeuronPtr weight_neuron(new CPPNEAT::Neuron(
+              "weight",
+              CPPNEAT::Neuron::OUTPUT_LAYER,
+              CPPNEAT::Neuron::SIMPLE,
+              initial_neuron_params));
+      CPPNEAT::NeuronGenePtr weight_neuron_gene(new CPPNEAT::NeuronGene(
+              weight_neuron,
+              innov_number++,
+              true)
       );
       ret->add_neuron_gene(weight_neuron_gene, 1, true);
 
       // Connect every input with every output
       for (size_t i = 0; i < 3; i++)
       {
-        CPPNEAT::ConnectionGenePtr connection_to_weight(
-                new CPPNEAT::ConnectionGene(weight_neuron_gene->getInnovNumber(),
-                                            i + 1,
-                                            0,
-                                            innov_number++,
-                                            true,
-                                            ""));
-        ret->add_connection_gene(connection_to_weight);
+        CPPNEAT::ConnectionGenePtr connToWeight(new CPPNEAT::ConnectionGene(
+                weight_neuron_gene->getInnovNumber(),
+                i + 1,
+                0,
+                innov_number++,
+                true,
+                ""));
+        ret->add_connection_gene(connToWeight);
       }
       return ret;
     }
@@ -748,60 +792,62 @@ namespace revolve
     PolicyPtr convertForSplinesFromHyper(CPPNEAT::GeneticEncodingPtr genotype)
     {
       //TODO::fix update rate
-      boost::shared_ptr<LayeredExtNNConfig> cppn = convertForLayeredExtNN(
+      boost::shared_ptr< LayeredExtNNConfig > cppn = convertForLayeredExtNN(
               genotype);
       if (policy == nullptr)
       {
-        policy = PolicyPtr(new Policy(sorted_coordinates.size(),
-                                      Spline(spline_size, 0)));
+        policy = PolicyPtr(new Policy(
+                sorted_coordinates.size(),
+                Spline(spline_size, 0)));
       }
       if (++cur_step >= update_rate)
       {
         spline_size++;
         cur_step = 0;
-        policy = PolicyPtr(new Policy(sorted_coordinates.size(),
-                                      Spline(spline_size, 0)));
+        policy = PolicyPtr(new Policy(
+                sorted_coordinates.size(),
+                Spline(spline_size, 0)));
       }
       for (size_t j = 0; j < sorted_coordinates.size(); j++)
       {
         for (size_t i = 0; i < spline_size; i++)
         {
-          std::tuple<double, double, double> coord(sorted_coordinates[j].first,
-                                                   sorted_coordinates[j].second,
-                                                   i / ((double)spline_size));
-          for (NeuronPtr neuron : cppn->layers_[0])
+          std::tuple< double, double, double > coord(
+                  sorted_coordinates[j].first,
+                  sorted_coordinates[j].second,
+                  i / ((double)spline_size));
+          for (const auto &neuron : cppn->layers_[0])
           {
             //could be faster by neuron->Id()[6] but less easy to read
             if (neuron->Id() == "Input-0")
             {
-              neuron->SetInput(std::get<0>(coord));
-            } else if (neuron->Id() == "Input-1")
+              neuron->SetInput(std::get< 0 >(coord));
+            }
+            else if (neuron->Id() == "Input-1")
             {
-              neuron->SetInput(std::get<1>(coord));
-            } else if (neuron->Id() == "Input-2")
+              neuron->SetInput(std::get< 1 >(coord));
+            }
+            else if (neuron->Id() == "Input-2")
             {
-              neuron->SetInput(std::get<2>(coord));
+              neuron->SetInput(std::get< 2 >(coord));
             }
           }
 
-          for (std::vector<NeuronPtr> layer : cppn->layers_)
+          for (const auto &layer : cppn->layers_)
           {
-            for (NeuronPtr neuron : layer)
+            for (const auto &neuron : layer)
             {
               neuron->Update(0);
             }
-            for (NeuronPtr neuron : layer)
+            for (const auto &neuron : layer)
             {
               neuron->FlipState();
             }
           }
 
           // Retrieve the output value
-          for (auto it = cppn->layers_[cppn->layers_.size() - 1].begin();
-               it != cppn->layers_[cppn->layers_.size() - 1].end();
-               ++it)
+          for (const auto &outNeuron : cppn->layers_[cppn->layers_.size() - 1])
           {
-            auto outNeuron = *it;
             if (outNeuron->Id() == "weight")
             {
               (*policy)[j][i] = outNeuron->GetOutput();
@@ -814,12 +860,9 @@ namespace revolve
       return policy;
     }
 
-    CPPNEAT::GeneticEncodingPtr
-    convertForHyperFromSplines(PolicyPtr policy)
+    CPPNEAT::GeneticEncodingPtr convertForHyperFromSplines(PolicyPtr policy)
     {
       return last_genotype_;
     }
-
-
   }
 }

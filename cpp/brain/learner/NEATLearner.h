@@ -98,6 +98,8 @@ namespace CPPNEAT
             GeneticEncodingPtr parent1,
             GeneticEncodingPtr parent2);
 
+    void displayConfiguration();
+
     std::pair< GeneticEncodingPtr, GeneticEncodingPtr > select_for_tournament(
             std::vector< std::pair< GeneticEncodingPtr, double>> candidates,
             unsigned int tourn_size);

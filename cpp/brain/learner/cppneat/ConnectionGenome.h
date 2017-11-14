@@ -3,45 +3,47 @@
 
 #include "Genome.h"
 //class for connection genes
-namespace CPPNEAT {
-class ConnectionGene
-        : public Gene
+namespace CPPNEAT
 {
+  class ConnectionGene
+          : public Gene
+  {
 
-public:
-    ConnectionGene(int mark_to,
-                   int mark_from,
-                   double weight,
-                   int innov_number = 0,
-                   bool enabled = true,
-                   std::string parent_name = "",
-                   int parent_index = -1,
-                   std::string socket = "")
+    public:
+    ConnectionGene(
+            int mark_to,
+            int mark_from,
+            double weight,
+            int innov_number = 0,
+            bool enabled = true,
+            std::string parent_name = "",
+            int parent_index = -1,
+            std::string socket = "")
             : Gene(innov_number, enabled, parent_name, parent_index)
-            , mark_to(mark_to)
-            , mark_from(mark_from)
+            , from_(mark_from)
+            , to_(mark_to)
             , weight(weight)
             , socket(socket)
     { this->gene_type = Gene::CONNECTION_GENE; };
 
-    ConnectionGene(ConnectionGene &copy_of)
+    ConnectionGene(ConnectionGene &_copy)
             :
-            Gene(copy_of.getInnovNumber(),
-                 copy_of.isEnabled(),
-                 copy_of.get_parent_name(),
-                 copy_of.get_parent_index())
-            , mark_to(copy_of.mark_to)
-            , mark_from(copy_of.mark_from)
-            , weight(copy_of.weight)
-            , socket(copy_of.socket)
+            Gene(_copy.getInnovNumber(),
+                 _copy.isEnabled(),
+                 _copy.get_parent_name(),
+                 _copy.get_parent_index())
+            , from_(_copy.from_)
+            , to_(_copy.to_)
+            , weight(_copy.weight)
+            , socket(_copy.socket)
     { this->gene_type = Gene::CONNECTION_GENE; }
 
-public:
-    int mark_to;
-    int mark_from;
+    public:
+    int from_;
+    int to_;
     double weight;
     std::string socket;
-};
+  };
 }
 
 #endif // REVOLVEBRAIN_BRAIN_LEARNER_CPPNNEAT_CONNECTIONGENOME_H_

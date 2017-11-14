@@ -42,15 +42,16 @@ public:
     size_t num_connection_genes();
 
     bool
-    connection_exists(int mark_from,
-                      int mark_to);
+    connection_exists(int _from,
+                      int _to);
 
     static double
-    get_dissimilarity(GeneticEncodingPtr genotype1,
-                      GeneticEncodingPtr genotype2,
-                      double excess_coef,
-                      double disjoint_coef,
-                      double weight_diff_coef);
+    Dissimilarity(
+            GeneticEncodingPtr genotype1,
+            GeneticEncodingPtr genotype2,
+            double excess_coef,
+            double disjoint_coef,
+            double weight_diff_coef);
 
     static void
     get_excess_disjoint(GeneticEncodingPtr genotype1,
@@ -59,8 +60,9 @@ public:
                         int &disjoint_num);
 
     static std::vector<std::pair<GenePtr, GenePtr>>
-    get_pairs(std::vector<GenePtr> genes_sorted1,
-              std::vector<GenePtr> genes_sorted2);
+    Pairs(
+            std::vector< GenePtr > genes_sorted1,
+            std::vector< GenePtr > genes_sorted2);
 
     static std::vector<std::pair<int, int>>
     get_space_map(std::vector<GeneticEncodingPtr> genotypes,
@@ -70,7 +72,7 @@ public:
     adopt(GeneticEncodingPtr adoptee);
 
     std::vector<GenePtr>
-    get_sorted_genes();
+    SortedGenes();
 
     std::pair<int, int>
     min_max_innov_numer();

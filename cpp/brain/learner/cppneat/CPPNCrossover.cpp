@@ -16,10 +16,11 @@ Crossover::crossover(GeneticEncodingPtr genotype_more_fit,
   genotype_more_fit = genotype_more_fit->copy();
   genotype_less_fit = genotype_less_fit->copy();
 
-  std::vector<GenePtr> genes_better = genotype_more_fit->get_sorted_genes();
-  std::vector<GenePtr> genes_worse = genotype_less_fit->get_sorted_genes();
-  std::vector<std::pair<GenePtr, GenePtr>> gene_pairs = GeneticEncoding::get_pairs(genes_better,
-                                                                                   genes_worse);
+  std::vector<GenePtr> genes_better = genotype_more_fit->SortedGenes();
+  std::vector<GenePtr> genes_worse = genotype_less_fit->SortedGenes();
+  std::vector<std::pair<GenePtr, GenePtr>> gene_pairs =
+          GeneticEncoding::Pairs(genes_better,
+                                 genes_worse);
 
   std::vector<GenePtr> child_genes;
   for (std::pair<GenePtr, GenePtr> pair : gene_pairs) {

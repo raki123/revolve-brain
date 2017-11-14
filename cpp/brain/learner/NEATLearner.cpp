@@ -53,163 +53,25 @@ namespace CPPNEAT
     }
     if (_parent1 not_eq "none")
     {
-      mutator->load_known_innovations(_parent1);
+      mutator->LoadInnovationsFromFirst(_parent1);
     }
     if (_parent2 not_eq "none")
     {
-      mutator->load_known_innovations(_parent2);
+      mutator->LoadInnovationsFromSecond(_parent2);
     }
     if (start_from_ != nullptr)
     {
-      std::cout
-              << "generating inital population from starting network"
-              << std::endl;
+      std::cout << "generating initial population from starting network"
+                << std::endl;
       initialise(std::vector< GeneticEncodingPtr >());
     }
     else
     {
-      std::cout
-              << "no starting network given, initialise has to be called"
-              << std::endl;
+      std::cout << "no starting network given, initialise has to be called"
+                << std::endl;
     }
     this->mutator->make_starting_genotype_known(start_from_);
-    std::cout
-            << "\033[1;33m"
-            << "-----------------------------------------------------------------------------------------------------------"
-            << "\033[0m"
-            << std::endl;
-    std::cout.width(35);
-    std::cout
-            << std::right
-            << "\033[1;31m"
-            << "Starting NEAT learner with the following parameters"
-            << "\033[0m"
-            << std::endl;
-    std::cout.width(100);
-    std::cout
-            << std::right
-            << "Asexual reproduction: "
-            << "\033[1;36m"
-            << is_asexual_
-            << "\033[0m"
-            << std::endl;
-    std::cout.width(100);
-    std::cout
-            << std::right
-            << "Population size: "
-            << "\033[1;36m"
-            << population_size_
-            << "\033[0m"
-            << std::endl;
-    std::cout.width(100);
-    std::cout
-            << std::right
-            << "Tournament size: (currently not applicable, always 2) "
-            << "\033[1;36m"
-            << tournament_size_
-            << "\033[0m"
-            << std::endl;
-    std::cout.width(100);
-    std::cout
-            << std::right
-            << "Number of children: (rest of new individuals are elite of previous generation) "
-            << "\033[1;36m"
-            << num_children_
-            << "\033[0m"
-            << std::endl;
-    std::cout.width(100);
-    std::cout
-            << std::right
-            << "Weight mutation probability: "
-            << "\033[1;36m"
-            << weight_mutation_probability
-            << "\033[0m"
-            << std::endl;
-    std::cout.width(100);
-    std::cout
-            << std::right
-            << "Weight mutation sigma: "
-            << "\033[1;36m"
-            << weight_mutation_sigma
-            << "\033[0m"
-            << std::endl;
-    std::cout.width(100);
-    std::cout
-            << std::right
-            << "Param mutation probability: "
-            << "\033[1;36m"
-            << param_mutation_probability
-            << "\033[0m"
-            << std::endl;
-    std::cout.width(100);
-    std::cout
-            << std::right
-            << "Param mutation sigma: "
-            << "\033[1;36m"
-            << param_mutation_sigma
-            << "\033[0m"
-            << std::endl;
-    std::cout.width(100);
-    std::cout
-            << std::right
-            << "Probability of structural additions: "
-            << "\033[1;36m"
-            << structural_augmentation_probability
-            << "\033[0m"
-            << std::endl;
-    std::cout.width(100);
-    std::cout
-            << std::right
-            << "Probability of structural removal: "
-            << "\033[1;36m"
-            << structural_removal_probability
-            << "\033[0m"
-            << std::endl;
-    std::cout.width(100);
-    std::cout
-            << std::right
-            << "Number of generations: "
-            << "\033[1;36m"
-            << max_generations
-            << "\033[0m"
-            << std::endl;
-    std::cout.width(100);
-    std::cout
-            << std::right
-            << "Speciation threshold: (maximum dissimilarity to be in same species) "
-            << "\033[1;36m"
-            << speciation_threshold
-            << "\033[0m"
-            << std::endl;
-    std::cout.width(100);
-    std::cout
-            << std::right
-            << "How often do we evaluate before we take the average fitness: "
-            << "\033[1;36m"
-            << repeat_evaluations
-            << "\033[0m"
-            << std::endl;
-    std::cout.width(100);
-    std::cout
-            << std::right
-            << "How many initial structural mutations do we apply in case a starting genome was given: "
-            << "\033[1;36m"
-            << initial_structural_mutations_
-            << "\033[0m"
-            << std::endl;
-    std::cout.width(100);
-    std::cout
-            << std::right
-            << "Probability to mate outside of species while there is more than one member inside the species: "
-            << "\033[1;36m"
-            << interspecies_mate_probability
-            << "\033[0m"
-            << std::endl;
-    std::cout
-            << "\033[1;33m"
-            << "-----------------------------------------------------------------------------------------------------------"
-            << "\033[0m"
-            << std::endl;
+    this->displayConfiguration();
   }
 
   void NEATLearner::initialise(std::vector< GeneticEncodingPtr > init_genotypes)
@@ -273,7 +135,7 @@ namespace CPPNEAT
             }
             std::map< std::string, double > neuron_params;
             std::vector< std::string > params;
-            for (const auto &spec_pair : mutator->get_brain_spec())
+            for (const auto &spec_pair : mutator->BrainSpec())
             {
               for (const auto &param_spec : spec_pair.second.param_specs)
               {
@@ -364,7 +226,7 @@ namespace CPPNEAT
             auto innov_numb = neuron_node["in_no"].as< int >();
             std::map< std::string, double > neuron_params;
             std::vector< std::string > params;
-            for (const auto &spec_pair : mutator->get_brain_spec())
+            for (const auto &spec_pair : mutator->BrainSpec())
             {
               for (const auto &param_spec : spec_pair.second.param_specs)
               {
@@ -501,7 +363,7 @@ namespace CPPNEAT
 
         if (mutator_path != "none")
         {
-          mutator->write_known_innovations(mutator_path);
+          mutator->RecordInnovations(mutator_path);
         }
         std::exit(0);
       }
@@ -532,8 +394,8 @@ namespace CPPNEAT
               << "            in_no: "
               << connection->getInnovNumber()
               << std::endl;
-      outputFile << "            from: " << connection->mark_from << std::endl;
-      outputFile << "            to: " << connection->mark_to << std::endl;
+      outputFile << "            from: " << connection->from_ << std::endl;
+      outputFile << "            to: " << connection->to_ << std::endl;
       outputFile << "            weight: " << connection->weight << std::endl;
       outputFile
               << "            parent_name: "
@@ -618,11 +480,11 @@ namespace CPPNEAT
                 sppair : species)
       {
         //TODO:: coefficients
-        if (GeneticEncoding::get_dissimilarity(sppair.first,
-                                               cur_brain.first,
-                                               1,
-                                               1,
-                                               0.4) < speciation_threshold)
+        if (GeneticEncoding::Dissimilarity(sppair.first,
+                                           cur_brain.first,
+                                           1,
+                                           1,
+                                           0.4) < speciation_threshold)
         {
           added = true;
           species[sppair.first].push_back(cur_brain.first);
@@ -775,8 +637,7 @@ namespace CPPNEAT
     std::vector< std::pair< GeneticEncodingPtr, double>> velocity_pairs;
     for (auto it : brain_velocity)
     {
-      velocity_pairs.push_back(std::pair< GeneticEncodingPtr, double >(it.first,
-                                                                       it.second));
+      velocity_pairs.push_back({it.first, it.second});
     }
     std::sort(velocity_pairs.begin(),
               velocity_pairs.end(),
@@ -854,22 +715,161 @@ namespace CPPNEAT
     }
   }
 
-  std::pair< GeneticEncodingPtr, GeneticEncodingPtr >
-  NEATLearner::select_for_tournament(
+  std::pair< GeneticEncodingPtr, GeneticEncodingPtr > NEATLearner::select_for_tournament(
           std::vector< std::pair< GeneticEncodingPtr, double > > candidates,
           unsigned int tourn_size)
   {
     std::shuffle(candidates.begin(),
                  candidates.end(),
                  generator);
-    candidates =
-            std::vector< std::pair< GeneticEncodingPtr, double>>(candidates.begin(),
-                                                                 candidates.begin() + tourn_size);
+    candidates = std::vector< std::pair< GeneticEncodingPtr, double>>(
+            candidates.begin(),
+            candidates.begin() + tourn_size);
     std::sort(candidates.begin(),
               candidates.end(),
               fitness_cmp);
-    return std::pair< GeneticEncodingPtr, GeneticEncodingPtr >(candidates[0].first,
-                                                               candidates[1].first);
+    return {candidates[0].first, candidates[1].first};
+  }
+
+  void NEATLearner::displayConfiguration()
+  {
+    std::cout
+            << "\033[1;33m"
+            << "-----------------------------------------------------------------------------------------------------------"
+            << "\033[0m"
+            << std::endl;
+    std::cout.width(35);
+    std::cout
+            << std::right
+            << "\033[1;31m"
+            << "Starting NEAT learner with the following parameters"
+            << "\033[0m"
+            << std::endl;
+    std::cout.width(100);
+    std::cout
+            << std::right
+            << "Asexual reproduction: "
+            << "\033[1;36m"
+            << is_asexual_
+            << "\033[0m"
+            << std::endl;
+    std::cout.width(100);
+    std::cout
+            << std::right
+            << "Population size: "
+            << "\033[1;36m"
+            << population_size_
+            << "\033[0m"
+            << std::endl;
+    std::cout.width(100);
+    std::cout
+            << std::right
+            << "Tournament size: (currently not applicable, always 2) "
+            << "\033[1;36m"
+            << tournament_size_
+            << "\033[0m"
+            << std::endl;
+    std::cout.width(100);
+    std::cout
+            << std::right
+            << "Number of children: (rest of new individuals are elite of previous generation) "
+            << "\033[1;36m"
+            << num_children_
+            << "\033[0m"
+            << std::endl;
+    std::cout.width(100);
+    std::cout
+            << std::right
+            << "Weight mutation probability: "
+            << "\033[1;36m"
+            << weight_mutation_probability
+            << "\033[0m"
+            << std::endl;
+    std::cout.width(100);
+    std::cout
+            << std::right
+            << "Weight mutation sigma: "
+            << "\033[1;36m"
+            << weight_mutation_sigma
+            << "\033[0m"
+            << std::endl;
+    std::cout.width(100);
+    std::cout
+            << std::right
+            << "Param mutation probability: "
+            << "\033[1;36m"
+            << param_mutation_probability
+            << "\033[0m"
+            << std::endl;
+    std::cout.width(100);
+    std::cout
+            << std::right
+            << "Param mutation sigma: "
+            << "\033[1;36m"
+            << param_mutation_sigma
+            << "\033[0m"
+            << std::endl;
+    std::cout.width(100);
+    std::cout
+            << std::right
+            << "Probability of structural additions: "
+            << "\033[1;36m"
+            << structural_augmentation_probability
+            << "\033[0m"
+            << std::endl;
+    std::cout.width(100);
+    std::cout
+            << std::right
+            << "Probability of structural removal: "
+            << "\033[1;36m"
+            << structural_removal_probability
+            << "\033[0m"
+            << std::endl;
+    std::cout.width(100);
+    std::cout
+            << std::right
+            << "Number of generations: "
+            << "\033[1;36m"
+            << max_generations
+            << "\033[0m"
+            << std::endl;
+    std::cout.width(100);
+    std::cout
+            << std::right
+            << "Speciation threshold: (maximum dissimilarity to be in same species) "
+            << "\033[1;36m"
+            << speciation_threshold
+            << "\033[0m"
+            << std::endl;
+    std::cout.width(100);
+    std::cout
+            << std::right
+            << "How often do we evaluate before we take the average fitness: "
+            << "\033[1;36m"
+            << repeat_evaluations
+            << "\033[0m"
+            << std::endl;
+    std::cout.width(100);
+    std::cout
+            << std::right
+            << "How many initial structural mutations do we apply in case a starting genome was given: "
+            << "\033[1;36m"
+            << initial_structural_mutations_
+            << "\033[0m"
+            << std::endl;
+    std::cout.width(100);
+    std::cout
+            << std::right
+            << "Probability to mate outside of species while there is more than one member inside the species: "
+            << "\033[1;36m"
+            << interspecies_mate_probability
+            << "\033[0m"
+            << std::endl;
+    std::cout
+            << "\033[1;33m"
+            << "-----------------------------------------------------------------------------------------------------------"
+            << "\033[0m"
+            << std::endl;
   }
 
   const bool NEATLearner::ASEXUAL = false;
