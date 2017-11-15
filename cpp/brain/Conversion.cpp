@@ -175,8 +175,8 @@ namespace revolve
             CPPNEAT::GeneticEncodingPtr genotype)
     {
       assert(!genotype->is_layered_);
-      auto neuron_genes = genotype->neuron_genes_;
-      auto connection_genes = genotype->connection_genes_;
+      auto neuron_genes = genotype->neurons_;
+      auto connection_genes = genotype->connections_;
 
       std::map< int, NeuronPtr > innov_number_to_neuron;
 
@@ -194,12 +194,12 @@ namespace revolve
             newNeuron.reset(new InputNeuron(neuronId, neuron_params));
             config->inputNeurons_.push_back(newNeuron);
             config->inputPositionMap_[newNeuron] =
-                    InputMap[neuron_gene->getInnovNumber()];
+                    InputMap[neuron_gene->InnovationNumber()];
             break;
           }
           case CPPNEAT::Neuron::HIDDEN_LAYER:
           {
-            switch (neuron_gene->neuron->neuron_type)
+            switch (neuron_gene->neuron->type_)
             {
               case CPPNEAT::Neuron::INPUT:
               case CPPNEAT::Neuron::SIMPLE:
@@ -250,7 +250,7 @@ namespace revolve
           }
           case CPPNEAT::Neuron::OUTPUT_LAYER:
           {
-            switch (neuron_gene->neuron->neuron_type)
+            switch (neuron_gene->neuron->type_)
             {
               case CPPNEAT::Neuron::INPUT:
               case CPPNEAT::Neuron::SIMPLE:
@@ -298,7 +298,7 @@ namespace revolve
             }
             config->outputNeurons_.push_back(newNeuron);
             config->outputPositionMap_[newNeuron] =
-                    OutputMap[neuron_gene->getInnovNumber()];
+                    OutputMap[neuron_gene->InnovationNumber()];
             break;
           }
           default:
@@ -308,7 +308,7 @@ namespace revolve
         }
         config->allNeurons_.push_back(newNeuron);
         config->idToNeuron_[neuronId] = newNeuron;
-        innov_number_to_neuron[neuron_gene->getInnovNumber()] = newNeuron;
+        innov_number_to_neuron[neuron_gene->InnovationNumber()] = newNeuron;
       }
       for (const auto &connection_gene : connection_genes)
       {
@@ -359,7 +359,7 @@ namespace revolve
     {
       assert(genotype->is_layered_);
       auto layers = genotype->layers_;
-      auto connection_genes = genotype->connection_genes_;
+      auto connection_genes = genotype->connections_;
 
       std::map< int, NeuronPtr > neuron_inovation_numbers;
 
@@ -384,12 +384,12 @@ namespace revolve
               new_neuron.reset(new InputNeuron(neuronId, neuron_params));
               cppn->layers_[i].push_back(new_neuron);
               cppn->inputPositionMap_[new_neuron] =
-                      InputMap[neuron_gene->getInnovNumber()];
+                      InputMap[neuron_gene->InnovationNumber()];
               break;
             }
             case CPPNEAT::Neuron::HIDDEN_LAYER:
             {
-              switch (neuron_gene->neuron->neuron_type)
+              switch (neuron_gene->neuron->type_)
               {
                 case CPPNEAT::Neuron::INPUT:
                 case CPPNEAT::Neuron::SIMPLE:
@@ -451,7 +451,7 @@ namespace revolve
             }
             case CPPNEAT::Neuron::OUTPUT_LAYER:
             {
-              switch (neuron_gene->neuron->neuron_type)
+              switch (neuron_gene->neuron->type_)
               {
                 case CPPNEAT::Neuron::INPUT:
                 case CPPNEAT::Neuron::SIMPLE:
@@ -511,7 +511,7 @@ namespace revolve
               }
               cppn->layers_[i].push_back(new_neuron);
               cppn->outputPositionMap_[new_neuron] =
-                      OutputMap[neuron_gene->getInnovNumber()];
+                      OutputMap[neuron_gene->InnovationNumber()];
               break;
             }
             default:
@@ -520,7 +520,7 @@ namespace revolve
             }
           }
           cppn->idToNeuron_[neuronId] = new_neuron;
-          neuron_inovation_numbers[neuron_gene->getInnovNumber()] = new_neuron;
+          neuron_inovation_numbers[neuron_gene->InnovationNumber()] = new_neuron;
         }
       }
       for (const auto &connection_gene : connection_genes)
@@ -778,7 +778,7 @@ namespace revolve
       for (size_t i = 0; i < 3; i++)
       {
         CPPNEAT::ConnectionGenePtr connToWeight(new CPPNEAT::ConnectionGene(
-                weight_neuron_gene->getInnovNumber(),
+                weight_neuron_gene->InnovationNumber(),
                 i + 1,
                 0,
                 innov_number++,

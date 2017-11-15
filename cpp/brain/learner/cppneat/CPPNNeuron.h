@@ -53,7 +53,9 @@ namespace CPPNEAT
            Ntype neuron_type,
            std::map<std::string, double> neuron_params);
 
-    void set_neuron_param(double value, ParamSpec param_spec);
+    void SetParameters(
+            const double _value,
+            ParamSpec _specification);
 
     /**
      * tostring     def __str__(self):
@@ -64,7 +66,7 @@ namespace CPPNEAT
 
     Layer layer;
 
-    Ntype neuron_type;
+    Ntype type_;
 
     std::map<std::string, double> neuron_params;
   };

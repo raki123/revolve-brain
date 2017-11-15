@@ -6,7 +6,7 @@ Neuron::Neuron(Neuron &copy_of)
         :
         neuron_id(copy_of.neuron_id)
         , layer(copy_of.layer)
-        , neuron_type(copy_of.neuron_type)
+        , type_(copy_of.type_)
         , neuron_params(copy_of.neuron_params)
 {
 
@@ -19,15 +19,16 @@ Neuron::Neuron(std::string neuron_id,
         :
         neuron_id(neuron_id)
         , layer(layer)
-        , neuron_type(neuron_type)
+        , type_(neuron_type)
         , neuron_params(neuron_params)
 {
 
 }
 
 void
-Neuron::set_neuron_param(double value,
-                         ParamSpec param_spec)
+Neuron::SetParameters(
+        const double _value,
+        ParamSpec _specification)
 {
 // 	if(value > param_spec.max_value) {
 // 		if(param_spec.max_inclusive) {
@@ -45,7 +46,7 @@ Neuron::set_neuron_param(double value,
 // 			value = param_spec.min_value + param_spec.epsilon;
 // 		}
 // 	}
-  neuron_params[param_spec.name] = value;
+  neuron_params[_specification.name] = _value;
 }
 
 }

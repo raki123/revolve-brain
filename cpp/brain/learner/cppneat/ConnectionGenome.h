@@ -24,11 +24,11 @@ namespace CPPNEAT
             , to_(mark_to)
             , weight(weight)
             , socket(socket)
-    { this->gene_type = Gene::CONNECTION_GENE; };
+    { this->type_ = Gene::CONNECTION_GENE; };
 
     ConnectionGene(ConnectionGene &_copy)
             :
-            Gene(_copy.getInnovNumber(),
+            Gene(_copy.InnovationNumber(),
                  _copy.isEnabled(),
                  _copy.get_parent_name(),
                  _copy.get_parent_index())
@@ -36,7 +36,7 @@ namespace CPPNEAT
             , to_(_copy.to_)
             , weight(_copy.weight)
             , socket(_copy.socket)
-    { this->gene_type = Gene::CONNECTION_GENE; }
+    { this->type_ = Gene::CONNECTION_GENE; }
 
     public:
     int from_;

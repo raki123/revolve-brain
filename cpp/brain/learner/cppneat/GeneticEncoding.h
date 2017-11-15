@@ -17,15 +17,15 @@ class GeneticEncoding
 public:
     GeneticEncoding(std::vector<NeuronGenePtr> neuron_genes,
                     std::vector<ConnectionGenePtr> connection_genes)
-            : neuron_genes_(neuron_genes)
-            , connection_genes_(connection_genes)
+            : neurons_(neuron_genes)
+            , connections_(connection_genes)
             , is_layered_(false)
     {}
 
     GeneticEncoding(std::vector<std::vector<NeuronGenePtr>> layers,
                     std::vector<ConnectionGenePtr> connection_genes)
             : layers_(layers)
-            , connection_genes_(connection_genes)
+            , connections_(connection_genes)
             , is_layered_(true)
     {}
 
@@ -78,7 +78,7 @@ public:
     min_max_innov_numer();
 
     GenePtr
-    find_gene_by_in(const size_t innov_number);
+    Find(const size_t innov_number);
 
     //non-layered
     void
@@ -120,13 +120,13 @@ public:
 
 public:
     //non-layered
-    std::vector<NeuronGenePtr> neuron_genes_;
+    std::vector<NeuronGenePtr> neurons_;
 
     //layered
     std::vector<std::vector<NeuronGenePtr>> layers_;
 
     //both
-    std::vector<ConnectionGenePtr> connection_genes_;
+    std::vector<ConnectionGenePtr> connections_;
 
 private:
     std::vector<GenePtr> all_genes_sorted;

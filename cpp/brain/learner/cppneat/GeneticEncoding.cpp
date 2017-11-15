@@ -11,12 +11,12 @@ namespace CPPNEAT
     if (not is_layered_)
     {
       GeneticEncodingPtr copy_gen(new GeneticEncoding(false));
-      for (const auto &neuron_gene : neuron_genes_)
+      for (const auto &neuron_gene : neurons_)
       {
         NeuronGenePtr copy_neuron(new NeuronGene(*neuron_gene));
         copy_gen->add_neuron_gene(copy_neuron);
       }
-      for (const auto &connection_gene : connection_genes_)
+      for (const auto &connection_gene : connections_)
       {
         ConnectionGenePtr copy_conn(new ConnectionGene(*connection_gene));
         copy_gen->add_connection_gene(copy_conn);
@@ -50,7 +50,7 @@ namespace CPPNEAT
           }
         }
       }
-      for (const auto &connection_gene : connection_genes_)
+      for (const auto &connection_gene : connections_)
       {
         ConnectionGenePtr copy_conn(new ConnectionGene(*connection_gene));
         copy_gen->add_connection_gene(copy_conn);
@@ -63,7 +63,7 @@ namespace CPPNEAT
   {
     if (not is_layered_)
     {
-      return neuron_genes_.size() + connection_genes_.size();
+      return neurons_.size() + connections_.size();
     }
     else
     {
@@ -72,7 +72,7 @@ namespace CPPNEAT
       {
         sum += layer.size();
       }
-      return sum + connection_genes_.size();
+      return sum + connections_.size();
     }
   }
 
@@ -80,7 +80,7 @@ namespace CPPNEAT
   {
     if (not is_layered_)
     {
-      return neuron_genes_.size();
+      return neurons_.size();
     }
     else
     {
@@ -95,14 +95,14 @@ namespace CPPNEAT
 
   size_t GeneticEncoding::num_connection_genes()
   {
-    return connection_genes_.size();
+    return connections_.size();
   }
 
   bool GeneticEncoding::connection_exists(
           int _from,
           int _to)
   {
-    for (const auto &connection : connection_genes_)
+    for (const auto &connection : connections_)
     {
       if (connection->from_ == _from
           and connection->to_ == _to
@@ -138,7 +138,7 @@ namespace CPPNEAT
       if (pair.first != nullptr && pair.second != nullptr)
       {
         if (pair.first
-                ->gene_type == Gene::CONNECTION_GENE)
+                ->type_ == Gene::CONNECTION_GENE)
         {
           weight_diff +=
                   std::abs(boost::dynamic_pointer_cast< ConnectionGene >(pair.first)->weight
@@ -164,13 +164,13 @@ namespace CPPNEAT
     std::vector< GenePtr > genes_sorted1 = genotype1->SortedGenes();
     std::vector< GenePtr > genes_sorted2 = genotype2->SortedGenes();
 
-    size_t min_mark1 = genes_sorted1[0]->getInnovNumber();
+    size_t min_mark1 = genes_sorted1[0]->InnovationNumber();
     size_t max_mark1 =
-            genes_sorted1[genes_sorted1.size() - 1]->getInnovNumber();
+            genes_sorted1[genes_sorted1.size() - 1]->InnovationNumber();
 
-    size_t min_mark2 = genes_sorted2[0]->getInnovNumber();
+    size_t min_mark2 = genes_sorted2[0]->InnovationNumber();
     size_t max_mark2 =
-            genes_sorted2[genes_sorted2.size() - 1]->getInnovNumber();
+            genes_sorted2[genes_sorted2.size() - 1]->InnovationNumber();
 
     std::vector< std::pair< GenePtr, GenePtr>>
             pairs = GeneticEncoding::Pairs(genes_sorted1,
@@ -178,10 +178,10 @@ namespace CPPNEAT
 
     for (const auto &pair : pairs)
     {
-      if (pair.first != nullptr && pair.second == nullptr)
+      if (pair.first != nullptr and pair.second == nullptr)
       {
-        if (pair.first->getInnovNumber() > (min_mark2 - 1)
-            and pair.first->getInnovNumber() < (max_mark2 + 1))
+        if (pair.first->InnovationNumber() > (min_mark2 - 1)
+            and pair.first->InnovationNumber() < (max_mark2 + 1))
         {
           disjoint_num++;
         }
@@ -192,8 +192,8 @@ namespace CPPNEAT
       }
       else if (pair.first == nullptr && pair.second != nullptr)
       {
-        if (pair.second->getInnovNumber() > (min_mark1 - 1)
-            and pair.second->getInnovNumber() < (max_mark1 + 1))
+        if (pair.second->InnovationNumber() > (min_mark1 - 1)
+            and pair.second->InnovationNumber() < (max_mark1 + 1))
         {
           disjoint_num++;
         }
@@ -212,13 +212,13 @@ namespace CPPNEAT
     size_t num_genes1 = genes_sorted1.size();
     size_t num_genes2 = genes_sorted2.size();
 
-    size_t min_mark1 = genes_sorted1[0]->getInnovNumber();
+    size_t min_mark1 = genes_sorted1[0]->InnovationNumber();
     size_t max_mark1 =
-            genes_sorted1[genes_sorted1.size() - 1]->getInnovNumber();
+            genes_sorted1[genes_sorted1.size() - 1]->InnovationNumber();
 
-    size_t min_mark2 = genes_sorted2[0]->getInnovNumber();
+    size_t min_mark2 = genes_sorted2[0]->InnovationNumber();
     size_t max_mark2 =
-            genes_sorted2[genes_sorted2.size() - 1]->getInnovNumber();
+            genes_sorted2[genes_sorted2.size() - 1]->InnovationNumber();
 
     size_t min_mark = std::min(min_mark1, min_mark2);
     size_t max_mark = std::max(max_mark1, max_mark2);
@@ -238,15 +238,15 @@ namespace CPPNEAT
       size_t jump1 = mark + 1;
       for (size_t i = start_from1; i < num_genes1; i++)
       {
-        if (genes_sorted1[i]->getInnovNumber() == mark)
+        if (genes_sorted1[i]->InnovationNumber() == mark)
         {
           gene1 = genes_sorted1[i];
           start_from1 = i;
           break;
         }
-        else if (genes_sorted1[i]->getInnovNumber() > mark)
+        else if (genes_sorted1[i]->InnovationNumber() > mark)
         { //if there is a gap jump over it
-          jump1 = genes_sorted1[i]->getInnovNumber();
+          jump1 = genes_sorted1[i]->InnovationNumber();
           start_from1 = i;
           break;
         }
@@ -262,15 +262,15 @@ namespace CPPNEAT
       size_t jump2 = mark + 1;
       for (size_t i = start_from2; i < num_genes2; i++)
       {
-        if (genes_sorted2[i]->getInnovNumber() == mark)
+        if (genes_sorted2[i]->InnovationNumber() == mark)
         {
           gene2 = genes_sorted2[i];
           start_from2 = i;
           break;
         }
-        else if (genes_sorted2[i]->getInnovNumber() > mark)
+        else if (genes_sorted2[i]->InnovationNumber() > mark)
         { //if there is a gap jump over it
-          jump2 = genes_sorted2[i]->getInnovNumber();
+          jump2 = genes_sorted2[i]->InnovationNumber();
           start_from2 = i;
           break;
         }
@@ -302,14 +302,14 @@ namespace CPPNEAT
       sorted_gene_vectors.push_back(genotype->SortedGenes());
     }
 
-    size_t glob_min_in = sorted_gene_vectors[0][0]->getInnovNumber();
+    size_t glob_min_in = sorted_gene_vectors[0][0]->InnovationNumber();
     size_t glob_max_in =
-            sorted_gene_vectors[0][sorted_gene_vectors.size() - 1]->getInnovNumber();
+            sorted_gene_vectors[0][sorted_gene_vectors.size() - 1]->InnovationNumber();
 
     for (const auto &gene_vector : sorted_gene_vectors)
     {
-      size_t min_in = gene_vector[0]->getInnovNumber();
-      size_t max_in = gene_vector[gene_vector.size() - 1]->getInnovNumber();
+      size_t min_in = gene_vector[0]->InnovationNumber();
+      size_t max_in = gene_vector[gene_vector.size() - 1]->InnovationNumber();
 
       if (min_in < glob_min_in)
       {
@@ -332,13 +332,13 @@ namespace CPPNEAT
         bool total_break = false;
         for (const auto &gene : gene_vector)
         {
-          if (gene->getInnovNumber() == in)
+          if (gene->InnovationNumber() == in)
           {
             cur_gene = gene;
             total_break = true;
             break;
           }
-          else if (gene->getInnovNumber() > in)
+          else if (gene->InnovationNumber() > in)
           {
             break;
           }
@@ -354,15 +354,15 @@ namespace CPPNEAT
       }
       else
       {
-        if (cur_gene->gene_type == Gene::CONNECTION_GENE)
+        if (cur_gene->type_ == Gene::CONNECTION_GENE)
         {
           in_param_numbers.push_back({in, 1});
         }
-        else if (cur_gene->gene_type == Gene::NEURON_GENE)
+        else if (cur_gene->type_ == Gene::NEURON_GENE)
         {
           Neuron::Ntype neuron_type =
                   boost::dynamic_pointer_cast< NeuronGene >(cur_gene)->neuron
-                                                                     ->neuron_type;
+                                                                     ->type_;
           Neuron::NeuronTypeSpec neuron_spec = brain_spec[neuron_type];
           in_param_numbers.push_back({in, neuron_spec.param_specs.size()});
         }
@@ -384,11 +384,11 @@ namespace CPPNEAT
       //adopt genes that i dont have
       if (pair.first not_eq nullptr and pair.second == nullptr)
       {
-        if (pair.first->gene_type == Gene::NEURON_GENE)
+        if (pair.first->type_ == Gene::NEURON_GENE)
         {
           add_neuron_gene(boost::dynamic_pointer_cast< NeuronGene >(pair.first));
         }
-        else if (pair.first->gene_type == Gene::CONNECTION_GENE)
+        else if (pair.first->type_ == Gene::CONNECTION_GENE)
         {
           add_connection_gene(boost::dynamic_pointer_cast< ConnectionGene >(pair.first));
         }
@@ -400,7 +400,7 @@ namespace CPPNEAT
           GenePtr gene1,
           GenePtr gene2)
   {
-    return gene1->getInnovNumber() < gene2->getInnovNumber();
+    return gene1->InnovationNumber() < gene2->InnovationNumber();
   }
 
   std::vector< GenePtr >
@@ -411,12 +411,12 @@ namespace CPPNEAT
       all_genes_sorted.clear();
       if (not is_layered_)
       {
-        for (const auto &neuron_gene : neuron_genes_)
+        for (const auto &neuron_gene : neurons_)
         {
           all_genes_sorted.push_back(boost::dynamic_pointer_cast< Gene >(
                   neuron_gene));
         }
-        for (const auto &connection_gene : connection_genes_)
+        for (const auto &connection_gene : connections_)
         {
           all_genes_sorted.push_back(boost::dynamic_pointer_cast< Gene >(
                   connection_gene));
@@ -432,7 +432,7 @@ namespace CPPNEAT
                     neuron_gene));
           }
         }
-        for (const auto &connection_gene : connection_genes_)
+        for (const auto &connection_gene : connections_)
         {
           all_genes_sorted.push_back(boost::dynamic_pointer_cast< Gene >(
                   connection_gene));
@@ -449,16 +449,16 @@ namespace CPPNEAT
   std::pair< int, int > GeneticEncoding::min_max_innov_numer()
   {
     this->SortedGenes();
-    return {all_genes_sorted[0]->getInnovNumber(),
-            all_genes_sorted[all_genes_sorted.size() - 1]->getInnovNumber()};
+    return {all_genes_sorted[0]->InnovationNumber(),
+            all_genes_sorted[all_genes_sorted.size() - 1]->InnovationNumber()};
   }
 
-  GenePtr GeneticEncoding::find_gene_by_in(const size_t innov_number)
+  GenePtr GeneticEncoding::Find(const size_t innov_number)
   {
     SortedGenes();
     for (const auto &gene : all_genes_sorted)
     {
-      if (gene->getInnovNumber() == innov_number)
+      if (gene->InnovationNumber() == innov_number)
       {
         return gene;
       }
@@ -470,7 +470,7 @@ namespace CPPNEAT
   void GeneticEncoding::add_neuron_gene(NeuronGenePtr neuron_gene)
   {
     SortedGenes();
-    neuron_genes_.push_back(neuron_gene);
+    neurons_.push_back(neuron_gene);
     auto ins = std::upper_bound(
             all_genes_sorted.begin(),
             all_genes_sorted.end(),
@@ -512,7 +512,7 @@ namespace CPPNEAT
   void GeneticEncoding::add_connection_gene(ConnectionGenePtr connection_gene)
   {
     SortedGenes();
-    connection_genes_.push_back(connection_gene);
+    connections_.push_back(connection_gene);
     auto ins = std::upper_bound(
             all_genes_sorted.begin(),
             all_genes_sorted.end(),
@@ -525,8 +525,8 @@ namespace CPPNEAT
 
   void GeneticEncoding::remonve_neuron_gene(int index)
   {
-    GenePtr old = boost::dynamic_pointer_cast< Gene >(neuron_genes_[index]);
-    neuron_genes_.erase(neuron_genes_.begin() + index);
+    GenePtr old = boost::dynamic_pointer_cast< Gene >(neurons_[index]);
+    neurons_.erase(neurons_.begin() + index);
     auto it = std::find(
             all_genes_sorted.begin(),
             all_genes_sorted.end(),
@@ -556,8 +556,8 @@ namespace CPPNEAT
 
   void GeneticEncoding::remove_connection_gene(int index)
   {
-    GenePtr old = boost::dynamic_pointer_cast< Gene >(connection_genes_[index]);
-    connection_genes_.erase(connection_genes_.begin() + index);
+    GenePtr old = boost::dynamic_pointer_cast< Gene >(connections_[index]);
+    connections_.erase(connections_.begin() + index);
     auto it = std::find(
             all_genes_sorted.begin(),
             all_genes_sorted.end(),
@@ -569,9 +569,9 @@ namespace CPPNEAT
   {
     if (not is_layered_)
     {
-      for (const auto &gene : neuron_genes_)
+      for (const auto &gene : neurons_)
       {
-        if (gene->getInnovNumber() == innov_number)
+        if (gene->InnovationNumber() == innov_number)
         {
           return true;
         }
@@ -584,7 +584,7 @@ namespace CPPNEAT
       {
         for (const auto &neuron_gene : layer)
         {
-          if (neuron_gene->getInnovNumber() == innov_number)
+          if (neuron_gene->InnovationNumber() == innov_number)
           {
             return true;
           }
@@ -658,7 +658,7 @@ namespace CPPNEAT
   {
     size_t layer = 0;
     size_t in_layer = 0;
-    while (layers_[layer][in_layer]->getInnovNumber() != innov_number)
+    while (layers_[layer][in_layer]->InnovationNumber() != innov_number)
     {
       if (layers_[layer].size() == in_layer + 1)
       {

@@ -87,7 +87,7 @@ namespace CPPNEAT
       brain_population_ = init_genotypes;
     }
     evaluation_queue_.clear();
-    for (GeneticEncodingPtr brain : brain_population_)
+    for (const auto &brain : brain_population_)
     {
       evaluation_queue_.push_back(brain);
     }
@@ -109,7 +109,7 @@ namespace CPPNEAT
         return std::vector< GeneticEncodingPtr >();
       }
       std::vector< GeneticEncodingPtr > genotypes;
-      for (unsigned int first = 0; first < yaml_file.size(); first++)
+      for (size_t first = 0; first < yaml_file.size(); first++)
       {
         std::map< int, int > old_to_new;
         GeneticEncodingPtr newGenome(new GeneticEncoding(true));
@@ -203,7 +203,7 @@ namespace CPPNEAT
     }
     else
     {
-      YAML::Node yaml_file = YAML::LoadFile(yaml_path);
+      auto yaml_file = YAML::LoadFile(yaml_path);
       if (yaml_file.IsNull())
       {
         std::cout << "Failed to load the yaml file." << std::endl;
@@ -215,7 +215,7 @@ namespace CPPNEAT
         GeneticEncodingPtr newGenome(new GeneticEncoding(true));
         for (size_t counter = 0; counter < yaml_file[first]["brain"]["layers"].size(); counter++)
         {
-          YAML::Node layer = yaml_file[first]["brain"]["layers"][counter];
+          auto layer = yaml_file[first]["brain"]["layers"][counter];
           layer = layer["layer_" + std::to_string(counter + 1)];
           bool is_new_layer = true;
           for (const auto &neuron_node : layer)
@@ -307,8 +307,8 @@ namespace CPPNEAT
         apply_structural_mutation(mutated_genotype);
       }
 
-      mutator->mutate_weights(mutated_genotype, 1, weight_mutation_sigma);
-      mutator->mutate_neuron_params(mutated_genotype, 1, param_mutation_sigma);
+      mutator->MutateWeights(mutated_genotype, 1, weight_mutation_sigma);
+      mutator->MutateNeuronParams(mutated_genotype, 1, param_mutation_sigma);
 
       init_pop.push_back(mutated_genotype);
     }
@@ -345,7 +345,7 @@ namespace CPPNEAT
       brain_fitness[active_brain_] = average_fitness;
       brain_velocity[active_brain_] = average_fitness;
 
-      if (evaluation_queue_.size() == 0)
+      if (evaluation_queue_.empty())
       {
         share_fitness();
 
@@ -384,15 +384,14 @@ namespace CPPNEAT
     outputFile << "- evaluation: " << total_brains_evaluated << std::endl;
     outputFile << "  brain:" << std::endl;
     outputFile << "    connection_genes:" << std::endl;
-    auto connection_genes = genome->connection_genes_;
+    auto connection_genes = genome->connections_;
     int n_cons = 1;
-    for (auto it = connection_genes.begin(); it != connection_genes.end(); it++)
+    for (const auto &connection : connection_genes)
     {
-      auto connection = it->get();
       outputFile << "      - con_" << n_cons << ":" << std::endl;
       outputFile
               << "            in_no: "
-              << connection->getInnovNumber()
+              << connection->InnovationNumber()
               << std::endl;
       outputFile << "            from: " << connection->from_ << std::endl;
       outputFile << "            to: " << connection->to_ << std::endl;
@@ -409,36 +408,36 @@ namespace CPPNEAT
     outputFile << "    layers:" << std::endl;
     auto layers = genome->layers_;
     int n_layer = 1;
-    for (auto it = layers.begin(); it != layers.end(); it++)
+    for (const auto &it : layers)
     {
       outputFile << "      - layer_" << n_layer << ":" << std::endl;
-      for (auto it2 = it->begin(); it2 != it->end(); it2++)
+      for (const auto &it2 : it)
       {
-        auto neuron = it2->get()->neuron;
+        auto neuron = it2->neuron;
         auto neuron_params = neuron->neuron_params;
         outputFile << "          - nid: " << neuron->neuron_id << std::endl;
-        outputFile << "            ntype: " << neuron->neuron_type << std::endl;
+        outputFile << "            ntype: " << neuron->type_ << std::endl;
         outputFile << "            nlayer: " << neuron->layer << std::endl;
         outputFile
                 << "            in_no: "
-                << it2->get()->getInnovNumber()
+                << it2->InnovationNumber()
                 << std::endl;
         outputFile
                 << "            parent_name: "
-                << it2->get()->get_parent_name()
+                << it2->get_parent_name()
                 << std::endl;
         outputFile
                 << "            parent_index: "
-                << it2->get()->get_parent_index()
+                << it2->get_parent_index()
                 << std::endl;
         outputFile << "            params:" << std::endl;
-        for (auto np = neuron_params.begin(); np != neuron_params.end(); np++)
+        for (const auto &np : neuron_params)
         {
           outputFile
                   << "              "
-                  << np->first
+                  << np.first
                   << ": "
-                  << np->second
+                  << np.second
                   << std::endl;
         }
       }
@@ -458,33 +457,33 @@ namespace CPPNEAT
   void NEATLearner::share_fitness()
   {
     //speciate
-    std::map< GeneticEncodingPtr, std::vector< GeneticEncodingPtr>>
-            old_species = species;
+    auto old_species = species;
     species.clear();
     //choose representative from previous generation (or do nothing for first run)
-    for (std::pair< GeneticEncodingPtr, std::vector< GeneticEncodingPtr>>
-              sppair : old_species)
+    for (const auto &sppair : old_species)
     {
-      std::uniform_int_distribution< int > choose(0,
-                                                  sppair.second.size() - 1);
+      std::uniform_int_distribution< int > choose(
+              0,
+              sppair.second.size() - 1);
       GeneticEncodingPtr representative = sppair.second[choose(generator)];
-      species.insert(std::make_pair(representative,
-                                    std::vector< GeneticEncodingPtr >()));
+      species.insert({representative,
+                      std::vector< GeneticEncodingPtr >()});
     }
 
-    for (std::pair< GeneticEncodingPtr, double > cur_brain : brain_velocity)
+    for (const auto &cur_brain : brain_velocity)
     {
       bool added = false;
       //search for matching species
-      for (std::pair< GeneticEncodingPtr, std::vector< GeneticEncodingPtr>>
-                sppair : species)
+      for (const auto &sppair : species)
       {
         //TODO:: coefficients
-        if (GeneticEncoding::Dissimilarity(sppair.first,
-                                           cur_brain.first,
-                                           1,
-                                           1,
-                                           0.4) < speciation_threshold)
+        auto dissimilarity = GeneticEncoding::Dissimilarity(
+                sppair.first,
+                cur_brain.first,
+                1,
+                1,
+                0.4);
+        if (dissimilarity < speciation_threshold)
         {
           added = true;
           species[sppair.first].push_back(cur_brain.first);
@@ -494,28 +493,25 @@ namespace CPPNEAT
       //add new species in case of no matches
       if (not added)
       {
-        species.insert(std::make_pair(cur_brain.first,
-                                      std::vector< GeneticEncodingPtr >(1,
-                                                                        cur_brain.first)));
+        species.insert({cur_brain.first,
+                        std::vector< GeneticEncodingPtr >(1, cur_brain.first)});
       }
     }
     old_species = species;
     species.clear();
     //only keep species which are not empty
-    for (std::pair< GeneticEncodingPtr, std::vector< GeneticEncodingPtr>>
-              sppair : old_species)
+    for (const auto &sppair : old_species)
     {
-      if (sppair.second.size() > 0)
+      if (sppair.second.empty())
       {
         species.insert(sppair);
       }
     }
     //actual sharing
     std::map< GeneticEncodingPtr, double > new_fitness;
-    for (std::pair< GeneticEncodingPtr, std::vector< GeneticEncodingPtr>>
-              sppair : species)
+    for (const auto &sppair : species)
     {
-      for (GeneticEncodingPtr brain : sppair.second)
+      for (const auto &brain : sppair.second)
       {
         new_fitness[brain] = brain_velocity[brain] / sppair.second.size();
       }
@@ -523,8 +519,7 @@ namespace CPPNEAT
     brain_fitness = new_fitness;
   }
 
-  bool
-  fitness_cmp(
+  bool fitness_cmp(
           std::pair< GeneticEncodingPtr, double > genotype1,
           std::pair< GeneticEncodingPtr, double > genotype2)
   {
@@ -536,11 +531,10 @@ namespace CPPNEAT
     //calculate number of children for each species
     double overall_fitness = 0;
     std::map< GeneticEncodingPtr, double > species_fitness;
-    for (std::pair< GeneticEncodingPtr, std::vector< GeneticEncodingPtr>>
-              sppair : species)
+    for (const auto &sppair : species)
     {
       double cur_sum = 0;
-      for (GeneticEncodingPtr brain : sppair.second)
+      for (const auto &brain : sppair.second)
       {
         cur_sum += brain_fitness[brain];
       }
@@ -552,17 +546,17 @@ namespace CPPNEAT
     double average_fitness = overall_fitness / num_children_;
     GeneticEncodingPtr best = species_fitness.begin()->first;
     double treshold = 0;
-    for (auto it = species_fitness.begin(); it != species_fitness.end(); ++it)
+    for (const auto &fitness : species_fitness)
     {
-      while (treshold + it->second >= (cur_children + 1) * average_fitness)
+      while (treshold + fitness.second >= (cur_children + 1) * average_fitness)
       {
-        species_offspring[it->first]++;
+        species_offspring[fitness.first]++;
         cur_children++;
       }
-      treshold += it->second;
-      if (species_fitness[best] < it->second)
+      treshold += fitness.second;
+      if (species_fitness[best] < fitness.second)
       {
-        best = it->first;
+        best = fitness.first;
       }
     }
     //should not happen, but might (>= for double flawed)
@@ -572,16 +566,13 @@ namespace CPPNEAT
       species_offspring[best]++;
     }
     //reproduce
-    std::uniform_real_distribution< double > uniform(0,
-                                                     1);
-    for (std::pair< GeneticEncodingPtr, std::vector< GeneticEncodingPtr>>
-              sppair : species)
+    std::uniform_real_distribution< double > uniform(0, 1);
+    for (const auto &sppair : species)
     {
       std::vector< std::pair< GeneticEncodingPtr, double>> fitness_pairs;
-      for (GeneticEncodingPtr brain : sppair.second)
+      for (const auto &brain : sppair.second)
       {
-        fitness_pairs.push_back(std::pair< GeneticEncodingPtr, double >(brain,
-                                                                        brain_fitness[brain]));
+        fitness_pairs.push_back({brain, brain_fitness[brain]});
       }
       std::sort(fitness_pairs.begin(), fitness_pairs.end(), fitness_cmp);
 
@@ -590,11 +581,12 @@ namespace CPPNEAT
       int i = 0;
       while (i++ < species_offspring[sppair.first])
       {
-        if (sppair.second.size() == 1 || uniform(generator) < interspecies_mate_probability)
+        if (sppair.second.size() == 1
+            or uniform(generator) < interspecies_mate_probability)
         {
-          //if there is only one individual in species or we are below threshold probability we want interspecies mating
-          std::uniform_int_distribution< int >
-                  choose(0, sppair.second.size() - 1);
+          //if there is only one individual in species or we are below
+          // threshold probability we want interspecies mating
+          std::uniform_int_distribution< int > choose(0, sppair.second.size() - 1);
           GeneticEncodingPtr mom = sppair.second[choose(generator)];
           std::uniform_int_distribution< int > chooose(0, species.size() - 1);
           int until = chooose(generator);
@@ -603,13 +595,11 @@ namespace CPPNEAT
           {
             ++species_iterator;
           }
-          std::vector< GeneticEncodingPtr >
-                  bachelors = (species_iterator)->second;
+          auto  bachelors = (species_iterator)->second;
           std::vector< std::pair< GeneticEncodingPtr, double>> to_sort;
           for (GeneticEncodingPtr brain : bachelors)
           {
-            to_sort.push_back(std::pair< GeneticEncodingPtr, double >(brain,
-                                                                      brain_fitness[brain]));
+            to_sort.push_back({brain, brain_fitness[brain]});
           }
           std::sort(to_sort.begin(), to_sort.end(), fitness_cmp);
 
@@ -620,13 +610,11 @@ namespace CPPNEAT
         }
         else
         {
-          std::pair< GeneticEncodingPtr, GeneticEncodingPtr >
-                  selected = select_for_tournament(fitness_pairs, 2);
+          auto selected = select_for_tournament(fitness_pairs, 2);
           parent_pairs.push_back(selected);
         }
       }
-      for (std::pair< GeneticEncodingPtr, GeneticEncodingPtr >
-                parents : parent_pairs)
+      for (const auto &parents : parent_pairs)
       {
         GeneticEncodingPtr
                 child_genotype = produce_child(parents.first, parents.second);
@@ -635,7 +623,7 @@ namespace CPPNEAT
     }
     //elitism
     std::vector< std::pair< GeneticEncodingPtr, double>> velocity_pairs;
-    for (auto it : brain_velocity)
+    for (const auto &it : brain_velocity)
     {
       velocity_pairs.push_back({it.first, it.second});
     }
@@ -677,17 +665,18 @@ namespace CPPNEAT
     }
     else
     {
-      child_genotype = Crossover::crossover(parent1,
-                                            parent2);
+      child_genotype = Crossover::crossover(
+              parent1,
+              parent2);
     }
 
-    mutator->mutate_weights(child_genotype,
-                            weight_mutation_probability,
-                            weight_mutation_sigma);
+    mutator->MutateWeights(child_genotype,
+                           weight_mutation_probability,
+                           weight_mutation_sigma);
 
-    mutator->mutate_neuron_params(child_genotype,
-                                  param_mutation_probability,
-                                  param_mutation_sigma);
+    mutator->MutateNeuronParams(child_genotype,
+                                param_mutation_probability,
+                                param_mutation_sigma);
 
     apply_structural_mutation(child_genotype);
 
@@ -697,20 +686,20 @@ namespace CPPNEAT
   void
   NEATLearner::apply_structural_mutation(GeneticEncodingPtr genotype)
   {
-    std::uniform_real_distribution< double > uniform(0,
-                                                     1);
-    mutator->mutate_structure(genotype,
-                              structural_augmentation_probability);
+    std::uniform_real_distribution< double > uniform(0, 1);
+    this->mutator->MutateStructure(
+            genotype,
+            structural_augmentation_probability);
 
     if (uniform(generator) < structural_removal_probability)
     {
       if (uniform(generator) < 0.5)
       {
-        mutator->remove_connection_mutation(genotype);
+        mutator->RemoveConnection(genotype);
       }
       else
       {
-        mutator->remove_neuron_mutation(genotype);
+        mutator->RemoveNeuron(genotype);
       }
     }
   }

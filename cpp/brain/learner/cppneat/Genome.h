@@ -26,7 +26,7 @@ public:
     {}
 
     virtual inline size_t
-    getInnovNumber()
+    InnovationNumber()
     { return innov_number; }
 
     virtual inline bool
@@ -45,7 +45,7 @@ public:
     get_parent_index()
     { return this->parent_index; }
 
-    GeneType gene_type;
+    GeneType type_;
 private:
     unsigned int innov_number;
     bool enabled;

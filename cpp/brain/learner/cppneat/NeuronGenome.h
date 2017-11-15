@@ -23,16 +23,16 @@ public:
                  parent_name,
                  parent_index)
             , neuron(neuron)
-    { this->gene_type = Gene::NEURON_GENE; }
+    { this->type_ = Gene::NEURON_GENE; }
 
-    NeuronGene(NeuronGene &copy_of)
+    NeuronGene(NeuronGene &_copy)
             :
-            Gene(copy_of.getInnovNumber(),
-                 copy_of.isEnabled(),
-                 copy_of.get_parent_name(),
-                 copy_of.get_parent_index())
-            , neuron(NeuronPtr(new Neuron(*(copy_of.neuron))))
-    { this->gene_type = Gene::NEURON_GENE; }
+            Gene(_copy.InnovationNumber(),
+                 _copy.isEnabled(),
+                 _copy.get_parent_name(),
+                 _copy.get_parent_index())
+            , neuron(NeuronPtr(new Neuron(*(_copy.neuron))))
+    { this->type_ = Gene::NEURON_GENE; }
 
 public:
     NeuronPtr neuron;
