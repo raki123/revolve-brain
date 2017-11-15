@@ -33,17 +33,17 @@ namespace CPPNEAT
           int innovation_number,
           int max_attempts,
           std::vector< Neuron::Ntype > addable_neurons)
-          : brain_spec(brain_spec)
+          : specification_(brain_spec)
           , sigma_(new_connection_sigma)
           , innovationNumber_(innovation_number)
-          , max_attempts(max_attempts)
-          , addable_neurons(addable_neurons)
+          , maxAttempts_(max_attempts)
+          , availableNeurons_(addable_neurons)
   {
     std::random_device rd;
     generator.seed(rd());
     if (addable_neurons.empty())
     {
-      this->addable_neurons = AddableTypes(brain_spec);
+      this->availableNeurons_ = AddableTypes(brain_spec);
     }
 
   }
@@ -116,28 +116,30 @@ namespace CPPNEAT
       std::cout << "Failed to load a first parents innovations." << std::endl;
       return;
     }
-    innovationNumber_ = yaml_file[0]["in_no"].as< int >();
-    connectionInnovations_.clear();
+    this->innovationNumber_ = yaml_file[0]["in_no"].as< size_t >();
+    this->connectionInnovations_.clear();
     for (const auto &connection : yaml_file[1]["connection_innovations"])
     {
       auto innovation = connection["connection_innovation"];
+
       auto from = innovation["mark_from"].as< size_t >();
       auto to = innovation["mark_to"].as< size_t >();
       auto inNum = innovation["in_no"].as< size_t >();
-      connectionInnovations_.insert({{from, to}, inNum});
+
+      this->connectionInnovations_.insert({{from, to}, inNum});
     }
-    neuronInnovations_.clear();
+    this->neuronInnovations_.clear();
     for (const auto &neuron : yaml_file[2]["neuron_innovations"])
     {
       auto innovation = neuron["neuron_innovation"];
       auto split = innovation["conn_split"].as< size_t >();
-      auto nType = static_cast<Neuron::Ntype>(innovation["ntype"].as< int >());
+      auto nType = static_cast<Neuron::Ntype>(innovation["ntype"].as< size_t >());
       std::vector< size_t > inNums;
       for (const auto &inNum : innovation["in_nos"])
       {
         inNums.push_back(inNum["in_no"].as< size_t >());
       }
-      neuronInnovations_.insert({{split, nType}, inNums});
+      this->neuronInnovations_.insert({{split, nType}, inNums});
     }
   }
 
@@ -156,39 +158,68 @@ namespace CPPNEAT
       return;
     }
 
+    // Map innvations from second to first
+    this->secondToFirst_.clear();
+    for (size_t innovations = 0; innovations < 10; ++innovations)
+    {
+      this->secondToFirst_[innovations] = innovations;
+    }
+
     // Load innovations as for a first parent
-    auto innovationSecondNumber_ = yaml_file[0]["in_no"].as< int >();
-    connectionSecondInnovations_.clear();
+    this->secondInnovationNumber_ = yaml_file[0]["in_no"].as< size_t >();
+
+//    this->connectionInnovations_.clear();
     for (const auto &connection : yaml_file[1]["connection_innovations"])
     {
       auto innovation = connection["connection_innovation"];
+
       auto from = innovation["mark_from"].as< size_t >();
       auto to = innovation["mark_to"].as< size_t >();
       auto inNum = innovation["in_no"].as< size_t >();
-      connectionSecondInnovations_.insert({{from, to}, inNum});
+
+      if (this->secondToFirst_.find(from) == this->secondToFirst_.end())
+      {
+        this->secondToFirst_[from] = from + this->innovationNumber_;
+      }
+      if (this->secondToFirst_.find(to) == this->secondToFirst_.end())
+      {
+        this->secondToFirst_[to] = to + this->innovationNumber_;
+      }
+      if (this->secondToFirst_.find(inNum) == this->secondToFirst_.end())
+      {
+        this->secondToFirst_[inNum] = inNum + this->innovationNumber_;
+      }
+
+      this->connectionInnovations_.insert(
+              {{this->secondToFirst_[from], this->secondToFirst_[to]},
+               this->secondToFirst_[inNum]});
     }
-    neuronSecondInnovations_.clear();
+//    this->neuronInnovations_.clear();
     for (const auto &neuron : yaml_file[2]["neuron_innovations"])
     {
       auto innovation = neuron["neuron_innovation"];
+
       auto split = innovation["conn_split"].as< size_t >();
-      auto nType = static_cast<Neuron::Ntype>(innovation["ntype"].as< int >());
+      auto nType = static_cast<Neuron::Ntype>(innovation["ntype"].as< size_t >());
+
+      if (this->secondToFirst_.find(split) == this->secondToFirst_.end())
+      {
+        this->secondToFirst_[split] = split + this->innovationNumber_;
+      }
       std::vector< size_t > inNums;
       for (const auto &inNum : innovation["in_nos"])
       {
-        inNums.push_back(inNum["in_no"].as< size_t >());
+        auto innov = inNum["in_no"].as< size_t >();
+        if (this->secondToFirst_.find(innov) == this->secondToFirst_.end())
+        {
+          this->secondToFirst_[innov] = innov + this->innovationNumber_;
+        }
+
+        inNums.push_back(this->secondToFirst_[innov]);
       }
-      neuronSecondInnovations_.insert({{split, nType}, inNums});
-    }
-
-    // Map innovations to innovations from first
-
-    for (const auto &connection : connectionSecondInnovations_)
-    {
-      auto from = connection.first.first;
-      auto to = connection.first.second;
-      auto conInNum2 = connection.second;
-
+      this->neuronInnovations_.insert(
+              {{this->secondToFirst_[split], nType},
+               inNums});
     }
   }
 
@@ -205,7 +236,7 @@ namespace CPPNEAT
         if (uniform(generator) < probability)
         {
           auto neuron_params =
-                  brain_spec[neuron_gene->neuron->type_].param_specs;
+                  specification_[neuron_gene->neuron->type_].param_specs;
           if (not neuron_params.empty())
           {
             std::uniform_int_distribution< size_t > uniform_int(
@@ -228,7 +259,7 @@ namespace CPPNEAT
           if (uniform(generator) < probability)
           {
             auto neuron_params =
-                    brain_spec[neuron_gene->neuron->type_].param_specs;
+                    specification_[neuron_gene->neuron->type_].param_specs;
             if (not neuron_params.empty())
             {
               std::uniform_int_distribution< size_t > uniform_int(
@@ -302,7 +333,7 @@ namespace CPPNEAT
       auto markFrom = from->InnovationNumber();
       auto markTo = to->InnovationNumber();
 
-      int num_attempts = 1;
+      size_t num_attempts = 1;
 
       while (genotype->HasConnection(markFrom, markTo)
              or to->neuron->layer == Neuron::INPUT_LAYER)
@@ -313,7 +344,7 @@ namespace CPPNEAT
         markTo = to->InnovationNumber();
 
         num_attempts++;
-        if (num_attempts > max_attempts)
+        if (num_attempts > maxAttempts_)
         {
           return false;
         }
@@ -358,7 +389,7 @@ namespace CPPNEAT
         mark_to = neuron_to->InnovationNumber();
 
         num_attempts++;
-        if (num_attempts > max_attempts)
+        if (num_attempts > maxAttempts_)
         {
           return false;
         }
@@ -403,7 +434,7 @@ namespace CPPNEAT
           double sigma)
   {
     assert(not genotype->connections_.empty());
-    assert(not addable_neurons.empty());
+    assert(not availableNeurons_.empty());
     if (not genotype->is_layered_)
     {
       std::uniform_int_distribution< size_t > choice1(
@@ -422,11 +453,11 @@ namespace CPPNEAT
               genotype->Find(to))->neuron;
 
       std::uniform_int_distribution< size_t > choice2(
-              0, addable_neurons.size() - 1);
-      auto new_neuron_type = addable_neurons[choice2(generator)];
+              0, availableNeurons_.size() - 1);
+      auto new_neuron_type = availableNeurons_[choice2(generator)];
 
       auto new_neuron_params = RandomParameters(
-              brain_spec[new_neuron_type],
+              specification_[new_neuron_type],
               sigma);
 
       NeuronPtr neuron_middle(new Neuron(
@@ -466,11 +497,11 @@ namespace CPPNEAT
               genotype->Find(to))->neuron;
 
       std::uniform_int_distribution< size_t > choice2(
-              0, addable_neurons.size() - 1);
-      auto new_neuron_type = addable_neurons[choice2(generator)];
+              0, availableNeurons_.size() - 1);
+      auto new_neuron_type = availableNeurons_[choice2(generator)];
 
       auto new_neuron_params = RandomParameters(
-              brain_spec[new_neuron_type],
+              specification_[new_neuron_type],
               sigma);
 
       NeuronPtr neuron_middle(new Neuron(

@@ -74,7 +74,7 @@ namespace CPPNEAT
 
     std::map< Neuron::Ntype, Neuron::NeuronTypeSpec > BrainSpec()
     {
-      return brain_spec;
+      return specification_;
     };
 
     void SetInnovationNumber(const size_t _innovationNumber)
@@ -84,7 +84,6 @@ namespace CPPNEAT
 
     private:
     std::map< std::pair< size_t, size_t >, size_t > connectionInnovations_;
-    std::map< std::pair< size_t, size_t >, size_t > connectionSecondInnovations_;
 
     //<mark_from, mark_to> -> innovation_number
     //contains all connections that ever existed!
@@ -98,17 +97,16 @@ namespace CPPNEAT
      */
     std::map< std::pair< size_t, Neuron::Ntype >, std::vector< size_t >>
             neuronInnovations_;
-    std::map< std::pair< size_t, Neuron::Ntype >, std::vector< size_t >>
-            neuronSecondInnovations_;
 
-    std::map< size_t, size_t > secondToFirst;
+    std::map< size_t, size_t > secondToFirst_;
 
     //contains only neurons that have been added by structural mutation
-    std::map< Neuron::Ntype, Neuron::NeuronTypeSpec > brain_spec;
+    std::map< Neuron::Ntype, Neuron::NeuronTypeSpec > specification_;
     double sigma_;
+    size_t maxAttempts_;
     size_t innovationNumber_;
-    size_t max_attempts;
-    std::vector< Neuron::Ntype > addable_neurons;
+    size_t secondInnovationNumber_;
+    std::vector< Neuron::Ntype > availableNeurons_;
 
     std::mt19937 generator;
   };
