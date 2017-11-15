@@ -70,7 +70,7 @@ public:
 
     std::vector<GenePtr> SortedGenes();
 
-    std::pair<int, int> min_max_innov_numer();
+    std::pair<int, int> InnovationsRange();
 
     GenePtr Find(const size_t innov_number);
 

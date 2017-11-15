@@ -408,8 +408,7 @@ namespace CPPNEAT
     return gene1->InnovationNumber() < gene2->InnovationNumber();
   }
 
-  std::vector< GenePtr >
-  GeneticEncoding::SortedGenes()
+  std::vector< GenePtr > GeneticEncoding::SortedGenes()
   {
     if (not all_genes_valid)
     {
@@ -443,15 +442,13 @@ namespace CPPNEAT
                   connection_gene));
         }
       }
-      std::sort(all_genes_sorted.begin(),
-                all_genes_sorted.end(),
-                gene_cmp);
+      std::sort(all_genes_sorted.begin(), all_genes_sorted.end(), gene_cmp);
       all_genes_valid = true;
     }
     return all_genes_sorted;
   }
 
-  std::pair< int, int > GeneticEncoding::min_max_innov_numer()
+  std::pair< int, int > GeneticEncoding::InnovationsRange()
   {
     this->SortedGenes();
     return {all_genes_sorted[0]->InnovationNumber(),

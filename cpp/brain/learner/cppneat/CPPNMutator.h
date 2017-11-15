@@ -16,11 +16,11 @@ namespace CPPNEAT
     public:
 
     Mutator(
-            std::map< Neuron::Ntype, Neuron::NeuronTypeSpec > brain_spec,
-            double new_connection_sigma,
-            int innovation_number,
-            int max_attempts,
-            std::vector< Neuron::Ntype > addable_neurons);
+            std::map< Neuron::Ntype, Neuron::NeuronTypeSpec > _specification,
+            const double _connectionSigma,
+            const size_t _innovationNumber,
+            const size_t _maxAttempts,
+            std::vector< Neuron::Ntype > _availableNeurons);
 
     static std::vector< Neuron::Ntype > AddableTypes(
             std::map< Neuron::Ntype, Neuron::NeuronTypeSpec > _specifications);
@@ -82,8 +82,14 @@ namespace CPPNEAT
       this->innovationNumber_ = _innovationNumber;
     };
 
-    private:
-    std::map< std::pair< size_t, size_t >, size_t > connectionInnovations_;
+
+    public: std::map< size_t, size_t > SecondToFirst()
+    {
+      return this->secondToFirst_;
+    }
+
+    private: std::map< std::pair< size_t, size_t >, size_t >
+            connectionInnovations_;
 
     //<mark_from, mark_to> -> innovation_number
     //contains all connections that ever existed!
@@ -95,20 +101,22 @@ namespace CPPNEAT
      * another neuron in order to store all the innovation numbers we need a
      * vector.
      */
-    std::map< std::pair< size_t, Neuron::Ntype >, std::vector< size_t >>
-            neuronInnovations_;
+    private: std::map< std::pair< size_t, Neuron::Ntype >,
+                       std::vector< size_t >> neuronInnovations_;
 
-    std::map< size_t, size_t > secondToFirst_;
+    private: std::map< size_t, size_t > secondToFirst_;
 
     //contains only neurons that have been added by structural mutation
-    std::map< Neuron::Ntype, Neuron::NeuronTypeSpec > specification_;
-    double sigma_;
-    size_t maxAttempts_;
-    size_t innovationNumber_;
-    size_t secondInnovationNumber_;
-    std::vector< Neuron::Ntype > availableNeurons_;
+    private: std::map< Neuron::Ntype, Neuron::NeuronTypeSpec > specification_;
 
-    std::mt19937 generator;
+    private: double sigma_;
+
+    private: size_t maxAttempts_;
+    private: size_t innovationNumber_;
+
+    private: std::vector< Neuron::Ntype > availableNeurons_;
+
+    private: std::mt19937 generator_;
   };
 }
 

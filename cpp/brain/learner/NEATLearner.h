@@ -50,15 +50,19 @@ namespace CPPNEAT
             const std::string &_parent2,
             LearningConfiguration conf);
 
-    void initialise(std::vector< GeneticEncodingPtr > init_genotypes);
+    void Initialise(std::vector< GeneticEncodingPtr > init_genotypes);
 
     std::vector< GeneticEncodingPtr > InitCppns();
 
-    std::vector< GeneticEncodingPtr > BrainsFromYaml(
-            std::string yaml_path,
+    std::vector< GeneticEncodingPtr > LoadCppns(
+            const std::string &_path,
             int offset);
 
-    void apply_structural_mutation(GeneticEncodingPtr genotype);
+    std::vector< GeneticEncodingPtr > LoadSecondCppns(
+            const std::string &_path,
+            int offset);
+
+    void MutateStructure(GeneticEncodingPtr genotype);
 
     //standard parameters
     static const bool ASEXUAL;
@@ -94,7 +98,7 @@ namespace CPPNEAT
 
     void ProduceGeneration();
 
-    GeneticEncodingPtr produce_child(
+    GeneticEncodingPtr OffspringGenome(
             GeneticEncodingPtr parent1,
             GeneticEncodingPtr parent2);
 
@@ -140,6 +144,7 @@ namespace CPPNEAT
     double interspecies_mate_probability;
     std::mt19937 generator;
 
+    private: std::map< size_t, size_t > secondToFirst_;
   };
 }
 
