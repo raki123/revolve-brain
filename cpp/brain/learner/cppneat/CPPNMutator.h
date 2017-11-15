@@ -20,8 +20,7 @@ namespace CPPNEAT
             double new_connection_sigma,
             int innovation_number,
             int max_attempts,
-            std::vector< Neuron::Ntype > addable_neurons,
-            bool layered);
+            std::vector< Neuron::Ntype > addable_neurons);
 
     static std::vector< Neuron::Ntype > AddableTypes(
             std::map< Neuron::Ntype, Neuron::NeuronTypeSpec > _specifications);
@@ -29,6 +28,7 @@ namespace CPPNEAT
     void make_starting_genotype_known(GeneticEncodingPtr _genotype);
 
     void LoadInnovationsFromFirst(const std::string &_path);
+
     void LoadInnovationsFromSecond(const std::string &_path);
 
     void RecordInnovations(const std::string &_path);
@@ -59,17 +59,17 @@ namespace CPPNEAT
 
     void RemoveNeuron(GeneticEncodingPtr genotype);
 
-    int AddNeuron(
-            NeuronPtr neuron,
-            GeneticEncodingPtr genotype,
-            ConnectionGenePtr split);
+    size_t AddNeuron(
+            const NeuronPtr neuron,
+            const GeneticEncodingPtr genotype,
+            const ConnectionGenePtr split);
 
-    int AddConnection(
-            int mark_from,
-            int mark_to,
-            double weight,
-            GeneticEncodingPtr genotype,
-            std::string socket);
+    size_t AddConnection(
+            const size_t _from,
+            const size_t _to,
+            const double _weight,
+            const GeneticEncodingPtr _genotype,
+            const std::string &_socket);
 
 
     std::map< Neuron::Ntype, Neuron::NeuronTypeSpec > BrainSpec()
@@ -77,17 +77,18 @@ namespace CPPNEAT
       return brain_spec;
     };
 
-    void set_current_innovation_number(int innov_numb)
+    void SetInnovationNumber(const size_t _innovationNumber)
     {
-      this->innovationNumber_ = innov_numb;
+      this->innovationNumber_ = _innovationNumber;
     };
 
     private:
-    std::map< std::pair< int, int >, size_t > connectionInnovations_;
+    std::map< std::pair< size_t, size_t >, size_t > connectionInnovations_;
+    std::map< std::pair< size_t, size_t >, size_t > connectionSecondInnovations_;
 
     //<mark_from, mark_to> -> innovation_number
     //contains all connections that ever existed!
-    /*<innovation_num_of_splited_connection, added_neurons_type> ->
+    /*<innovation_num_of_split_connection, added_neurons_type> ->
      * -> added_neurons_innovation_nums
      * since we want the ability to have multiple neurons of the same type
      * added between two neurons. It is necessary that we check if a new
@@ -95,14 +96,20 @@ namespace CPPNEAT
      * another neuron in order to store all the innovation numbers we need a
      * vector.
      */
-    std::map< std::pair< int, Neuron::Ntype >, std::vector< int>> neuronInnovations_;
+    std::map< std::pair< size_t, Neuron::Ntype >, std::vector< size_t >>
+            neuronInnovations_;
+    std::map< std::pair< size_t, Neuron::Ntype >, std::vector< size_t >>
+            neuronSecondInnovations_;
+
+    std::map< size_t, size_t > secondToFirst;
+
     //contains only neurons that have been added by structural mutation
     std::map< Neuron::Ntype, Neuron::NeuronTypeSpec > brain_spec;
     double sigma_;
-    int innovationNumber_;
-    int max_attempts;
+    size_t innovationNumber_;
+    size_t max_attempts;
     std::vector< Neuron::Ntype > addable_neurons;
-//    bool is_layered_;
+
     std::mt19937 generator;
   };
 }

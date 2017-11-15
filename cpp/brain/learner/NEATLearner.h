@@ -27,7 +27,7 @@ namespace CPPNEAT
       int num_children;
       int max_generations;
       int repeat_evaluations;
-      int initial_structural_mutations;
+      int initStructMutations;
       int num_first;
       int num_second;
       std::string parent1;
@@ -92,7 +92,7 @@ namespace CPPNEAT
 
     void share_fitness();
 
-    void produce_new_generation();
+    void ProduceGeneration();
 
     GeneticEncodingPtr produce_child(
             GeneticEncodingPtr parent1,
@@ -100,12 +100,12 @@ namespace CPPNEAT
 
     void displayConfiguration();
 
-    std::pair< GeneticEncodingPtr, GeneticEncodingPtr > select_for_tournament(
+    std::pair< GeneticEncodingPtr, GeneticEncodingPtr > Tournament(
             std::vector< std::pair< GeneticEncodingPtr, double>> candidates,
-            unsigned int tourn_size);
+            unsigned int _tournamentSize);
 
 
-    GeneticEncodingPtr active_brain_;
+    GeneticEncodingPtr activeBrain_;
     std::map< double, GeneticEncodingPtr, std::greater< double > > bestBrains_;
 //    double fitness;
     std::vector< GeneticEncodingPtr > evaluation_queue_;

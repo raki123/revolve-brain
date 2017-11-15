@@ -32,19 +32,16 @@ namespace CPPNEAT
           double new_connection_sigma,
           int innovation_number,
           int max_attempts,
-          std::vector< Neuron::Ntype > addable_neurons,
-          bool layered
-  )
+          std::vector< Neuron::Ntype > addable_neurons)
           : brain_spec(brain_spec)
           , sigma_(new_connection_sigma)
           , innovationNumber_(innovation_number)
           , max_attempts(max_attempts)
           , addable_neurons(addable_neurons)
-//        , is_layered_(layered)
   {
     std::random_device rd;
     generator.seed(rd());
-    if (addable_neurons.size() == 0)
+    if (addable_neurons.empty())
     {
       this->addable_neurons = AddableTypes(brain_spec);
     }
@@ -56,7 +53,7 @@ namespace CPPNEAT
   {
     for (const auto &connection : _genotype->connections_)
     {
-      this->connectionInnovations_[{connection->from_, connection->to_}] =
+      this->connectionInnovations_[{connection->From(), connection->To()}] =
               connection->InnovationNumber();
     }
   }
@@ -116,9 +113,7 @@ namespace CPPNEAT
     YAML::Node yaml_file = YAML::LoadFile(_path);
     if (yaml_file.IsNull())
     {
-      std::cout
-              << "Failed to load the yaml file. If this is the first run do not worry."
-              << std::endl;
+      std::cout << "Failed to load a first parents innovations." << std::endl;
       return;
     }
     innovationNumber_ = yaml_file[0]["in_no"].as< int >();
@@ -126,21 +121,21 @@ namespace CPPNEAT
     for (const auto &connection : yaml_file[1]["connection_innovations"])
     {
       auto innovation = connection["connection_innovation"];
-      auto from = innovation["mark_from"].as< int >();
-      auto to = innovation["mark_to"].as< int >();
-      auto inNum = innovation["in_no"].as< int >();
+      auto from = innovation["mark_from"].as< size_t >();
+      auto to = innovation["mark_to"].as< size_t >();
+      auto inNum = innovation["in_no"].as< size_t >();
       connectionInnovations_.insert({{from, to}, inNum});
     }
     neuronInnovations_.clear();
     for (const auto &neuron : yaml_file[2]["neuron_innovations"])
     {
       auto innovation = neuron["neuron_innovation"];
-      auto split = innovation["conn_split"].as< int >();
+      auto split = innovation["conn_split"].as< size_t >();
       auto nType = static_cast<Neuron::Ntype>(innovation["ntype"].as< int >());
-      std::vector< int > inNums;
+      std::vector< size_t > inNums;
       for (const auto &inNum : innovation["in_nos"])
       {
-        inNums.push_back(inNum["in_no"].as< int >());
+        inNums.push_back(inNum["in_no"].as< size_t >());
       }
       neuronInnovations_.insert({{split, nType}, inNums});
     }
@@ -157,13 +152,44 @@ namespace CPPNEAT
     YAML::Node yaml_file = YAML::LoadFile(_path);
     if (yaml_file.IsNull())
     {
-      std::cout
-              << "Failed to load the yaml file. If this is the first run do not worry."
-              << std::endl;
+      std::cout << "Failed to load a second parents innovations." << std::endl;
       return;
     }
 
+    // Load innovations as for a first parent
+    auto innovationSecondNumber_ = yaml_file[0]["in_no"].as< int >();
+    connectionSecondInnovations_.clear();
+    for (const auto &connection : yaml_file[1]["connection_innovations"])
+    {
+      auto innovation = connection["connection_innovation"];
+      auto from = innovation["mark_from"].as< size_t >();
+      auto to = innovation["mark_to"].as< size_t >();
+      auto inNum = innovation["in_no"].as< size_t >();
+      connectionSecondInnovations_.insert({{from, to}, inNum});
+    }
+    neuronSecondInnovations_.clear();
+    for (const auto &neuron : yaml_file[2]["neuron_innovations"])
+    {
+      auto innovation = neuron["neuron_innovation"];
+      auto split = innovation["conn_split"].as< size_t >();
+      auto nType = static_cast<Neuron::Ntype>(innovation["ntype"].as< int >());
+      std::vector< size_t > inNums;
+      for (const auto &inNum : innovation["in_nos"])
+      {
+        inNums.push_back(inNum["in_no"].as< size_t >());
+      }
+      neuronSecondInnovations_.insert({{split, nType}, inNums});
+    }
 
+    // Map innovations to innovations from first
+
+    for (const auto &connection : connectionSecondInnovations_)
+    {
+      auto from = connection.first.first;
+      auto to = connection.first.second;
+      auto conInNum2 = connection.second;
+
+    }
   }
 
   void Mutator::MutateNeuronParams(
@@ -231,7 +257,7 @@ namespace CPPNEAT
     {
       if (uniform(generator) < probability)
       {
-        connection_gene->weight += normal(generator);
+        connection_gene->ModifyWeight(normal(generator));
       }
     }
   }
@@ -278,7 +304,7 @@ namespace CPPNEAT
 
       int num_attempts = 1;
 
-      while (genotype->connection_exists(markFrom, markTo)
+      while (genotype->HasConnection(markFrom, markTo)
              or to->neuron->layer == Neuron::INPUT_LAYER)
       {
         from = genotype->neurons_[choice(generator)];
@@ -321,7 +347,7 @@ namespace CPPNEAT
 
       int num_attempts = 1;
 
-      while (genotype->connection_exists(mark_from, mark_to)
+      while (genotype->HasConnection(mark_from, mark_to)
              or index_from.first >= index_to.first)
       {
         index_from = genotype->convert_index_to_layer_index(choice(generator));
@@ -338,11 +364,12 @@ namespace CPPNEAT
         }
       }
       std::normal_distribution< double > normal(0, sigma);
-      AddConnection(mark_from,
-                    mark_to,
-                    normal(generator),
-                    genotype,
-                    "");
+      this->AddConnection(
+              mark_from,
+              mark_to,
+              normal(generator),
+              genotype,
+              "");
 #ifdef CPPNEAT_DEBUG
       if (not genotype->is_valid()) {
           std::cerr << "add connection mutation caused invalid genotye" << std::endl;
@@ -384,61 +411,17 @@ namespace CPPNEAT
       auto split_id = choice1(generator);
       auto split = genotype->connections_[split_id];
 
-      auto old_weight = split->weight;
-      auto mark_from = split->from_;
-      auto mark_to = split->to_;
+      auto old_weight = split->Weight();
+      auto from = split->From();
+      auto to = split->To();
 
-      genotype->remove_connection_gene(split_id);
+      genotype->RemoveConnection(split_id);
       auto neuron_from = boost::dynamic_pointer_cast< NeuronGene >(
-              genotype->Find(mark_from))->neuron;
+              genotype->Find(from))->neuron;
       auto neuron_to = boost::dynamic_pointer_cast< NeuronGene >(
-              genotype->Find(mark_to))->neuron;
+              genotype->Find(to))->neuron;
 
       std::uniform_int_distribution< size_t > choice2(
-              0, addable_neurons.size() - 1);
-      auto new_neuron_type = addable_neurons[choice2(generator)];
-
-      auto new_neuron_params = RandomParameters(
-              brain_spec[new_neuron_type],
-              sigma);
-
-      NeuronPtr neuron_middle
-              (new Neuron("augment" + std::to_string(innovationNumber_ + 1),
-                          Neuron::HIDDEN_LAYER,
-                          new_neuron_type,
-                          new_neuron_params));
-      int mark_middle = AddNeuron(neuron_middle,
-                                  genotype,
-                                  split);
-      AddConnection(mark_from,
-                    mark_middle,
-                    old_weight,
-                    genotype,
-                    "");
-      AddConnection(mark_middle,
-                    mark_to,
-                    1.0,
-                    genotype,
-                    "");
-    }
-    else
-    {
-      std::uniform_int_distribution< size_t > choice1(
-              0, genotype->connections_.size() - 1);
-      auto split_id = choice1(generator);
-      auto split = genotype->connections_[split_id];
-
-      auto old_weight = split->weight;
-      auto mark_from = split->from_;
-      auto mark_to = split->to_;
-
-      genotype->remove_connection_gene(split_id);
-      auto neuron_from = boost::dynamic_pointer_cast< NeuronGene >(
-              genotype->Find(mark_from))->neuron;
-      auto neuron_to = boost::dynamic_pointer_cast< NeuronGene >(
-              genotype->Find(mark_to))->neuron;
-
-      std::uniform_int_distribution< int > choice2(
               0, addable_neurons.size() - 1);
       auto new_neuron_type = addable_neurons[choice2(generator)];
 
@@ -451,31 +434,78 @@ namespace CPPNEAT
               Neuron::HIDDEN_LAYER,
               new_neuron_type,
               new_neuron_params));
-      auto mark_middle = AddNeuron(neuron_middle,
-                                   genotype,
-                                   split);
+      auto middle = AddNeuron(neuron_middle, genotype, split);
+      this->AddConnection(
+              from,
+              middle,
+              old_weight,
+              genotype,
+              "");
+      this->AddConnection(
+              middle,
+              to,
+              1.0,
+              genotype,
+              "");
+    }
+    else
+    {
+      std::uniform_int_distribution< size_t > choice1(
+              0, genotype->connections_.size() - 1);
+      auto split_id = choice1(generator);
+      auto split = genotype->connections_[split_id];
+
+      auto old_weight = split->Weight();
+      auto from = split->From();
+      auto to = split->To();
+
+      genotype->RemoveConnection(split_id);
+      auto neuron_from = boost::dynamic_pointer_cast< NeuronGene >(
+              genotype->Find(from))->neuron;
+      auto neuron_to = boost::dynamic_pointer_cast< NeuronGene >(
+              genotype->Find(to))->neuron;
+
+      std::uniform_int_distribution< size_t > choice2(
+              0, addable_neurons.size() - 1);
+      auto new_neuron_type = addable_neurons[choice2(generator)];
+
+      auto new_neuron_params = RandomParameters(
+              brain_spec[new_neuron_type],
+              sigma);
+
+      NeuronPtr neuron_middle(new Neuron(
+              "augment" + std::to_string(innovationNumber_ + 1),
+              Neuron::HIDDEN_LAYER,
+              new_neuron_type,
+              new_neuron_params));
+      auto middle = AddNeuron(
+              neuron_middle,
+              genotype,
+              split);
 #ifdef CPPNEAT_DEBUG
       if (not genotype->is_valid()) {
           std::cerr << "add neuron mutation caused invalid genotye1" << std::endl;
           throw std::runtime_error("mutation error");
       }
 #endif
-      AddConnection(mark_from,
-                    mark_middle,
-                    old_weight,
-                    genotype,
-                    "");
+      this->AddConnection(
+              from,
+              middle,
+              old_weight,
+              genotype,
+              "");
 #ifdef CPPNEAT_DEBUG
       if (not genotype->is_valid()) {
           std::cerr << "add neuron mutation caused invalid genotye2" << std::endl;
           throw std::runtime_error("mutation error");
       }
 #endif
-      AddConnection(mark_middle,
-                    mark_to,
-                    1.0,
-                    genotype,
-                    "");
+      this->AddConnection(
+              middle,
+              to,
+              1.0,
+              genotype,
+              "");
     }
 #ifdef CPPNEAT_DEBUG
     if (not genotype->is_valid()) {
@@ -515,26 +545,25 @@ namespace CPPNEAT
     auto neuron_mark = neuron_gene->InnovationNumber();
 
     std::vector< int > bad_connections;
-    for (unsigned int i = 0; i < genotype->connections_
-                                         .size(); i++)
+    for (unsigned int i = 0; i < genotype->connections_.size(); i++)
     {
-      if (genotype->connections_[i]->from_ == neuron_mark ||
-          genotype->connections_[i]->to_ == neuron_mark)
+      if (genotype->connections_[i]->From() == neuron_mark
+          or genotype->connections_[i]->To() == neuron_mark)
       {
         bad_connections.push_back(i);
       }
     }
     for (size_t i = bad_connections.size() - 1; i >= 0; i--)
     {
-      genotype->remove_connection_gene(bad_connections[i]);
+      genotype->RemoveConnection(bad_connections[i]);
     }
-    genotype->remonve_neuron_gene(gene_id);
+    genotype->RemoveNeuron(gene_id);
   }
 
-  int Mutator::AddNeuron(
-          NeuronPtr neuron,
-          GeneticEncodingPtr genotype,
-          ConnectionGenePtr split)
+  size_t Mutator::AddNeuron(
+          const NeuronPtr neuron,
+          const GeneticEncodingPtr genotype,
+          const ConnectionGenePtr split)
   {
     auto connection_split_in = split->InnovationNumber();
     std::pair< int, Neuron::Ntype > neuron_pair(
@@ -560,16 +589,16 @@ namespace CPPNEAT
                 -1));
         if (not genotype->is_layered_)
         {
-          genotype->add_neuron_gene(new_neuron_gene);
+          genotype->AddNeuron(new_neuron_gene);
         }
         else
         {
-          auto mark_from = split->from_;
-          auto mark_to = split->to_;
+          auto mark_from = split->From();
+          auto mark_to = split->To();
           auto index_from = genotype->convert_in_to_layer_index(mark_from);
           auto index_to = genotype->convert_in_to_layer_index(mark_to);
           assert(index_from.first < index_to.first);
-          genotype->add_neuron_gene(
+          genotype->AddNeuron(
                   new_neuron_gene,
                   index_from.first + 1,
                   //we need a new layer iff the two layers are "right next to each other"
@@ -590,16 +619,16 @@ namespace CPPNEAT
     neuronInnovations_[neuron_pair].push_back(innovationNumber_);
     if (not genotype->is_layered_)
     {
-      genotype->add_neuron_gene(new_neuron_gene);
+      genotype->AddNeuron(new_neuron_gene);
     }
     else
     {
-      auto mark_from = split->from_;
-      auto mark_to = split->to_;
+      auto mark_from = split->From();
+      auto mark_to = split->To();
       auto index_from = genotype->convert_in_to_layer_index(mark_from);
       auto index_to = genotype->convert_in_to_layer_index(mark_to);
       assert(index_from.first < index_to.first);
-      genotype->add_neuron_gene(
+      genotype->AddNeuron(
               new_neuron_gene,
               index_from.first + 1,
               //we need a new layer iff the two layers are "right next to each other"
@@ -608,20 +637,20 @@ namespace CPPNEAT
     return new_neuron_gene->InnovationNumber();
   }
 
-  int Mutator::AddConnection(
-          int mark_from,
-          int mark_to,
-          double weight,
-          GeneticEncodingPtr genotype,
-          std::string socket)
+  size_t Mutator::AddConnection(
+          const size_t _from,
+          const size_t _to,
+          const double _weight,
+          const GeneticEncodingPtr _genotype,
+          const std::string &_socket)
   {
     std::pair< size_t, size_t > innovation_pair(
-            mark_from,
-            mark_to);
+            _from,
+            _to);
     if (connectionInnovations_.find(innovation_pair) != connectionInnovations_.end())
     {
       auto found =
-              genotype->Find(connectionInnovations_[innovation_pair]);
+              _genotype->Find(connectionInnovations_[innovation_pair]);
       if (found != nullptr)
       {
         boost::dynamic_pointer_cast< ConnectionGene >(found)->setEnabled(true);
@@ -630,29 +659,29 @@ namespace CPPNEAT
       else
       {
         ConnectionGenePtr new_conn_gene(new ConnectionGene(
-                mark_to,
-                mark_from,
-                weight,
+                _to,
+                _from,
+                _weight,
                 connectionInnovations_[innovation_pair],
                 true,
                 "none",
                 -1,
-                socket));
-        genotype->add_connection_gene(new_conn_gene);
+                _socket));
+        _genotype->AddConnection(new_conn_gene);
         return new_conn_gene->InnovationNumber();
       }
     }
     ConnectionGenePtr new_conn_gene(new ConnectionGene(
-            mark_to,
-            mark_from,
-            weight,
+            _to,
+            _from,
+            _weight,
             ++innovationNumber_,
             true,
             "none",
             -1,
-            socket));
+            _socket));
     connectionInnovations_[innovation_pair] = innovationNumber_;
-    genotype->add_connection_gene(new_conn_gene);
+    _genotype->AddConnection(new_conn_gene);
     return new_conn_gene->InnovationNumber();
   }
 }

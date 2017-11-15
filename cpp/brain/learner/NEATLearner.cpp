@@ -15,13 +15,13 @@ namespace CPPNEAT
           const std::string &_parent2,
           NEATLearner::LearningConfiguration conf
   )
-          : active_brain_(nullptr)
+          : activeBrain_(nullptr)
           , generation_number(0)
           , total_brains_evaluated(0)
           , mutator(mutator)
           , mutator_path(_innovations)
           , is_asexual_(conf.asexual)
-          , initial_structural_mutations_(conf.initial_structural_mutations)
+          , initial_structural_mutations_(conf.initStructMutations)
           , num_children_(conf.num_children)
           , population_size_(conf.pop_size)
           , tournament_size_(conf.tournament_size)
@@ -91,7 +91,7 @@ namespace CPPNEAT
     {
       evaluation_queue_.push_back(brain);
     }
-    active_brain_ = evaluation_queue_.back();
+    activeBrain_ = evaluation_queue_.back();
     evaluation_queue_.pop_back();
   }
 
@@ -101,7 +101,7 @@ namespace CPPNEAT
   {
     if (offset != -1)
     {
-      int innovation_counter = offset;
+      size_t innovation_counter = offset;
       auto yaml_file = YAML::LoadFile(yaml_path);
       if (yaml_file.IsNull())
       {
@@ -109,29 +109,31 @@ namespace CPPNEAT
         return std::vector< GeneticEncodingPtr >();
       }
       std::vector< GeneticEncodingPtr > genotypes;
-      for (size_t first = 0; first < yaml_file.size(); first++)
+      for (const auto &brain : yaml_file)
       {
-        std::map< int, int > old_to_new;
+        std::map< size_t, size_t > old_to_new;
         GeneticEncodingPtr newGenome(new GeneticEncoding(true));
-        for (size_t counter = 0; counter < yaml_file[first]["brain"]["layers"].size(); counter++)
+        for (size_t counter = 0; counter < brain["brain"]["layers"].size(); counter++)
         {
-          auto layer = yaml_file[first]["brain"]["layers"][counter];
+          auto layer = brain["brain"]["layers"][counter];
           layer = layer["layer_" + std::to_string(counter + 1)];
           bool is_new_layer = true;
-          for (const auto &neuron_node : layer)
+          for (const auto &neuron : layer)
           {
-            auto neuron_id = neuron_node["nid"].as< std::string >();
-            auto neuron_type = static_cast<Neuron::Ntype>(neuron_node["ntype"].as< int >());
-            auto neuron_layer = static_cast<Neuron::Layer>(neuron_node["nlayer"].as< int >());
-            int innov_numb;
-            if (old_to_new.find(neuron_node["in_no"].as< int >()) == old_to_new.end())
+            auto nId = neuron["nid"].as< std::string >();
+            auto nType = static_cast<Neuron::Ntype>(
+                    neuron["ntype"].as< size_t >());
+            auto nLayer = static_cast<Neuron::Layer>(
+                    neuron["nlayer"].as< size_t >());
+            size_t innovationNumber;
+            if (old_to_new.find(neuron["in_no"].as< size_t >()) == old_to_new.end())
             {
-              innov_numb = innovation_counter++;
-              old_to_new[neuron_node["in_no"].as< int >()] = innov_numb;
+              innovationNumber = innovation_counter++;
+              old_to_new[neuron["in_no"].as< size_t >()] = innovationNumber;
             }
             else
             {
-              innov_numb = old_to_new[neuron_node["in_no"].as< int >()];
+              innovationNumber = old_to_new[neuron["in_no"].as< size_t >()];
             }
             std::map< std::string, double > neuron_params;
             std::vector< std::string > params;
@@ -147,7 +149,7 @@ namespace CPPNEAT
                 }
               }
             }
-            auto params_node = neuron_node["params"];
+            auto params_node = neuron["params"];
             for (const auto &param_name : params)
             {
               YAML::Node param_node = params_node[param_name];
@@ -157,45 +159,45 @@ namespace CPPNEAT
               }
             }
             NeuronPtr new_neuron(new Neuron(
-                    neuron_id,
-                    neuron_layer,
-                    neuron_type,
+                    nId,
+                    nLayer,
+                    nType,
                     neuron_params));
             NeuronGenePtr new_neuron_gene(new NeuronGene(
                     new_neuron,
-                    innov_numb,
+                    innovationNumber,
                     true));
-            newGenome->add_neuron_gene(
+            newGenome->AddNeuron(
                     new_neuron_gene,
                     counter,
                     is_new_layer);
             is_new_layer = false;
           }
         }
-        for (size_t i = 0; i < yaml_file[first]["brain"]["connection_genes"].size(); i++)
+        for (const auto &connection : brain["brain"]["connection_genes"])
         {
-          auto connection = yaml_file[first]["brain"]["connection_genes"][i]["con_1"];
-          auto mark_to = old_to_new[connection["to"].as< int >()];
-          auto mark_from = old_to_new[connection["from"].as< int >()];
-          auto weight = connection["weight"].as< double >();
-          int innov_numb;
-          if (old_to_new.find(connection["in_no"].as< int >()) == old_to_new.end())
+          auto to = old_to_new[connection["con_1"]["to"].as< size_t >()];
+          auto from = old_to_new[connection["con_1"]["from"].as< size_t >()];
+          auto weight = connection["con_1"]["weight"].as< double >();
+          size_t innovationNumber;
+          if (old_to_new.find(connection["con_1"]["in_no"].as< size_t >())
+              == old_to_new.end())
           {
-            innov_numb = innovation_counter++;
-            old_to_new[connection["in_no"].as< int >()] = innov_numb;
+            innovationNumber = innovation_counter++;
+            old_to_new[connection["in_no"].as< int >()] = innovationNumber;
           }
           else
           {
-            innov_numb = old_to_new[connection["in_no"].as< int >()];
+            innovationNumber = old_to_new[connection["in_no"].as< size_t >()];
           }
           ConnectionGenePtr newConnection(new ConnectionGene(
-                  mark_to,
-                  mark_from,
+                  to,
+                  from,
                   weight,
-                  innov_numb,
+                  innovationNumber,
                   true,
                   ""));
-          newGenome->add_connection_gene(newConnection);
+          newGenome->AddConnection(newConnection);
         }
         genotypes.push_back(newGenome);
       }
@@ -258,20 +260,19 @@ namespace CPPNEAT
                     true,
                     yaml_path,
                     first));
-            newGenome->add_neuron_gene(
+            newGenome->AddNeuron(
                     new_neuron_gene,
                     counter,
                     is_new_layer);
             is_new_layer = false;
           }
         }
-        for (unsigned int i = 0; i < yaml_file[first]["brain"]["connection_genes"].size(); i++)
+        for (const auto &connection : yaml_file[first]["brain"]["connection_genes"])
         {
-          auto connection = yaml_file[first]["brain"]["connection_genes"][i]["con_1"];
-          auto to = connection["to"].as< int >();
-          auto from = connection["from"].as< int >();
-          auto weight = connection["weight"].as< double >();
-          auto innov_numb = connection["in_no"].as< int >();
+          auto to = connection["con_1"]["to"].as< size_t >();
+          auto from = connection["con_1"]["from"].as< size_t >();
+          auto weight = connection["con_1"]["weight"].as< double >();
+          auto innov_numb = connection["con_1"]["in_no"].as< size_t >();
           ConnectionGenePtr newConnection(new ConnectionGene(
                   to,
                   from,
@@ -281,7 +282,7 @@ namespace CPPNEAT
                   yaml_path,
                   first,
                   ""));
-          newGenome->add_connection_gene(newConnection);
+          newGenome->AddConnection(newConnection);
         }
         genotypes.push_back(newGenome);
       }
@@ -341,19 +342,19 @@ namespace CPPNEAT
       {
         sum += add;
       }
-      double average_fitness = sum / repeat_evaluations;
-      brain_fitness[active_brain_] = average_fitness;
-      brain_velocity[active_brain_] = average_fitness;
+      auto average_fitness = sum / repeat_evaluations;
+      brain_fitness[activeBrain_] = average_fitness;
+      brain_velocity[activeBrain_] = average_fitness;
 
       if (evaluation_queue_.empty())
       {
         share_fitness();
 
-        produce_new_generation();
+        this->ProduceGeneration();
         std::reverse(evaluation_queue_.begin(), evaluation_queue_.end());
-        generation_number++;
+        this->generation_number++;
       }
-      active_brain_ = evaluation_queue_.back();
+      activeBrain_ = evaluation_queue_.back();
       evaluation_queue_.pop_back();
       fitness_buffer.clear();
       if (generation_number >= max_generations)
@@ -361,7 +362,7 @@ namespace CPPNEAT
         std::cout << "Maximum number of generations reached" << std::endl;
         this->RecordBest(id);
 
-        if (mutator_path != "none")
+        if ("none" not_eq mutator_path)
         {
           mutator->RecordInnovations(mutator_path);
         }
@@ -372,7 +373,7 @@ namespace CPPNEAT
 
   GeneticEncodingPtr NEATLearner::currentGenotype()
   {
-    return active_brain_;
+    return this->activeBrain_;
   }
 
   void NEATLearner::writeGenome(
@@ -389,21 +390,15 @@ namespace CPPNEAT
     for (const auto &connection : connection_genes)
     {
       outputFile << "      - con_" << n_cons << ":" << std::endl;
-      outputFile
-              << "            in_no: "
-              << connection->InnovationNumber()
-              << std::endl;
-      outputFile << "            from: " << connection->from_ << std::endl;
-      outputFile << "            to: " << connection->to_ << std::endl;
-      outputFile << "            weight: " << connection->weight << std::endl;
-      outputFile
-              << "            parent_name: "
-              << connection->get_parent_name()
-              << std::endl;
-      outputFile
-              << "            parent_index: "
-              << connection->get_parent_index()
-              << std::endl;
+      outputFile << "            in_no: "
+                 << connection->InnovationNumber() << std::endl;
+      outputFile << "            from: " << connection->From() << std::endl;
+      outputFile << "            to: " << connection->To() << std::endl;
+      outputFile << "            weight: " << connection->Weight() << std::endl;
+      outputFile << "            parent_name: "
+                 << connection->ParentsName() << std::endl;
+      outputFile << "            parent_index: "
+                 << connection->ParentsIndex() << std::endl;
     }
     outputFile << "    layers:" << std::endl;
     auto layers = genome->layers_;
@@ -418,27 +413,17 @@ namespace CPPNEAT
         outputFile << "          - nid: " << neuron->neuron_id << std::endl;
         outputFile << "            ntype: " << neuron->type_ << std::endl;
         outputFile << "            nlayer: " << neuron->layer << std::endl;
-        outputFile
-                << "            in_no: "
-                << it2->InnovationNumber()
-                << std::endl;
-        outputFile
-                << "            parent_name: "
-                << it2->get_parent_name()
-                << std::endl;
-        outputFile
-                << "            parent_index: "
-                << it2->get_parent_index()
-                << std::endl;
+        outputFile << "            in_no: "
+                   << it2->InnovationNumber() << std::endl;
+        outputFile << "            parent_name: "
+                   << it2->ParentsName() << std::endl;
+        outputFile << "            parent_index: "
+                   << it2->ParentsIndex() << std::endl;
         outputFile << "            params:" << std::endl;
         for (const auto &np : neuron_params)
         {
-          outputFile
-                  << "              "
-                  << np.first
-                  << ": "
-                  << np.second
-                  << std::endl;
+          outputFile << "              " << np.first << ": "
+                     << np.second << std::endl;
         }
       }
       n_layer++;
@@ -462,12 +447,9 @@ namespace CPPNEAT
     //choose representative from previous generation (or do nothing for first run)
     for (const auto &sppair : old_species)
     {
-      std::uniform_int_distribution< int > choose(
-              0,
-              sppair.second.size() - 1);
+      std::uniform_int_distribution< int > choose(0, sppair.second.size() - 1);
       GeneticEncodingPtr representative = sppair.second[choose(generator)];
-      species.insert({representative,
-                      std::vector< GeneticEncodingPtr >()});
+      species.insert({representative, std::vector< GeneticEncodingPtr >()});
     }
 
     for (const auto &cur_brain : brain_velocity)
@@ -526,7 +508,7 @@ namespace CPPNEAT
     return genotype1.second > genotype2.second;
   }
 
-  void NEATLearner::produce_new_generation()
+  void NEATLearner::ProduceGeneration()
   {
     //calculate number of children for each species
     double overall_fitness = 0;
@@ -610,7 +592,7 @@ namespace CPPNEAT
         }
         else
         {
-          auto selected = select_for_tournament(fitness_pairs, 2);
+          auto selected = Tournament(fitness_pairs, 2);
           parent_pairs.push_back(selected);
         }
       }
@@ -670,13 +652,15 @@ namespace CPPNEAT
               parent2);
     }
 
-    mutator->MutateWeights(child_genotype,
-                           weight_mutation_probability,
-                           weight_mutation_sigma);
+    mutator->MutateWeights(
+            child_genotype,
+            weight_mutation_probability,
+            weight_mutation_sigma);
 
-    mutator->MutateNeuronParams(child_genotype,
-                                param_mutation_probability,
-                                param_mutation_sigma);
+    mutator->MutateNeuronParams(
+            child_genotype,
+            param_mutation_probability,
+            param_mutation_sigma);
 
     apply_structural_mutation(child_genotype);
 
@@ -704,16 +688,14 @@ namespace CPPNEAT
     }
   }
 
-  std::pair< GeneticEncodingPtr, GeneticEncodingPtr > NEATLearner::select_for_tournament(
+  std::pair< GeneticEncodingPtr, GeneticEncodingPtr > NEATLearner::Tournament(
           std::vector< std::pair< GeneticEncodingPtr, double > > candidates,
-          unsigned int tourn_size)
+          unsigned int _tournamentSize)
   {
-    std::shuffle(candidates.begin(),
-                 candidates.end(),
-                 generator);
+    std::shuffle(candidates.begin(), candidates.end(), generator);
     candidates = std::vector< std::pair< GeneticEncodingPtr, double>>(
             candidates.begin(),
-            candidates.begin() + tourn_size);
+            candidates.begin() + _tournamentSize);
     std::sort(candidates.begin(),
               candidates.end(),
               fitness_cmp);

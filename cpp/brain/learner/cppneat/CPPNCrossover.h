@@ -9,8 +9,8 @@ class Crossover
 {
 public:
     static GeneticEncodingPtr
-    crossover(GeneticEncodingPtr genotype_more_fit,
-              GeneticEncodingPtr genotype_less_fit);
+    crossover(GeneticEncodingPtr _moreFitGenome,
+              GeneticEncodingPtr _lessFitGenome);
 
 };
 }

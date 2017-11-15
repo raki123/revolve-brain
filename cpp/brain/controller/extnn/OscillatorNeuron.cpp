@@ -30,7 +30,7 @@ OscillatorNeuron::CalculateOutput(double t)
 }
 
 std::map<std::string, double>
-OscillatorNeuron::getNeuronParameters()
+OscillatorNeuron::Parameters()
 {
   std::map<std::string, double> ret;
   ret["rv:period"] = period_;

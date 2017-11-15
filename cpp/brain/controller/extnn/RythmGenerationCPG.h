@@ -50,7 +50,7 @@ namespace revolve
      	*/
       virtual double CalculateOutput(double t) override;
 
-      virtual std::map<std::string, double> getNeuronParameters() override;
+      virtual std::map<std::string, double> Parameters() override;
 
       virtual void
       setNeuronParameters(std::map<std::string, double> params) override;

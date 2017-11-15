@@ -30,7 +30,7 @@ public:
     CalculateOutput(double t) override;
 
     virtual std::map<std::string, double>
-    getNeuronParameters() override;
+    Parameters() override;
 
     virtual void
     setNeuronParameters(std::map<std::string, double> params) override;

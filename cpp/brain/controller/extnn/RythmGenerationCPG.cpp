@@ -60,7 +60,7 @@ namespace revolve
       for (auto it = this->incomingConnections_.begin(); it != this->incomingConnections_.end(); ++it)
       {
         auto inConnection = it->second;
-        inputValue += inConnection->GetInputNeuron()->GetOutput() * inConnection->GetWeight();
+        inputValue += inConnection->GetInputNeuron()->Output() * inConnection->GetWeight();
       }
 
       double state_deriv = inputValue - this->bias_;
@@ -83,7 +83,7 @@ namespace revolve
       return result;
     }
 
-    std::map<std::string, double> RythmGenerationCPG::getNeuronParameters()
+    std::map<std::string, double> RythmGenerationCPG::Parameters()
     {
       std::map<std::string, double> ret;
       ret["rv:bias"] = bias_;

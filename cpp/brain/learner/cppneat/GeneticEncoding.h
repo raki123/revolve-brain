@@ -41,26 +41,24 @@ public:
 
     size_t num_connection_genes();
 
-    bool
-    connection_exists(int _from,
-                      int _to);
+    bool HasConnection(
+            const size_t _from,
+            const size_t _to);
 
-    static double
-    Dissimilarity(
+    static double Dissimilarity(
             GeneticEncodingPtr genotype1,
             GeneticEncodingPtr genotype2,
             double excess_coef,
             double disjoint_coef,
             double weight_diff_coef);
 
-    static void
-    get_excess_disjoint(GeneticEncodingPtr genotype1,
-                        GeneticEncodingPtr genotype2,
-                        int &excess_num,
-                        int &disjoint_num);
+    static void ExcessDisjoint(
+            GeneticEncodingPtr genotype1,
+            GeneticEncodingPtr genotype2,
+            int &excess_num,
+            int &disjoint_num);
 
-    static std::vector<std::pair<GenePtr, GenePtr>>
-    Pairs(
+    static std::vector<std::pair<GenePtr, GenePtr>> Pairs(
             std::vector< GenePtr > genes_sorted1,
             std::vector< GenePtr > genes_sorted2);
 
@@ -68,45 +66,36 @@ public:
     get_space_map(std::vector<GeneticEncodingPtr> genotypes,
                   std::map<Neuron::Ntype, Neuron::NeuronTypeSpec> brain_spec);
 
-    void
-    adopt(GeneticEncodingPtr adoptee);
+    void adopt(GeneticEncodingPtr adoptee);
 
-    std::vector<GenePtr>
-    SortedGenes();
+    std::vector<GenePtr> SortedGenes();
 
-    std::pair<int, int>
-    min_max_innov_numer();
+    std::pair<int, int> min_max_innov_numer();
 
-    GenePtr
-    Find(const size_t innov_number);
+    GenePtr Find(const size_t innov_number);
 
     //non-layered
-    void
-    add_neuron_gene(NeuronGenePtr neuron_gene);
+    void AddNeuron(NeuronGenePtr neuron_gene);
 
     //layered
-    void
-    add_neuron_gene(NeuronGenePtr neuron_gene,
-                    int layer,
-                    bool is_new_layer);
+    void AddNeuron(
+            NeuronGenePtr _neuron,
+            const size_t _layer,
+            const bool _newLayer);
 
-    void
-    add_connection_gene(ConnectionGenePtr connection_gene);
+    void AddConnection(ConnectionGenePtr _connection);
 
-    void
-    remove_connection_gene(int index);
+    void RemoveConnection(const size_t _index);
 
     //non-layered
-    void
-    remonve_neuron_gene(int index);
+    void RemoveNeuron(const size_t index);
 
     //layered
-    void
-    remove_neuron_gene(int layer,
-                       int index);
+    void RemoveNeuron(
+            const size_t _layer,
+            const size_t _index);
 
-    bool
-    neuron_exists(const size_t innov_number);
+    bool HasNeuron(const size_t _innovationNumber);
 
 #ifdef CPPNEAT_DEBUG
     bool is_valid();

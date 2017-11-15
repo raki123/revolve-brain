@@ -44,7 +44,7 @@ LeakyIntegrator::CalculateOutput(double t)
                                          .end(); ++it) {
     auto inConnection = it->second;
     inputValue += inConnection->GetInputNeuron()
-                              ->GetOutput() * inConnection->GetWeight();
+                              ->Output() * inConnection->GetWeight();
   }
 
   stateDeriv_ = (-state_ + inputValue) / tau_;
@@ -56,7 +56,7 @@ LeakyIntegrator::CalculateOutput(double t)
 }
 
 std::map<std::string, double>
-LeakyIntegrator::getNeuronParameters()
+LeakyIntegrator::Parameters()
 {
   std::map<std::string, double> ret;
   ret["rv:bias"] = bias_;

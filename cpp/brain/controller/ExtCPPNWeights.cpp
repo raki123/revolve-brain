@@ -83,7 +83,7 @@ ExtNNController::update(const std::vector<ActuatorPtr> &actuators,
   for (auto it = outputNeurons_.begin(); it != outputNeurons_.end(); ++it) {
     auto outNeuron = *it;
     int pos = outputPositionMap_[outNeuron];
-    outputs_[pos] = outNeuron->GetOutput();
+    outputs_[pos] = outNeuron->Output();
 
     // debF << pos << "," << outputs_[pos] << std::endl;
   }
@@ -110,7 +110,7 @@ std::vector<double> ExtNNController::getPhenotype()
   //neuron_parameters
   for (size_t i = 0; i < allNeurons_.size(); i++) {
     //iterator over map is ordered, therefore we always return the same parameter in the same place
-    std::map<std::string, double> params = allNeurons_[i]->getNeuronParameters();
+    std::map<std::string, double> params = allNeurons_[i]->Parameters();
     for (auto it = params.begin(); it != params.end(); ++it) {
       ret.push_back(it->second);
     }
@@ -128,7 +128,7 @@ void ExtNNController::setPhenotype(std::vector<double> weights)
   //neuron_parameters
   for (size_t i = 0; i < allNeurons_.size(); i++) {
     //iterator over map is ordered, therefore we always return the same parameter in the same place
-    std::map<std::string, double> params = allNeurons_[i]->getNeuronParameters();
+    std::map<std::string, double> params = allNeurons_[i]->Parameters();
     for (auto it = params.begin(); it != params.end(); ++it) {
       params[it->first] = weights[connections_.size() + i];
       matches++;
@@ -148,7 +148,8 @@ void ExtNNController::writeNetwork(std::ofstream &write_to)
 {
   boost::adjacency_list<> graph(allNeurons_.size());
   for (size_t i = 0; i < allNeurons_.size(); i++) {
-    std::vector<std::pair<std::string, NeuralConnectionPtr>> connectionsToAdd = allNeurons_[i]->getIncomingConnections();
+    std::vector<std::pair<std::string, NeuralConnectionPtr>> connectionsToAdd =
+            allNeurons_[i]->IncomingConnections();
     for (std::pair<std::string, NeuralConnectionPtr> connectionToAdd : connectionsToAdd) {
       NeuronPtr input = connectionToAdd.second
                                        ->GetInputNeuron();
@@ -164,7 +165,7 @@ void ExtNNController::writeNetwork(std::ofstream &write_to)
   for (size_t i = 0; i < allNeurons_.size(); i++) {
     std::stringstream nodeName;
     nodeName << allNeurons_[i]->Id() + " of type: " + allNeurons_[i]->getType() << std::endl;
-    for (std::pair<std::string, double> param : allNeurons_[i]->getNeuronParameters()) {
+    for (std::pair<std::string, double> param : allNeurons_[i]->Parameters()) {
       nodeName << param.first << ": " << param.second << std::endl;
     }
     names[i] = nodeName.str();

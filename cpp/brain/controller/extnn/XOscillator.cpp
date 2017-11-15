@@ -40,7 +40,7 @@ XOscillator::CalculateOutput(double t)
     auto inConnection = it->second;
 
     if (socketId == "from_v") {
-      vInput += inConnection->GetInputNeuron()->GetOutput() * inConnection->GetWeight();
+      vInput += inConnection->GetInputNeuron()->Output() * inConnection->GetWeight();
     }
   }
 
@@ -59,7 +59,7 @@ XOscillator::CalculateOutput(double t)
 }
 
 std::map<std::string, double>
-XOscillator::getNeuronParameters()
+XOscillator::Parameters()
 {
   std::map<std::string, double> ret;
   ret["rv:tau"] = tau_;

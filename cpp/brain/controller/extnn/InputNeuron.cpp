@@ -24,7 +24,7 @@ InputNeuron::SetInput(double value)
 }
 
 std::map<std::string, double>
-InputNeuron::getNeuronParameters()
+InputNeuron::Parameters()
 {
   std::map<std::string, double> ret;
   return ret;

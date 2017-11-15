@@ -25,7 +25,7 @@ BiasNeuron::CalculateOutput(double /*t*/)
 }
 
 std::map<std::string, double>
-BiasNeuron::getNeuronParameters()
+BiasNeuron::Parameters()
 {
   std::map<std::string, double> ret;
   ret["rv:bias"] = bias_;

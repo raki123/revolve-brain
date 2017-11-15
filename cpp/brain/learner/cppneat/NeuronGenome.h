@@ -13,26 +13,28 @@ class NeuronGene
 
 public:
     NeuronGene(NeuronPtr neuron,
-               int innov_number = 0,
-               bool enabled = true,
-               std::string parent_name = "",
-               int parent_index = -1)
-            :
-            Gene(innov_number,
-                 enabled,
-                 parent_name,
-                 parent_index)
+               const size_t _innovationNumber = 0,
+               const bool _enabled = true,
+               const std::string _parentsName = "",
+               const int _parentsIndex = -1)
+            : Gene(_innovationNumber,
+                   _enabled,
+                   _parentsName,
+                   _parentsIndex)
             , neuron(neuron)
-    { this->type_ = Gene::NEURON_GENE; }
+    {
+      this->type_ = Gene::NEURON_GENE;
+    }
 
     NeuronGene(NeuronGene &_copy)
-            :
-            Gene(_copy.InnovationNumber(),
-                 _copy.isEnabled(),
-                 _copy.get_parent_name(),
-                 _copy.get_parent_index())
+            : Gene(_copy.InnovationNumber(),
+                   _copy.IsEnabled(),
+                   _copy.ParentsName(),
+                   _copy.ParentsIndex())
             , neuron(NeuronPtr(new Neuron(*(_copy.neuron))))
-    { this->type_ = Gene::NEURON_GENE; }
+    {
+        this->type_ = Gene::NEURON_GENE;
+    }
 
 public:
     NeuronPtr neuron;

@@ -26,7 +26,7 @@ LinearNeuron::CalculateOutput(double t)
 
   for (auto it = this->incomingConnections_.begin(); it != this->incomingConnections_.end(); ++it) {
     auto inConnection = it->second;
-    inputValue += inConnection->GetInputNeuron()->GetOutput() * inConnection->GetWeight();
+    inputValue += inConnection->GetInputNeuron()->Output() * inConnection->GetWeight();
   }
 
   double result = this->gain_ * (inputValue - this->bias_);
@@ -35,7 +35,7 @@ LinearNeuron::CalculateOutput(double t)
 }
 
 std::map<std::string, double>
-LinearNeuron::getNeuronParameters()
+LinearNeuron::Parameters()
 {
   std::map<std::string, double> ret;
   ret["rv:bias"] = bias_;

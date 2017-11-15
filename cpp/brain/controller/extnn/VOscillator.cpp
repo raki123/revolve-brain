@@ -51,13 +51,13 @@ VOscillator::CalculateOutput(double t)
 
 
     if (socketId == "from_x") {
-      xInput += inConnection->GetInputNeuron()->GetOutput() * inConnection->GetWeight();
+      xInput += inConnection->GetInputNeuron()->Output() * inConnection->GetWeight();
     } else if (socketId == "from_x_ext") {
-      xExternal += inConnection->GetInputNeuron()->GetOutput() * inConnection->GetWeight();
+      xExternal += inConnection->GetInputNeuron()->Output() * inConnection->GetWeight();
     } else if (socketId == "from_v_ext") {
-      vExternal += inConnection->GetInputNeuron()->GetOutput() * inConnection->GetWeight();
+      vExternal += inConnection->GetInputNeuron()->Output() * inConnection->GetWeight();
     } else {
-      otherInputs += inConnection->GetInputNeuron()->GetOutput() * inConnection->GetWeight();
+      otherInputs += inConnection->GetInputNeuron()->Output() * inConnection->GetWeight();
     }
 
   }
@@ -78,7 +78,7 @@ VOscillator::CalculateOutput(double t)
 }
 
 std::map<std::string, double>
-VOscillator::getNeuronParameters()
+VOscillator::Parameters()
 {
   std::map<std::string, double> ret;
   ret["rv:alpha"] = alpha_;

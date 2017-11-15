@@ -312,13 +312,13 @@ namespace revolve
       }
       for (const auto &connection_gene : connection_genes)
       {
-        auto dst = innov_number_to_neuron[connection_gene->to_];
+        auto dst = innov_number_to_neuron[connection_gene->To()];
         NeuralConnectionPtr newConnection(new NeuralConnection(
-                innov_number_to_neuron[connection_gene->from_],
+                innov_number_to_neuron[connection_gene->From()],
                 dst,
-                connection_gene->weight)
+                connection_gene->Weight())
         );
-        dst->AddIncomingConnection(dst->GetSocketId(), newConnection);
+        dst->AddIncomingConnection(dst->SocketId(), newConnection);
         config->connections_.push_back(newConnection);
       }
       known_genotypes[config] = genotype;
@@ -526,14 +526,14 @@ namespace revolve
       for (const auto &connection_gene : connection_genes)
       {
         NeuronPtr destination_neuron =
-                neuron_inovation_numbers[connection_gene->to_];
+                neuron_inovation_numbers[connection_gene->To()];
         NeuralConnectionPtr newConnection(new NeuralConnection(
-                neuron_inovation_numbers[connection_gene->from_],
+                neuron_inovation_numbers[connection_gene->From()],
                 destination_neuron,
-                connection_gene->weight)
+                connection_gene->Weight())
         );
         destination_neuron->AddIncomingConnection(
-                destination_neuron->GetSocketId(),
+                destination_neuron->SocketId(),
                 newConnection);
         cppn->connections_.push_back(newConnection);
       }
@@ -550,7 +550,7 @@ namespace revolve
       {
         std::vector< std::pair< std::string, NeuralConnectionPtr>>
                 connectionsToAdd =
-                conf->allNeurons_[i]->getIncomingConnections();
+                conf->allNeurons_[i]->IncomingConnections();
 
         for (std::pair< std::string, NeuralConnectionPtr >
                   connectionToAdd : connectionsToAdd)
@@ -571,7 +571,7 @@ namespace revolve
                 << conf->allNeurons_[i]->Id() + " of type: " + conf->allNeurons_[i]->getType()
                 << std::endl;
         for (std::pair< std::string, double >
-                  param : conf->allNeurons_[i]->getNeuronParameters())
+                  param : conf->allNeurons_[i]->Parameters())
         {
           nodeName << param.first << ": " << param.second << std::endl;
         }
@@ -647,7 +647,7 @@ namespace revolve
         {
           if (outNeuron->Id() == "weight")
           {
-            connection->SetWeight(outNeuron->GetOutput());
+            connection->SetWeight(outNeuron->Output());
             break;
           }
         }
@@ -705,7 +705,7 @@ namespace revolve
         std::map< std::string, double > params;
         for (const auto &outNeuron : cppn->layers_[cppn->layers_.size() - 1])
         {
-          params[outNeuron->Id()] = outNeuron->GetOutput();
+          params[outNeuron->Id()] = outNeuron->Output();
         }
         neuron->setNeuronParameters(params);
       }
@@ -756,7 +756,7 @@ namespace revolve
                 neuron,
                 innov_number++,
                 true));
-        ret->add_neuron_gene(neuron_gene, 0, i == 0);
+        ret->AddNeuron(neuron_gene, 0, i == 0);
       }
 
       // Add output layer
@@ -772,7 +772,7 @@ namespace revolve
               innov_number++,
               true)
       );
-      ret->add_neuron_gene(weight_neuron_gene, 1, true);
+      ret->AddNeuron(weight_neuron_gene, 1, true);
 
       // Connect every input with every output
       for (size_t i = 0; i < 3; i++)
@@ -784,7 +784,7 @@ namespace revolve
                 innov_number++,
                 true,
                 ""));
-        ret->add_connection_gene(connToWeight);
+        ret->AddConnection(connToWeight);
       }
       return ret;
     }
@@ -850,7 +850,7 @@ namespace revolve
           {
             if (outNeuron->Id() == "weight")
             {
-              (*policy)[j][i] = outNeuron->GetOutput();
+              (*policy)[j][i] = outNeuron->Output();
               break;
             }
           }

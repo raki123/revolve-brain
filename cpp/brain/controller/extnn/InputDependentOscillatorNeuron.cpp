@@ -35,14 +35,14 @@ InputDependentOscillatorNeuron::CalculateOutput(double /*t*/)
                                          .end(); ++it) {
     auto inConnection = it->second;
     inputValue += inConnection->GetInputNeuron()
-                              ->GetOutput() * inConnection->GetWeight();
+                              ->Output() * inConnection->GetWeight();
   }
   return 0.5 * (1.0 + this->gain_ *
                       sin(2.0 * M_PI / (this->period_) * (inputValue - this->period_ * this->phaseOffset_)));
 }
 
 std::map<std::string, double>
-InputDependentOscillatorNeuron::getNeuronParameters()
+InputDependentOscillatorNeuron::Parameters()
 {
   std::map<std::string, double> ret;
   ret["rv:period"] = period_;

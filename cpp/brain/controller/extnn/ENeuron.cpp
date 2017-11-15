@@ -21,7 +21,7 @@ Neuron::AddIncomingConnection(const std::string &socketName,
 
 
 void
-Neuron::DeleteIncomingConections()
+Neuron::DeleteIncomingConnections()
 {
   incomingConnections_.clear();
 }
@@ -42,14 +42,14 @@ Neuron::FlipState()
 
 
 double
-Neuron::GetOutput() const
+Neuron::Output() const
 {
   return this->output_;
 }
 
 
 std::string
-Neuron::GetSocketId() const
+Neuron::SocketId() const
 {
   return std::to_string(this->incomingConnections_.size());
 }
@@ -62,7 +62,7 @@ Neuron::Id() const
 }
 
 std::vector<std::pair<std::string, NeuralConnectionPtr> >
-Neuron::getIncomingConnections()
+Neuron::IncomingConnections()
 {
   return this->incomingConnections_;
 }

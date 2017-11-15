@@ -76,7 +76,7 @@ void RafCPGController::update(const std::vector<ActuatorPtr> &actuators,
   for (auto it = outputNeurons_.begin(); it != outputNeurons_.end(); ++it) {
     auto outNeuron = *it;
     int pos = outputPositionMap_[outNeuron];
-    outputs_[pos] = outNeuron->GetOutput();
+    outputs_[pos] = outNeuron->Output();
   }
 
   // Send new signals to the actuators
@@ -121,7 +121,8 @@ void RafCPGController::writeNetwork(std::ofstream &write_to)
 {
   boost::adjacency_list<> graph(allNeurons_.size());
   for (size_t i = 0; i < allNeurons_.size(); i++) {
-    std::vector<std::pair<std::string, NeuralConnectionPtr>> connectionsToAdd = allNeurons_[i]->getIncomingConnections();
+    std::vector<std::pair<std::string, NeuralConnectionPtr>> connectionsToAdd =
+            allNeurons_[i]->IncomingConnections();
     for (std::pair<std::string, NeuralConnectionPtr> connectionToAdd : connectionsToAdd) {
       NeuronPtr input = connectionToAdd.second->GetInputNeuron();
       long indexInput = std::find(allNeurons_.begin(), allNeurons_.end(), input) - allNeurons_.begin();
@@ -132,7 +133,7 @@ void RafCPGController::writeNetwork(std::ofstream &write_to)
   for (size_t i = 0; i < allNeurons_.size(); ++i) {
     std::stringstream nodeName;
     nodeName << allNeurons_[i]->Id() + " of type: " + allNeurons_[i]->getType() << std::endl;
-    for (std::pair<std::string, double> param : allNeurons_[i]->getNeuronParameters()) {
+    for (std::pair<std::string, double> param : allNeurons_[i]->Parameters()) {
       nodeName << param.first << ": " << param.second << std::endl;
     }
     names[i] = nodeName.str();
