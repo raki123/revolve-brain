@@ -278,61 +278,6 @@ namespace CPPNEAT
         }
 
     }
-//    this->connectionInnovations_.clear();
-    for (const auto &connection : yaml[1]["connection_innovations"])
-    {
-      auto innovation = connection["connection_innovation"];
-
-      auto from = innovation["mark_from"].as< size_t >();
-      auto to = innovation["mark_to"].as< size_t >();
-      auto inNum = innovation["in_no"].as< size_t >();
-
-      if (this->secondToFirst_.find(from) == this->secondToFirst_.end())
-      {
-        this->secondToFirst_[from] = from + this->innovationNumber_;
-      }
-      if (this->secondToFirst_.find(to) == this->secondToFirst_.end())
-      {
-        this->secondToFirst_[to] = to + this->innovationNumber_;
-      }
-      if (this->secondToFirst_.find(inNum) == this->secondToFirst_.end())
-      {
-        this->secondToFirst_[inNum] = inNum + this->innovationNumber_;
-      }
-
-      this->connectionInnovations_.insert(
-              {{this->secondToFirst_[from], this->secondToFirst_[to]},
-               this->secondToFirst_[inNum]});
-    }
-//    this->neuronInnovations_.clear();
-    for (const auto &neuron : yaml[2]["neuron_innovations"])
-    {
-      auto innovation = neuron["neuron_innovation"];
-
-      auto split = innovation["conn_split"].as< size_t >();
-      auto nType = static_cast<Neuron::Ntype>(innovation["ntype"].as< size_t >());
-
-      if (this->secondToFirst_.find(split) == this->secondToFirst_.end())
-      {
-        this->secondToFirst_[split] = split + this->innovationNumber_;
-      }
-      std::vector< size_t > inNums;
-      for (const auto &inNum : innovation["in_nos"])
-      {
-        auto innov = inNum["in_no"].as< size_t >();
-        if (this->secondToFirst_.find(innov) == this->secondToFirst_.end())
-        {
-          this->secondToFirst_[innov] = innov + this->innovationNumber_;
-        }
-
-        inNums.push_back(this->secondToFirst_[innov]);
-      }
-      this->neuronInnovations_.insert(
-              {{this->secondToFirst_[split], nType},
-               inNums});
-    }
-
-    this->innovationNumber_ += secondInnovationNumber_;
   }
 
   void Mutator::MutateNeuronParams(
