@@ -136,6 +136,13 @@ namespace CPPNEAT
       this->neuronInnovations_.insert({{split, nType}, inNums});
     }
   }
+  
+  bool connectionComp(std::pair< std::pair< size_t, size_t >, size_t> f,std::pair< std::pair< size_t, size_t >, size_t> s) {
+    return f.second > s.second;
+  }
+  bool neuronComp(std::pair< std::pair< size_t, size_t >, std::vector< size_t > > f,std::pair< std::pair< size_t, size_t >, std::vector< size_t > > s) {
+    return f.second[0] > s.second[0];
+  }
 
   void Mutator::LoadInnovationsFromSecond(const std::string &_path)
   {
@@ -145,6 +152,34 @@ namespace CPPNEAT
       std::cerr << "Error: Load second innovations:" << _path << std::endl;
       return;
     }
+    // Load innovations as for a first parent
+    size_t secondInnovationNumber_ = yaml[0]["in_no"].as< size_t >();
+    std::vector< std::pair< std::pair< size_t, size_t >, size_t > >
+            secondConnectionInnovations_;
+    std::vector< std::pair< std::pair< size_t, Neuron::Ntype >,
+                       std::vector< size_t >>> secondNeuronInnovations_;
+    for (const auto &connection : yaml[1]["connection_innovations"])
+    {
+      auto innovation = connection["connection_innovation"];
+
+      auto from = innovation["mark_from"].as< size_t >();
+      auto to = innovation["mark_to"].as< size_t >();
+      auto inNum = innovation["in_no"].as< size_t >();
+
+      secondConnectionInnovations_.push_back(std::make_pair(std::make_pair(from, to), inNum));
+    }
+    for (const auto &neuron : yaml[2]["neuron_innovations"])
+    {
+      auto innovation = neuron["neuron_innovation"];
+      auto split = innovation["conn_split"].as< size_t >();
+      auto nType = static_cast<Neuron::Ntype>(innovation["ntype"].as< size_t >());
+      std::vector< size_t > inNums;
+      for (const auto &inNum : innovation["in_nos"])
+      {
+        inNums.push_back(inNum["in_no"].as< size_t >());
+      }
+      secondNeuronInnovations_.push_back({{split, nType}, inNums});
+    }
 
     // Map innvations from second to first
     this->secondToFirst_.clear();
@@ -153,9 +188,96 @@ namespace CPPNEAT
       this->secondToFirst_[innovations] = innovations;
     }
 
-    // Load innovations as for a first parent
-    auto secondInnovationNumber_ = yaml[0]["in_no"].as< size_t >();
+    std::sort(secondConnectionInnovations_.begin(), secondConnectionInnovations_.end(), connectionComp);
+    std::sort(secondNeuronInnovations_.begin(), secondNeuronInnovations_.end(), neuronComp);
+    while(not secondConnectionInnovations_.empty() and not secondNeuronInnovations_.empty()) {
+        if(secondConnectionInnovations_.empty() and not secondNeuronInnovations_.empty()) {
+            size_t conn_split;
+            Neuron::Ntype nType;
+            std::vector< size_t > inNums;
+            auto neuronInnovation = secondNeuronInnovations_.back();
+            std::tie(conn_split, nType) = neuronInnovation.first;
+            inNums = neuronInnovation.second;
+            secondNeuronInnovations_.pop_back();
+            if(this->neuronInnovations_.find({this->secondToFirst_[conn_split], nType}) != this->neuronInnovations_.end()) {
+                std::vector< size_t > firstInNums = this->neuronInnovations_.find({this->secondToFirst_[conn_split], nType})->second;
+                for(size_t i = 0; i < inNums.size(); i++) {
+                    if(firstInNums.size() > i) {
+                        this->secondToFirst_[inNums[i]] = firstInNums[i];
+                    } else {
+                        this->secondToFirst_[inNums[i]] = ++(this->innovationNumber_);
+                        firstInNums.push_back(this->innovationNumber_);
+                    }
+                }
+                this->neuronInnovations_[std::make_pair(this->secondToFirst_[conn_split], nType)] = firstInNums; 
+            } else {
+                std::vector< size_t > toIns;
+                for(size_t i = 0; i < inNums.size(); i++) {
+                    this->secondToFirst_[inNums[i]] = ++(this->innovationNumber_);
+                    toIns.push_back(this->innovationNumber_);
+                }
+                this->neuronInnovations_[std::make_pair(this->secondToFirst_[conn_split], nType)] = toIns; 
+            }
+        } else if(not secondConnectionInnovations_.empty() and secondNeuronInnovations_.empty()) {
+            size_t from, to, inno;
+            auto connectionInnovation = secondConnectionInnovations_.back();
+            std::tie(from, to) = connectionInnovation.first;
+            inno = connectionInnovation.second;
+            secondConnectionInnovations_.pop_back();
+            if(this->connectionInnovations_.find({this->secondToFirst_[from], this->secondToFirst_[to]}) != this->connectionInnovations_.end()) {
+                size_t firstInno = this->connectionInnovations_.find({this->secondToFirst_[from], this->secondToFirst_[to]})->second;
+                this->secondToFirst_[inno] = firstInno;
+            } else {
+                this->secondToFirst_[inno] = ++(this->innovationNumber_);
+                this->connectionInnovations_[std::make_pair(this->secondToFirst_[from], this->secondToFirst_[to])] = this->innovationNumber_;
+            }
+        } else {
+            size_t minConn = secondConnectionInnovations_.back().second;
+            size_t minNeuron = secondNeuronInnovations_.back().second[0];
+            if(minConn < minNeuron) {
+                size_t from, to, inno;
+                auto connectionInnovation = secondConnectionInnovations_.back();
+                std::tie(from, to) = connectionInnovation.first;
+                inno = connectionInnovation.second;
+                secondConnectionInnovations_.pop_back();
+                if(this->connectionInnovations_.find({this->secondToFirst_[from], this->secondToFirst_[to]}) != this->connectionInnovations_.end()) {
+                    size_t firstInno = this->connectionInnovations_.find({this->secondToFirst_[from], this->secondToFirst_[to]})->second;
+                    this->secondToFirst_[inno] = firstInno;
+                } else {
+                    this->secondToFirst_[inno] = ++(this->innovationNumber_);
+                    this->connectionInnovations_[std::make_pair(this->secondToFirst_[from], this->secondToFirst_[to])] = this->innovationNumber_;
+                }
+            } else {
+                size_t conn_split;
+                Neuron::Ntype nType;
+                std::vector< size_t > inNums;
+                auto neuronInnovation = secondNeuronInnovations_.back();
+                std::tie(conn_split, nType) = neuronInnovation.first;
+                inNums = neuronInnovation.second;
+                secondNeuronInnovations_.pop_back();
+                if(this->neuronInnovations_.find({this->secondToFirst_[conn_split], nType}) != this->neuronInnovations_.end()) {
+                    std::vector< size_t > firstInNums = this->neuronInnovations_.find({this->secondToFirst_[conn_split], nType})->second;
+                    for(size_t i = 0; i < inNums.size(); i++) {
+                        if(firstInNums.size() > i) {
+                            this->secondToFirst_.insert({inNums[i], firstInNums[i]});
+                        } else {
+                            this->secondToFirst_[inNums[i]] = ++(this->innovationNumber_);
+                            firstInNums.push_back(this->innovationNumber_);
+                        }
+                    }
+                    this->neuronInnovations_[std::make_pair(this->secondToFirst_[conn_split], nType)] = firstInNums; 
+                } else {
+                    std::vector< size_t > toIns;
+                    for(size_t i = 0; i < inNums.size(); i++) {
+                        this->secondToFirst_[inNums[i]] = ++(this->innovationNumber_);
+                        toIns.push_back(this->innovationNumber_);
+                    }
+                    this->neuronInnovations_[std::make_pair(this->secondToFirst_[conn_split], nType)] = toIns; 
+                }
+            }
+        }
 
+    }
 //    this->connectionInnovations_.clear();
     for (const auto &connection : yaml[1]["connection_innovations"])
     {
